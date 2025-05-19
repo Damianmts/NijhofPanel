@@ -18,7 +18,7 @@ sealed partial class Build
             foreach (var (wixInstaller, wixTarget) in InstallersMap)
             {
                 Log.Information("Project: {Name}", wixTarget.Name);
-                
+
                 DotNetBuild(settings => settings
                     .SetProjectFile(wixInstaller)
                     .SetConfiguration(configuration)
@@ -26,15 +26,17 @@ sealed partial class Build
                     .SetVerbosity(DotNetVerbosity.minimal));
 
                 var builderFile = Directory
-                    .EnumerateFiles(wixInstaller.Directory / "bin" / configuration,  $"{wixInstaller.Name}.exe")
+                    .EnumerateFiles(wixInstaller.Directory / "bin" / configuration, $"{wixInstaller.Name}.exe")
                     .FirstOrDefault()
                     .NotNull($"No installer builder was found for the project: {wixInstaller.Name}");
 
-                var targetDirectories = Directory.GetDirectories(wixTarget.Directory, $"* {configuration} *", SearchOption.AllDirectories);
+                var targetDirectories = Directory.GetDirectories(wixTarget.Directory, $"* {configuration} *",
+                    SearchOption.AllDirectories);
                 Assert.NotEmpty(targetDirectories, "No content were found to create an installer");
 
                 var arguments = targetDirectories.Select(path => path.DoubleQuoteIfNeeded()).JoinSpace();
-                var process = ProcessTasks.StartProcess(builderFile, arguments, logInvocation: false, logger: InstallerLogger);
+                var process = ProcessTasks.StartProcess(builderFile, arguments, logInvocation: false,
+                    logger: InstallerLogger);
                 process.AssertZeroExitCode();
             }
         });

@@ -23,7 +23,7 @@ public static class Generator
             Description = "Revit add-in installation files",
             Display = FeatureDisplay.expand
         };
-        
+
         foreach (var directory in args)
         {
             var directoryInfo = new DirectoryInfo(directory);

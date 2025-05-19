@@ -29,7 +29,8 @@ sealed partial class Build
 
         if (tags.Length < 2) return;
 
-        if (changelogBuilder[^1] != '\r' || changelogBuilder[^1] != '\n') changelogBuilder.AppendLine(Environment.NewLine);
+        if (changelogBuilder[^1] != '\r' || changelogBuilder[^1] != '\n')
+            changelogBuilder.AppendLine(Environment.NewLine);
         changelogBuilder.Append("Full changelog: ");
         changelogBuilder.Append(GitRepository.GetGitHubCompareTagsUrl(tags[^1].Text, tags[^2].Text));
     }

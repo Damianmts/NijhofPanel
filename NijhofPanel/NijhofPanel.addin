@@ -1,0 +1,15 @@
+﻿<RevitAddIns>
+    <AddIn Type="Application">
+        <Name>NijhofPanel</Name>
+        <Assembly>NijhofPanel\NijhofPanel.dll</Assembly>
+        <AddInId>15120B71-FEF8-4ECE-A8E5-7F390899380D</AddInId>
+        <FullClassName>NijhofPanel.Application</FullClassName>
+        <VendorId>Development</VendorId>
+        <VendorDescription></VendorDescription>
+        <VendorEmail></VendorEmail>
+    </AddIn>
+    <ManifestSettings>
+        <UseRevitContext>False</UseRevitContext>
+        <ContextName>NijhofPanel</ContextName>
+    </ManifestSettings>
+</RevitAddIns>

@@ -20,7 +20,8 @@ sealed partial class Build : NukeBuild
             .Where(config => Configurations.Any(wildcard => FileSystemName.MatchesSimpleExpression(wildcard, config)))
             .ToList();
 
-        Assert.NotEmpty(configurations, $"No solution configurations have been found. Pattern: {string.Join(" | ", Configurations)}");
+        Assert.NotEmpty(configurations,
+            $"No solution configurations have been found. Pattern: {string.Join(" | ", Configurations)}");
         return configurations;
     }
 }

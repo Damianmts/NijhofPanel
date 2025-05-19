@@ -25,13 +25,14 @@ sealed partial class Build
     /// </summary>
     Dictionary<Project, Project> InstallersMap => new()
     {
-        {Solution.Automation.Installer, Solution.NijhofPanel}
+        { Solution.Automation.Installer, Solution.NijhofPanel }
     };
 
     /// <summary>
     ///     Path to build output.
     /// </summary>
     readonly AbsolutePath ArtifactsDirectory = RootDirectory / "output";
+
     /// <summary>
     ///     Releases changelog path.
     /// </summary>
@@ -46,7 +47,8 @@ sealed partial class Build
     ///     1.0.0-beta.2.250101 <br/>
     ///     1.0.0
     /// </example>
-    [Parameter] string ReleaseVersion;
+    [Parameter]
+    string ReleaseVersion;
 
     /// <summary>
     ///     The previous release version.
@@ -54,12 +56,14 @@ sealed partial class Build
     /// <remarks>
     ///     Can be used to compare versions or analyze changes between versions.
     /// </remarks>
-    string PreviousReleaseVersion => GitTasks.Git("tag -l --sort=v:refname", logInvocation: false, logOutput: false).ToArray() switch
-    {
-        var tags when tags.Length >= 2 => tags[^2].Text,
-        var tags when tags.Length == 0 => throw new InvalidOperationException("The pipeline must be triggered by pushing a new tag"),
-        _ => GitTasks.Git("rev-list --max-parents=0 HEAD", logOutput: false, logInvocation: false).First().Text
-    };
+    string PreviousReleaseVersion =>
+        GitTasks.Git("tag -l --sort=v:refname", logInvocation: false, logOutput: false).ToArray() switch
+        {
+            var tags when tags.Length >= 2 => tags[^2].Text,
+            var tags when tags.Length == 0 => throw new InvalidOperationException(
+                "The pipeline must be triggered by pushing a new tag"),
+            _ => GitTasks.Git("rev-list --max-parents=0 HEAD", logOutput: false, logInvocation: false).First().Text
+        };
 
     /// <summary>
     ///     Numeric release version without a stage.
@@ -84,12 +88,14 @@ sealed partial class Build
     /// <summary>
     ///     Git repository metadata.
     /// </summary>
-    [GitRepository] readonly GitRepository GitRepository;
-    
+    [GitRepository]
+    readonly GitRepository GitRepository;
+
     /// <summary>
     ///     Solution structure metadata.
     /// </summary>
-    [Solution(GenerateProjects = true)] Solution Solution;
+    [Solution(GenerateProjects = true)]
+    Solution Solution;
 
     /// <summary>
     ///     Set not-defined properties.
