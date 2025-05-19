@@ -1,0 +1,21 @@
+﻿<ListBox x:Name="sidebar" ... >
+    <ListBox.Template>
+        <ControlTemplate>
+            <DockPanel LastChildFill="False">
+                <!-- Bovenste knoppen -->
+                <ItemsPresenter DockPanel.Dock="Top"/>
+                
+                <!-- Onderste knop -->
+                <services:Srv_NavButton DockPanel.Dock="Bottom" 
+                    Navlink="pack://application:,,,/NijhofPanel;component/Views/SettingsPageView.xaml" 
+                    Margin="3" 
+                    Padding="6" 
+                    MouseLeftButtonUp="OnNavButtonClick">
+                    <services:Srv_NavButton.Icon>
+                        <PathGeometry Figures="M19.14,12.94c0.04-0.3..."/>
+                    </services:Srv_NavButton.Icon>
+                </services:Srv_NavButton>
+            </DockPanel>
+        </ControlTemplate>
+    </ListBox.Template>
+</ListBox>

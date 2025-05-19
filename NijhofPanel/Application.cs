@@ -63,8 +63,8 @@ public class Application : ExternalApplication
         var iconService = new Srv_Icon();
         
         PushButtonData buttonData = new PushButtonData(
-            "Open Paneel",
-            "Open Paneel",
+            "Open Panel",
+            "Open Panel",
             assemblyPath,
             "NijhofPanel.Commands.Core.Com_OpenPanel"
         )
@@ -81,5 +81,25 @@ public class Application : ExternalApplication
         }
         
         ribbonPanel.AddItem(buttonData);
+        
+        PushButtonData toggleButtonData = new PushButtonData(
+            "Toggle Window",
+            "Open als Venster",
+            assemblyPath,
+            "NijhofPanel.Commands.Core.Com_ToggleWindow"
+        )
+        {
+            ToolTip = "Open het paneel als los venster",
+            LongDescription = "Schakel tussen dockable panel en los venster"
+        };
+        
+        if (icon != null)
+        {
+            toggleButtonData.LargeImage = icon;
+            toggleButtonData.Image = icon;
+        }
+    
+        ribbonPanel.AddItem(toggleButtonData);
+
     }
 }

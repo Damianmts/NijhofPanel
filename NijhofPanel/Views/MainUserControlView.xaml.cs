@@ -99,6 +99,7 @@ public partial class MainUserControlView : UserControl
             try
             {
                 navframe.Navigate(navButton.Navlink);
+                sidebar.SelectedItem = navButton;
             }
             catch (Exception ex)
             {

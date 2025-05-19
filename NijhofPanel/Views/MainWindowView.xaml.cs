@@ -3,11 +3,11 @@ using NijhofPanel.ViewModels;
 
 namespace NijhofPanel.Views;
 
-public partial class PrefabWindowView : Window
+public partial class MainWindowView : Window
 {
-    public PrefabWindowView()
+    public MainWindowView()
     {
         InitializeComponent();
-        DataContext = new PrefabWindowViewModel();
+        DataContext = new MainWindowViewModel();
     }
 }
