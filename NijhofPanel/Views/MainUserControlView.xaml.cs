@@ -3,12 +3,16 @@ using NijhofPanel.ViewModels;
 using NijhofPanel.Services;
 using System;
 using System.Windows;
+using System.Windows.Input;
 using NijhofPanel.Views;
 
 namespace NijhofPanel.Views;
 
 public partial class MainUserControlView : UserControl
 {
+    // Lijst om geopende vensters bij te houden
+    private readonly Dictionary<string, Window> _openWindows = new Dictionary<string, Window>();
+
     public MainUserControlView(MainUserControlViewModel viewModel)
     {
         InitializeComponent();
@@ -28,6 +32,23 @@ public partial class MainUserControlView : UserControl
         {
             try
             {
+                // Controleer eerst of het venster al open is
+                if (_openWindows.ContainsKey(windowButton.Navlink))
+                {
+                    // Activeer het bestaande venster
+                    var existingWindow = _openWindows[windowButton.Navlink];
+                    if (existingWindow.IsVisible)
+                    {
+                        existingWindow.Activate();
+                        return;
+                    }
+                    else
+                    {
+                        // Verwijder het venster uit de dictionary als het gesloten is
+                        _openWindows.Remove(windowButton.Navlink);
+                    }
+                }
+
                 Window? window = null;
 
                 switch (windowButton.Navlink)
@@ -48,12 +69,40 @@ public partial class MainUserControlView : UserControl
 
                 if (window != null)
                 {
+                    // Maak het venster modeless
+                    window.Owner = Window.GetWindow(this);
+                    
+                    // Voeg het venster toe aan de dictionary
+                    _openWindows[windowButton.Navlink] = window;
+                    
+                    // Registreer een handler voor als het venster sluit
+                    window.Closed += (s, args) =>
+                    {
+                        _openWindows.Remove(windowButton.Navlink);
+                        // Reset de selectie om de "geselecteerde" status te verwijderen
+                        sidebar.SelectedIndex = -1;
+                    };
+                    
                     window.Show();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Fout bij openen venster: {ex.Message}");
+            }
+        }
+    }
+    private void OnNavButtonClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is Srv_NavButton navButton && navButton.Navlink != null)
+        {
+            try
+            {
+                navframe.Navigate(navButton.Navlink);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fout bij navigatie (klik): {ex.Message}");
             }
         }
     }

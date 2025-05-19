@@ -67,7 +67,7 @@
         <Resource Include="Resources\Icons\RibbonIcon16.png"/>
         <Resource Include="Resources\Icons\RibbonIcon32.png"/>
         <None Remove="Resources\Icons\NijhofLogo_32x32.png" />
-        <Resource Include="Resources\Icons\NijhofLogo_32x32.png" />
+        <EmbeddedResource Include="Resources\Icons\NijhofLogo_32x32.png" />
     </ItemGroup>
 
     <ItemGroup>

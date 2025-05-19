@@ -9,10 +9,10 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:MainUserControlViewModel}"
              Background="White"
-             Height="500"
-             Width="300"
-             MinHeight="500"
-             MinWidth="300">
+             Height="700"
+             Width="350"
+             MinHeight="700"
+             MinWidth="350">
     
     <UserControl.Resources>
         <ResourceDictionary>
@@ -29,15 +29,13 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         
-        <ListBox Grid.Column="0" SelectionMode="Single" SelectionChanged="sidebar_SelectionChanged" x:Name="sidebar" Margin="0,0,0,0" BorderThickness="0">
-            <ListBox.Effect>
-                <DropShadowEffect Direction="0"
-                                  ShadowDepth="3"
-                                  BlurRadius="5"
-                                  Opacity="0.5"
-                                  Color="Black"/>
-            </ListBox.Effect>
-
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+        
+        <ListBox Grid.Row="0" SelectionMode="Single" SelectionChanged="sidebar_SelectionChanged" x:Name="sidebar" Margin="0,0,0,0" BorderThickness="0">
             <services:Srv_NavButton Navlink="pack://application:,,,/NijhofPanel;component/Views/StartPageView.xaml" Margin="3" Padding="6"
                                        Icon="F1 M32,32z M0,0z M30.854,16.548C30.523,17.43,29.703,18,28.764,18L28,18 28,29C28,29.552,27.552,30,27,30L21,30 21,23C21,20.243 18.757,18 16,18 13.243,18 11,20.243 11,23L11,30 5,30C4.448,30,4,29.552,4,29L4,18 3.235,18C2.296,18 1.476,17.431 1.145,16.549 0.814,15.667 1.057,14.697 1.765,14.079L13.444,3.019C14.878,1.662,17.123,1.662,18.556,3.019L30.263,14.105C30.941,14.696,31.185,15.666,30.854,16.548z" />
             <Separator />
@@ -64,6 +62,20 @@
                                        Icon="F1 M24,24z M0,0z M20,15C20,15,18.6,16.3,21.1,17L18.3,19.8 15.5,19.8C15.5,19.8,13.6,19.7,15,22L11,22 9,20C9,20,7.7,18.6,7,21.1L4.2,18.3 4.2,15.5C4.2,15.5,4.3,13.6,2,15L2,11 4,9C4,9,5.4,7.7,2.8,7.1L5.6,4.2 8.5,4.2C8.5,4.2,10.4,4.3,9,2L13,2 15,4C15,4,16.3,5.4,17,2.8L19.8,5.6 19.8,8.5C19.8,8.5,19.7,10.4,22,9L22,13 20,15 M14,12A2,2,0,0,0,12,10A2,2,0,0,0,10,12A2,2,0,0,0,12,14A2,2,0,0,0,14,12z" />
         </ListBox>
 
+            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,0,0">
+                <Separator/>
+                <services:Srv_NavButton Navlink="pack://application:,,,/NijhofPanel;component/Views/SettingsPageView.xaml" Margin="3" Padding="6" MouseLeftButtonUp="OnNavButtonClick">
+                    <services:Srv_NavButton.Icon>
+                        <PathGeometry Figures="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                    </services:Srv_NavButton.Icon>
+                </services:Srv_NavButton>
+            </StackPanel>
+        </Grid>
+        
+        <Border Grid.Column="0" 
+                BorderThickness="0,0,1,0" 
+                BorderBrush="#DDDDDD"/>
+            
         <Frame Grid.Column="1" x:Name="navframe" NavigationUIVisibility="Hidden" Background="#e9ecef" />
     </Grid>
 </UserControl>

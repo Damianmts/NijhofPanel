@@ -15,6 +15,9 @@ namespace NijhofPanel;
 /// <summary>
 ///     Application entry point
 /// </summary>
+
+// TODO - Add button to open DockablePane in a Window view. (Only one instance can exist. Panel or window)
+
 [UsedImplicitly]
 public class Application : ExternalApplication
 {
@@ -39,7 +42,7 @@ public class Application : ExternalApplication
         var dockablePaneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
         var dockablePaneService = new Srv_DockablePane(mainView);
         
-        Application.RegisterDockablePane(dockablePaneId, "Nijhof Panel", dockablePaneService);
+        Application.RegisterDockablePane(dockablePaneId, "Nijhof Tools", dockablePaneService);
     }
 
     private RibbonPanel GetOrCreateRibbonPanel()
