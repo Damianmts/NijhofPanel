@@ -16,7 +16,8 @@ sealed partial class Build
             {
                 Log.Information("Project: {Name}", project.Name);
 
-                var targetDirectories = Directory.GetDirectories(project.Directory, "* Release *", SearchOption.AllDirectories);
+                var targetDirectories =
+                    Directory.GetDirectories(project.Directory, "* Release *", SearchOption.AllDirectories);
                 Assert.NotEmpty(targetDirectories, "No files were found to create a bundle");
 
                 var bundleName = $"{project.Name}.bundle";
