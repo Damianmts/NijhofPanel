@@ -4,9 +4,122 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:NijhofPanel.Views"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
         mc:Ignorable="d"
-        Title="LibraryWindowView" Height="450" Width="800">
-    <Grid>
+        Title="Nijhof Library"
+        Height="700"
+        Width="1100">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_BasicButton.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Grid Background="#f1f3f5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         
+        <Border Grid.Column="0"
+                CornerRadius="2"
+                Background="White"
+                Margin="10,10,10,45">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="0.5"
+                                  Direction="0"
+                                  Opacity="0.3"
+                                  Color="Black" />
+            </Border.Effect>
+            <syncfusion:SfTreeView x:Name="SfTreeView"
+                                   ItemsSource="{Binding RootFiles}"
+                                   ChildPropertyName="SubFiles"
+                                   ShowLines="True"
+                                   ShowRootLines="True"
+                                   NodePopulationMode="Instant"
+                                   IsAnimationEnabled="False"
+                                   SelectionMode="Extended"
+                                   FocusVisualStyle="{x:Null}"
+                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                   ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                   QueryNodeSize="SfTreeView_QueryNodeSize"
+                                   SelectedItem="{Binding SelectedFolder, Mode=TwoWay}"
+                                   Margin="0">
+                <syncfusion:SfTreeView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding ItemName}"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"
+                                   MaxWidth="200"
+                                   TextWrapping="Wrap"
+                                   TextTrimming="None" />
+                    </DataTemplate>
+                </syncfusion:SfTreeView.ItemTemplate>
+            </syncfusion:SfTreeView>
+        </Border> 
+        
+        <Border Grid.Column="1"
+                CornerRadius="2"
+                Background="White"
+                Margin="10,10,10,45">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="0.5"
+                                  Direction="0"
+                                  Opacity="0.3"
+                                  Color="Black" />
+            </Border.Effect>
+            <ListView ItemsSource="{Binding SelectedFolderContent}"
+                      BorderThickness="0"
+                      Background="Transparent"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      Margin="0">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"
+                                   IsItemsHost="True"
+                                   Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="5" Width="130" HorizontalAlignment="Center">
+                            <Image Source="{Binding Thumbnail}"
+                                   Width="120"
+                                   Height="120"
+                                   Stretch="UniformToFill" />
+                            <TextBlock Text="{Binding DisplayName}"
+                                       TextAlignment="Center"
+                                       Margin="0,5,0,0"
+                                       TextWrapping="Wrap"
+                                       FontSize="14" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+
+        <StackPanel Grid.Column="1" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Bottom" 
+                    Orientation="Horizontal" 
+                    Margin="10,0,5,5">
+            
+                <Button Style="{StaticResource BasicButton}" 
+                        Content="Laden" 
+                        FontSize="14"/>
+                
+                <Button Style="{StaticResource BasicButton}"
+                        Content="Plaatsen" 
+                        FontSize="14"/>
+                
+                <Button Style="{StaticResource BasicButton}" 
+                        Content="Sluiten" 
+                        FontSize="14"/>
+        </StackPanel>
     </Grid>
 </Window>

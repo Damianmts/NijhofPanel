@@ -53,6 +53,7 @@
 
     <ItemGroup>
         <!-- Revit References -->
+        <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
         <PackageReference Include="Nice3point.Revit.Build.Tasks" Version="3.0.1"/>
         <PackageReference Include="Nice3point.Revit.Toolkit" Version="$(RevitVersion).*"/>
         <PackageReference Include="Nice3point.Revit.Extensions" Version="$(RevitVersion).*"/>
@@ -61,6 +62,10 @@
 
         <!-- MVVM -->
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+        <PackageReference Include="Syncfusion.Licensing" Version="29.2.4" />
+        <PackageReference Include="Syncfusion.SfBusyIndicator.WPF" Version="29.2.4" />
+        <PackageReference Include="Syncfusion.SfTreeView.WPF" Version="29.2.4" />
+        <PackageReference Include="Syncfusion.Shared.WPF" Version="29.2.4" />
     </ItemGroup>
 
     <ItemGroup>
@@ -75,7 +80,6 @@
         <Folder Include="Commands\Tools\" />
         <Folder Include="Extensions\" />
         <Folder Include="Helpers\" />
-        <Folder Include="Models"/>
     </ItemGroup>
 
 </Project>
