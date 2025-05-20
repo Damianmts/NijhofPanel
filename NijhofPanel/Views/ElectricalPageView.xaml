@@ -8,10 +8,284 @@
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
       MinHeight="500"
-      MinWidth="250"
+      MinWidth="240"
       Background="White">
-    
-    <Grid>
-        <TextBlock Text="ElectricalPageView" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-    </Grid>
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ElectricalButton.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <ScrollViewer.Style>
+            <Style TargetType="ScrollViewer">
+                <Style.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource ModernScrollBar}">
+                        <Setter Property="Width" Value="4" />
+                        <Setter Property="MinWidth" Value="4" />
+                    </Style>
+                </Style.Resources>
+            </Style>
+        </ScrollViewer.Style>
+
+        <StackPanel Margin="10">
+            <!-- Eerste sectie -->
+            <TextBlock Text="Stopcontact"
+                       FontWeight="Bold"
+                       FontSize="18"
+                       Margin="0,0,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60">
+                    <Image Source="/NijhofPanel;component/Resources/Icons/WCDTest.png"
+                           Width="50"
+                           Height="50"
+                           Stretch="Uniform"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+                </Button>
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+
+            <!-- Tweede sectie -->
+            <TextBlock Text="Aansluitpunt"
+                       FontWeight="Bold"
+                       FontSize="18"
+                       Margin="0,5,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+
+            <!-- Derde sectie -->
+            <TextBlock Text="Data"
+                       FontWeight="Bold"
+                       FontSize="18"
+                       Margin="0,5,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+
+            <!-- Vierde sectie -->
+            <TextBlock Text="Schakelaar"
+                       FontWeight="Bold"
+                       FontSize="18"
+                       Margin="0,5,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+
+            <!-- Vijfde sectie -->
+            <TextBlock Text="Verlichting"
+                       FontWeight="Bold"
+                       FontSize="18"
+                       Margin="0,5,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+
+            <!-- Vijfde sectie -->
+            <TextBlock Text="Overig"
+                       FontWeight="Bold"
+                       FontSize="18"
+                       Margin="0,5,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+
+            <!-- Vijfde sectie -->
+            <TextBlock Text="Tools"
+                       FontWeight="Bold"
+                       FontSize="18"
+                       Margin="0,5,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+                <Button Content="Knop"
+                        Style="{StaticResource ElectricalButton}"
+                        Width="60"
+                        Height="60" />
+            </WrapPanel>
+
+        </StackPanel>
+    </ScrollViewer>
 </Page>

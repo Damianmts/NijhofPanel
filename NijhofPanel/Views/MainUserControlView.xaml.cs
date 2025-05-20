@@ -19,16 +19,16 @@ public partial class MainUserControlView : UserControl
         DataContext = viewModel;
         
         // Select StartPageView at startup
-        sidebar.SelectedIndex = 0;
+        Sidebar.SelectedIndex = 0;
     }
     
-    private void sidebar_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void Sidebar_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (sidebar.SelectedItem is Srv_NavButton navButton)
+        if (Sidebar.SelectedItem is Srv_NavButton navButton)
         {
-            navframe.Navigate(navButton.Navlink);
+            Navframe.Navigate(navButton.Navlink);
         }
-        else if (sidebar.SelectedItem is Srv_WindowButton windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
+        else if (Sidebar.SelectedItem is Srv_WindowButton windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
         {
             try
             {
@@ -80,7 +80,7 @@ public partial class MainUserControlView : UserControl
                     {
                         _openWindows.Remove(windowButton.Navlink);
                         // Reset de selectie om de "geselecteerde" status te verwijderen
-                        sidebar.SelectedIndex = -1;
+                        Sidebar.SelectedIndex = -1;
                     };
                     
                     window.Show();
@@ -98,8 +98,8 @@ public partial class MainUserControlView : UserControl
         {
             try
             {
-                navframe.Navigate(navButton.Navlink);
-                sidebar.SelectedItem = navButton;
+                Navframe.Navigate(navButton.Navlink);
+                Sidebar.SelectedItem = navButton;
             }
             catch (Exception ex)
             {

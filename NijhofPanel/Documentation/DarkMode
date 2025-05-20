@@ -1,0 +1,121 @@
+﻿## Me
+Ik wil een dark mode toevoegen, hoe doe ik dat
+
+## AI Assistant
+Laat me u helpen met het implementeren van een dark mode in uw WPF-applicatie. Hier is een stapsgewijze uitleg:
+
+1. **Maak een ThemesDictionary**
+Eerst moet u een nieuwe ResourceDictionary maken voor uw thema's.
+
+Maak een nieuw bestand `Themes/ThemeColors.xaml` met twee kleurenschema's:
+
+```xaml
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <!-- Light Theme -->
+    <SolidColorBrush x:Key="PrimaryBackgroundColor" Color="White" />
+    <SolidColorBrush x:Key="PrimaryTextColor" Color="Black" />
+    <SolidColorBrush x:Key="SecondaryBackgroundColor" Color="#F5F5F5" />
+    
+    <!-- Dark Theme -->
+    <SolidColorBrush x:Key="PrimaryBackgroundColor.Dark" Color="#2D2D2D" />
+    <SolidColorBrush x:Key="PrimaryTextColor.Dark" Color="White" />
+    <SolidColorBrush x:Key="SecondaryBackgroundColor.Dark" Color="#1F1F1F" />
+</ResourceDictionary>
+```
+
+2. **Voeg de ThemesDictionary toe**
+In uw `App.xaml`, voeg de nieuwe ResourceDictionary toe:
+
+```xaml
+<Application.Resources>
+    <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="Themes/ThemeColors.xaml"/>
+            <!-- Andere bestaande dictionaries -->
+        </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+</Application.Resources>
+```
+
+3. **Implementeer een ThemeManager**
+Maak een nieuwe class `ThemeManager.cs`:
+
+```csharp
+public class ThemeManager
+{
+    public static void ChangeTheme(bool isDarkTheme)
+    {
+        var app = Application.Current;
+        var resources = app.Resources.MergedDictionaries[0];
+        
+        var newBrushes = new ResourceDictionary();
+        var suffix = isDarkTheme ? ".Dark" : "";
+        
+        foreach (var key in resources.Keys)
+        {
+            if (key.ToString().EndsWith(".Dark"))
+                continue;
+                
+            var darkKey = $"{key}{suffix}";
+            if (resources.Contains(darkKey))
+            {
+                app.Resources[key] = resources[darkKey];
+            }
+        }
+    }
+}
+```
+
+4. **Pas uw bestaande XAML aan**
+Vervang hardgecodeerde kleuren door referenties naar de theme resources:
+
+```xaml
+<UserControl Background="{DynamicResource PrimaryBackgroundColor}"
+           ... >
+```
+
+5. **Voeg een schakelaar toe**
+Voeg een toggle button toe aan uw interface om tussen themes te wisselen:
+
+```xaml
+<ToggleButton Content="Dark Mode" 
+              IsChecked="{Binding IsDarkMode}"
+              Command="{Binding ToggleThemeCommand}"/>
+```
+
+6. **ViewModel aanpassingen**
+In uw ViewModel:
+
+```csharp
+private bool _isDarkMode;
+public bool IsDarkMode
+{
+    get => _isDarkMode;
+    set
+    {
+        _isDarkMode = value;
+        ThemeManager.ChangeTheme(value);
+        OnPropertyChanged();
+    }
+}
+
+public ICommand ToggleThemeCommand { get; }
+
+public YourViewModel()
+{
+    ToggleThemeCommand = new RelayCommand(() =>
+    {
+        IsDarkMode = !IsDarkMode;
+    });
+}
+```
+
+**Tips:**
+- Sla de thema-voorkeur op in de gebruikersinstellingen om deze te behouden tussen sessies
+- Overweeg om systeemthema-detectie toe te voegen
+- Test uw applicatie grondig in beide thema's
+- Vergeet niet alle custom controls en componenten aan te passen
+
+Wilt u specifieke hulp bij het implementeren van een van deze stappen?

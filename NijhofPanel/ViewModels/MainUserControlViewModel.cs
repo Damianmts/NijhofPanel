@@ -1,5 +1,6 @@
 ﻿using NijhofPanel.Views;
 using Autodesk.Revit.UI;
+using System.Windows.Input;
 
 namespace NijhofPanel.ViewModels;
 
@@ -36,4 +37,21 @@ public class MainUserControlViewModel
         var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
         return uiApp.GetDockablePane(paneId);
     }
+    
+    // TODO - Finish dark mode logic
+    public ICommand Com_ToggleTheme { get; }
+
+    public MainUserControlViewModel()
+    {
+        Com_ToggleTheme = new RelayCommand(ExecuteToggleTheme);
+    }
+
+    private void ExecuteToggleTheme()
+    {
+        // Hier komt de logica voor het wisselen tussen dark en light mode
+        // Bijvoorbeeld:
+        //IsDarkMode = !IsDarkMode;
+        //ApplyTheme();
+    }
+
 }

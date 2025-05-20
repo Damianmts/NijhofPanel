@@ -8,6 +8,8 @@ using Assembly = System.Reflection.Assembly;
 const string outputName = "NijhofPanel";
 const string projectName = "NijhofPanel";
 
+// TODO - Customize installer
+
 var project = new Project
 {
     OutDir = "output",
