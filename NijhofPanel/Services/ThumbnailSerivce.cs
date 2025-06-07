@@ -5,28 +5,25 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace NijhofPanel.Services;
 
-public static class Srv_Thumbnail
+public static class ThumbnailSerivce
 {
-    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(4);
-    private static readonly ConcurrentDictionary<string, BitmapImage> _cache = new();
-    private static readonly string cacheFolder = @"F:\Revit\Nijhof Tools\cache\";
+    private static readonly SemaphoreSlim Semaphore = new(4);
+    private static readonly ConcurrentDictionary<string, BitmapImage> Cache = new();
+    private static readonly string CacheFolder = @"F:\Revit\Nijhof Tools\cache\";
 
-    static Srv_Thumbnail()
+    static ThumbnailSerivce()
     {
-        if (!Directory.Exists(cacheFolder))
-            Directory.CreateDirectory(cacheFolder);
+        if (!Directory.Exists(CacheFolder))
+            Directory.CreateDirectory(CacheFolder);
     }
 
-    public static async Task<BitmapImage> GetThumbnailAsync(string filePath)
+    public static async Task<BitmapImage?> GetThumbnailAsync(string filePath)
     {
-        if (_cache.TryGetValue(filePath, out var cached))
+        if (Cache.TryGetValue(filePath, out var cached))
             return cached;
 
         string cacheFilePath = GetCacheFilePath(filePath);
@@ -34,7 +31,7 @@ public static class Srv_Thumbnail
         if (File.Exists(cacheFilePath) && IsCacheValid(filePath, cacheFilePath))
         {
             var image = new BitmapImage(new Uri(cacheFilePath));
-            _cache.TryAdd(filePath, image);
+            Cache.TryAdd(filePath, image);
             return image;
         }
 
@@ -43,7 +40,7 @@ public static class Srv_Thumbnail
 
         return await Task.Run(async () =>
         {
-            await _semaphore.WaitAsync();
+            await Semaphore.WaitAsync();
             try
             {
                 var shellFile = ShellFile.FromFilePath(filePath);
@@ -57,12 +54,12 @@ public static class Srv_Thumbnail
                 File.SetLastWriteTimeUtc(cacheFilePath, File.GetLastWriteTimeUtc(filePath));
 
                 var result = ConvertToBitmapImage(resized);
-                _cache.TryAdd(filePath, result);
+                Cache.TryAdd(filePath, result);
                 return result;
             }
             finally
             {
-                _semaphore.Release();
+                Semaphore.Release();
             }
         });
     }
@@ -72,7 +69,7 @@ public static class Srv_Thumbnail
         using var md5 = MD5.Create();
         var hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(path));
         string hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-        return Path.Combine(cacheFolder, hash + ".png");
+        return Path.Combine(CacheFolder, hash + ".png");
     }
 
     private static bool IsCacheValid(string originalPath, string cachePath)

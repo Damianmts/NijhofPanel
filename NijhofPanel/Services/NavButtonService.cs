@@ -5,11 +5,11 @@ using System.Windows.Input;
 
 namespace NijhofPanel.Services;
 
-public class Srv_NavButton : ListBoxItem
+public class NavButtonService : ListBoxItem
 {
-    static Srv_NavButton()
+    static NavButtonService()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(Srv_NavButton), new FrameworkPropertyMetadata(typeof(Srv_NavButton)));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(NavButtonService), new FrameworkPropertyMetadata(typeof(NavButtonService)));
     }
 
     public Uri Navlink
@@ -17,14 +17,14 @@ public class Srv_NavButton : ListBoxItem
         get { return (Uri)GetValue(NavLinkProperty); }
         set { SetValue(NavLinkProperty, value); }  
     }
-    public static readonly DependencyProperty NavLinkProperty = DependencyProperty.Register("NavLink", typeof(Uri), typeof(Srv_NavButton), new PropertyMetadata(null));
+    public static readonly DependencyProperty NavLinkProperty = DependencyProperty.Register("NavLink", typeof(Uri), typeof(NavButtonService), new PropertyMetadata(null));
 
     public Geometry Icon
     {
         get { return (Geometry)GetValue(IconProperty); }
         set { SetValue(IconProperty, value); }
     }
-    public static readonly DependencyProperty IconProperty = DependencyProperty.Register("Icon", typeof(Geometry), typeof(Srv_NavButton), new PropertyMetadata(null));
+    public static readonly DependencyProperty IconProperty = DependencyProperty.Register("Icon", typeof(Geometry), typeof(NavButtonService), new PropertyMetadata(null));
     
     public ICommand Command
     {
@@ -32,7 +32,7 @@ public class Srv_NavButton : ListBoxItem
         set { SetValue(CommandProperty, value); }
     }
     public static readonly DependencyProperty CommandProperty = 
-        DependencyProperty.Register("Command", typeof(ICommand), typeof(Srv_NavButton), new PropertyMetadata(null));
+        DependencyProperty.Register("Command", typeof(ICommand), typeof(NavButtonService), new PropertyMetadata(null));
 
     protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
     {

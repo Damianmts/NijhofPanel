@@ -1,57 +1,88 @@
-﻿using NijhofPanel.Views;
-using Autodesk.Revit.UI;
+﻿using Autodesk.Revit.UI;
+using NijhofPanel.Views;
+using NijhofPanel.Services;
+using System;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 
-namespace NijhofPanel.ViewModels;
-
-public class MainUserControlViewModel
+namespace NijhofPanel.ViewModels
 {
-    private static MainWindowView _windowInstance;
-    
-    public void ToggleWindowMode(MainUserControlView userControl, UIApplication uiApp)
+    public class MainUserControlViewModel : INotifyPropertyChanged
     {
-        if (_windowInstance == null)
-        {
-            var dockablePane = GetDockablePane(uiApp);
-            if (dockablePane != null)
-                dockablePane.Hide();
+        private static MainWindowView _windowInstance;
+        private bool _isDarkMode;
 
-            _windowInstance = new MainWindowView();
-            _windowInstance.MainContent.Content = userControl;
-            _windowInstance.Closed += (s, e) =>
+        public bool IsDarkMode
+        {
+            get => _isDarkMode;
+            set
             {
-                _windowInstance = null;
-                dockablePane?.Show();
-            };
-            _windowInstance.Show();
+                if (_isDarkMode != value)
+                {
+                    _isDarkMode = value;
+                    OnPropertyChanged(nameof(IsDarkMode));
+                    UpdateTheme();
+                }
+            }
         }
-        else
+
+        public ICommand Com_ToggleTheme { get; }
+
+        public MainUserControlViewModel()
         {
-            _windowInstance.Close();
-            _windowInstance = null;
+            Com_ToggleTheme = new RelayCommand(ExecuteToggleTheme);
+            IsDarkMode = false;
+        }
+
+        public void ToggleWindowMode(MainUserControlView userControl, UIApplication uiApp)
+        {
+            if (_windowInstance == null)
+            {
+                var dockablePane = GetDockablePane(uiApp);
+                if (dockablePane != null)
+                    dockablePane.Hide();
+
+                _windowInstance = new MainWindowView();
+                _windowInstance.MainContent.Content = userControl;
+                _windowInstance.Closed += (s, e) =>
+                {
+                    _windowInstance = null;
+                    dockablePane?.Show();
+                };
+                _windowInstance.Show();
+            }
+            else
+            {
+                _windowInstance.Close();
+                _windowInstance = null;
+            }
+        }
+
+        private DockablePane GetDockablePane(UIApplication uiApp)
+        {
+            var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
+            return uiApp.GetDockablePane(paneId);
+        }
+
+        private void ExecuteToggleTheme()
+        {
+            IsDarkMode = !IsDarkMode;
+        }
+
+        private void UpdateTheme()
+        {
+            if (_windowInstance != null)
+            {
+                ThemeManagerService.UpdateTheme(IsDarkMode, _windowInstance);
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
-    
-    private DockablePane GetDockablePane(UIApplication uiApp)
-    {
-        var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
-        return uiApp.GetDockablePane(paneId);
-    }
-    
-    // TODO - Finish dark mode logic
-    public ICommand Com_ToggleTheme { get; }
-
-    public MainUserControlViewModel()
-    {
-        Com_ToggleTheme = new RelayCommand(ExecuteToggleTheme);
-    }
-
-    private void ExecuteToggleTheme()
-    {
-        // Hier komt de logica voor het wisselen tussen dark en light mode
-        // Bijvoorbeeld:
-        //IsDarkMode = !IsDarkMode;
-        //ApplyTheme();
-    }
-
 }

@@ -5,25 +5,25 @@ using System.Windows.Media.Imaging;
 
 namespace NijhofPanel.Models;
 
-public class Mod_FileItem : INotifyPropertyChanged
+public class FileItemModel : INotifyPropertyChanged
 {
-    public Mod_FileItem(string path, bool isDirectory = false)
+    public FileItemModel(string path, bool isDirectory = false)
     {
         FullPath = path;
         ItemName = System.IO.Path.GetFileName(path);
         DisplayName = System.IO.Path.GetFileNameWithoutExtension(path);
         IsDirectory = isDirectory;
-        SubFiles = new ObservableCollection<Mod_FileItem>();
+        SubFiles = new ObservableCollection<FileItemModel>();
     }
 
     public string ItemName { get; set; }
     public string DisplayName { get; set; }
     public string FullPath { get; set; }
     public bool IsDirectory { get; set; }
-    public ObservableCollection<Mod_FileItem> SubFiles { get; set; }
+    public ObservableCollection<FileItemModel> SubFiles { get; }
 
-    private BitmapImage _thumbnail;
-    public BitmapImage Thumbnail
+    private BitmapImage? _thumbnail;
+    public BitmapImage? Thumbnail
     {
         get => _thumbnail;
         set
@@ -33,8 +33,8 @@ public class Mod_FileItem : INotifyPropertyChanged
         }
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

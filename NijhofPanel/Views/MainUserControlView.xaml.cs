@@ -24,11 +24,11 @@ public partial class MainUserControlView : UserControl
     
     private void Sidebar_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (Sidebar.SelectedItem is Srv_NavButton navButton)
+        if (Sidebar.SelectedItem is NavButtonService navButton)
         {
             Navframe.Navigate(navButton.Navlink);
         }
-        else if (Sidebar.SelectedItem is Srv_WindowButton windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
+        else if (Sidebar.SelectedItem is WindowButtonService windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
         {
             try
             {
@@ -94,7 +94,7 @@ public partial class MainUserControlView : UserControl
     }
     private void OnNavButtonClick(object sender, MouseButtonEventArgs e)
     {
-        if (sender is Srv_NavButton navButton && navButton.Navlink != null)
+        if (sender is NavButtonService navButton && navButton.Navlink != null)
         {
             try
             {

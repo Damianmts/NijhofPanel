@@ -3,11 +3,11 @@ using System.Windows.Controls;
 
 namespace NijhofPanel.Services;
 
-public class Srv_DockablePane : IDockablePaneProvider
+public class DockablePaneService : IDockablePaneProvider
 {
     private UserControl _control;
 
-    public Srv_DockablePane(UserControl control)
+    public DockablePaneService(UserControl control)
     {
         _control = control;
     }

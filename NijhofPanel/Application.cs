@@ -44,7 +44,7 @@ public class Application : ExternalApplication
         var viewModel = new MainUserControlViewModel();
         var mainView = new MainUserControlView(viewModel);
         var dockablePaneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
-        var dockablePaneService = new Srv_DockablePane(mainView);
+        var dockablePaneService = new DockablePaneService(mainView);
         
         Application.RegisterDockablePane(dockablePaneId, "Nijhof Tools", dockablePaneService);
     }
@@ -64,7 +64,7 @@ public class Application : ExternalApplication
     private void AddButtonToPanel(RibbonPanel ribbonPanel)
     {
         string assemblyPath = typeof(Application).Assembly.Location;
-        var iconService = new Srv_Icon();
+        var iconService = new IconService();
         
         PushButtonData buttonData = new PushButtonData(
             "Open Panel",

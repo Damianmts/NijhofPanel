@@ -8,8 +8,17 @@
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
       MinHeight="500"
-      MinWidth="250"
-      Background="White">
+      MinWidth="270"
+      Background="{DynamicResource BackgroundColor_Light}">
+    
+    <!-- Resources -->
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
     
     <Grid>
         <TextBlock Text="UserPageView" VerticalAlignment="Center" HorizontalAlignment="Center"/>

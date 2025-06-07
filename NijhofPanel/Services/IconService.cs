@@ -3,7 +3,7 @@ using System.Windows.Media.Imaging;
 
 namespace NijhofPanel.Services;
 
-public class Srv_Icon
+public class IconService
 {
     public BitmapImage? LoadImageFromResource(string resourcePath)
     {

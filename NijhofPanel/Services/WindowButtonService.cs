@@ -7,12 +7,12 @@ using NijhofPanel.Views;
 
 namespace NijhofPanel.Services;
 
-public class Srv_WindowButton : ListBoxItem
+public class WindowButtonService : ListBoxItem
 {
-    static Srv_WindowButton()
+    static WindowButtonService()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(Srv_WindowButton),
-            new FrameworkPropertyMetadata(typeof(Srv_WindowButton)));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(WindowButtonService),
+            new FrameworkPropertyMetadata(typeof(WindowButtonService)));
     }
 
     public string Navlink
@@ -22,7 +22,7 @@ public class Srv_WindowButton : ListBoxItem
     }
 
     public static readonly DependencyProperty NavlinkProperty =
-        DependencyProperty.Register("Navlink", typeof(string), typeof(Srv_WindowButton), new PropertyMetadata(null));
+        DependencyProperty.Register("Navlink", typeof(string), typeof(WindowButtonService), new PropertyMetadata(null));
 
     public Geometry Icon
     {
@@ -31,5 +31,5 @@ public class Srv_WindowButton : ListBoxItem
     }
 
     public static readonly DependencyProperty IconProperty =
-        DependencyProperty.Register("Icon", typeof(Geometry), typeof(Srv_WindowButton), new PropertyMetadata(null));
+        DependencyProperty.Register("Icon", typeof(Geometry), typeof(WindowButtonService), new PropertyMetadata(null));
 }

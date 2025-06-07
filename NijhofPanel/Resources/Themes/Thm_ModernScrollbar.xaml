@@ -13,7 +13,7 @@
                             <Thumb>
                                 <Thumb.Template>
                                     <ControlTemplate>
-                                        <Border Background="#DDDDDD" 
+                                        <Border Background="Gray" 
                                                 CornerRadius="4"/>
                                     </ControlTemplate>
                                 </Thumb.Template>

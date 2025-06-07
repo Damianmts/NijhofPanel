@@ -10,17 +10,17 @@ namespace NijhofPanel.ViewModels;
 
 public class LibraryWindowViewModel : ObservableObject
 {
-    private ObservableCollection<Mod_FileItem> _rootFiles;
-    private Mod_FileItem _selectedFolder;
-    private ObservableCollection<Mod_FileItem> _selectedFolderContent;
+    private ObservableCollection<FileItemModel> _rootFiles;
+    private FileItemModel _selectedFolder;
+    private ObservableCollection<FileItemModel> _selectedFolderContent;
 
-    public ObservableCollection<Mod_FileItem> RootFiles
+    public ObservableCollection<FileItemModel> RootFiles
     {
         get => _rootFiles;
         set => SetProperty(ref _rootFiles, value);
     }
 
-    public Mod_FileItem SelectedFolder
+    public FileItemModel SelectedFolder
     {
         get => _selectedFolder;
         set
@@ -32,7 +32,7 @@ public class LibraryWindowViewModel : ObservableObject
         }
     }
 
-    public ObservableCollection<Mod_FileItem> SelectedFolderContent
+    public ObservableCollection<FileItemModel> SelectedFolderContent
     {
         get => _selectedFolderContent;
         set => SetProperty(ref _selectedFolderContent, value);
@@ -40,8 +40,8 @@ public class LibraryWindowViewModel : ObservableObject
 
     public LibraryWindowViewModel()
     {
-        RootFiles = new ObservableCollection<Mod_FileItem>();
-        SelectedFolderContent = new ObservableCollection<Mod_FileItem>();
+        RootFiles = new ObservableCollection<FileItemModel>();
+        SelectedFolderContent = new ObservableCollection<FileItemModel>();
         LoadFolderStructure();
     }
 
@@ -59,8 +59,8 @@ public class LibraryWindowViewModel : ObservableObject
 
             foreach (var file in files)
             {
-                var item = new Mod_FileItem(file);
-                item.Thumbnail = await Srv_Thumbnail.GetThumbnailAsync(file);
+                var item = new FileItemModel(file);
+                item.Thumbnail = await ThumbnailSerivce.GetThumbnailAsync(file);
                 SelectedFolderContent.Add(item);
             }
 
@@ -83,8 +83,8 @@ public class LibraryWindowViewModel : ObservableObject
 
                 foreach (var file in files)
                 {
-                    var item = new Mod_FileItem(file);
-                    item.Thumbnail = await Srv_Thumbnail.GetThumbnailAsync(file);
+                    var item = new FileItemModel(file);
+                    item.Thumbnail = await ThumbnailSerivce.GetThumbnailAsync(file);
                     SelectedFolderContent.Add(item);
                 }
 
@@ -105,27 +105,27 @@ public class LibraryWindowViewModel : ObservableObject
         var directories = Directory.GetDirectories(rootPath);
         foreach (var dir in directories)
         {
-            var dirItem = new Mod_FileItem(dir, isDirectory: true);
+            var dirItem = new FileItemModel(dir, isDirectory: true);
             LoadSubFolders(dirItem);
             RootFiles.Add(dirItem);
         }
     }
 
-    private void LoadSubFolders(Mod_FileItem parentItem)
+    private void LoadSubFolders(FileItemModel parentItemModel)
     {
         try
         {
-            var directories = Directory.GetDirectories(parentItem.FullPath);
+            var directories = Directory.GetDirectories(parentItemModel.FullPath);
             foreach (var dir in directories)
             {
-                var subItem = new Mod_FileItem(dir, isDirectory: true);
+                var subItem = new FileItemModel(dir, isDirectory: true);
                 LoadSubFolders(subItem); // recursief
-                parentItem.SubFiles.Add(subItem);
+                parentItemModel.SubFiles.Add(subItem);
             }
         }
         catch (IOException ex)
         {
-            MessageBox.Show($"Fout bij het laden van de map {parentItem.FullPath}: {ex.Message}");
+            MessageBox.Show($"Fout bij het laden van de map {parentItemModel.FullPath}: {ex.Message}");
         }
     }
 }

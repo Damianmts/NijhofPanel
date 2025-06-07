@@ -13,7 +13,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_BasicButton.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
