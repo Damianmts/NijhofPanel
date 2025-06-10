@@ -41,8 +41,8 @@
         </Setter>
     </Style>
     
-    <!-- Electrical Button -->
-    <Style x:Key="ElectricalButton" TargetType="Button">
+    <!-- Electrical Button with PNG Icons [NOT IN USE] -->
+    <Style x:Key="ElectricalButtonPNG" TargetType="Button">
         <Setter Property="Background" Value="#006235"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -86,6 +86,73 @@
                                 </Style>
                             </Image.Style>
                         </Image>
+                    </Grid>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="Border" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                CornerRadius="2">
+                            
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" 
+                                    Property="Background" 
+                                    Value="#004525"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- Electrical Button with SVG Icons -->
+    <Style x:Key="ElectricalButtonSVG" TargetType="Button">
+        <Setter Property="Background" Value="#006235"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Width" Value="60" />
+        <Setter Property="Height" Value="60" />
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect ShadowDepth="0.5" 
+                                  Color="Black" 
+                                  Opacity="0.3" 
+                                  Direction="0"/>
+            </Setter.Value>
+        </Setter>
+        
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock Text="{Binding}"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   Visibility="Visible"
+                                   Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
+                        <Path Data="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Tag}"
+                              Width="50"
+                              Height="50"
+                              Stretch="Uniform"
+                              Fill="#f5d105"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center">
+                        </Path>
                     </Grid>
                 </DataTemplate>
             </Setter.Value>

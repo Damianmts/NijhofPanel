@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:NijhofPanel.Views"
-      xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
       mc:Ignorable="d"
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
@@ -13,7 +12,6 @@
       Background="{DynamicResource BackgroundColor_Light}">
 
     <!-- To Do -->
-    <!-- TODO - Make/Add higher quality icons (SVG Vector) -->
     <!-- TODO - Add logic to place elements -->
 
     <Page.Resources>
@@ -22,6 +20,7 @@
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/EToolsVectorIcons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
@@ -46,16 +45,16 @@
                        FontSize="18"
                        Margin="0,0,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/WCD_Enkel.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/WCD_2vOpbouw.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/WCD_1vWaterdicht.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/WCD_Perilex.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource WCD_Enkel}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource WCD_2vOpbouw}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource WCD_1vWaterdicht}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource WCD_Perilex}"/>
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/WCD_Dubbel.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/WCD_Vloer.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/WCD_2vWaterdicht.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/WCD_Kracht.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource WCD_Dubbel}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource WCD_Vloer}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource WCD_2vWaterdicht}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource WCD_Kracht}"/>
             </WrapPanel>
             
             <TextBlock Text="Aansluitpunt"
@@ -64,14 +63,14 @@
                        FontSize="18"
                        Margin="0,5,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/ASP_Bedraad.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/ASP_230v.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/ASP_2x 230v.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/ASP_400v.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource ASP_Bedraad}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource ASP_230v}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource ASP_2x230v}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource ASP_400v}"/>
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/ASP_Onbedraad.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/ASP_CAP.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource ASP_Onbedraad}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource ASP_CAP}"/>
             </WrapPanel>
             
             <TextBlock Text="Data"
@@ -80,9 +79,9 @@
                        FontSize="18"
                        Margin="0,5,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/DATA_Enkel.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/DATA_Dubbel.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/DATA_Bekabeld.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource DATA_Enkel}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource DATA_Dubbel}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource DATA_Bekabeld}"/>
             </WrapPanel>
             
             <TextBlock Text="Schakelaar"
@@ -91,26 +90,26 @@
                        FontSize="18"
                        Margin="0,5,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_Enkelpolig.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_Dubbelpolig.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_Vierpolig.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_Wissel.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_Enkelpolig}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_Dubbelpolig}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_Vierpolig}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_Wissel}"/>
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_WisselDubbelP.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_2xWissel.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_Serie.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_Kruis.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_WisselDubbelP}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_2xWissel}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_Serie}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_Kruis}"/>
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_Dimmer.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_DimmerWissel.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/SCHAK_Jaloezie.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Content="Beweging Wand"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_Dimmer}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_DimmerWissel}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource SCHAK_Jaloezie}"/>
+                <Button Style="{StaticResource ElectricalButtonPNG}" Content="Beweging Wand"/>
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Content="Beweging Plafond"/>
-                <Button Style="{StaticResource ElectricalButton}" Content="Schemer- schakelaar"/>
+                <Button Style="{StaticResource ElectricalButtonPNG}" Content="Beweging Plafond"/>
+                <Button Style="{StaticResource ElectricalButtonPNG}" Content="Schemer- schakelaar"/>
             </WrapPanel>
             
             <TextBlock Text="Verlichting"
@@ -119,10 +118,10 @@
                        FontSize="18"
                        Margin="0,5,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/VERL_Centraaldoos.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/VERL_Plafond.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/VERL_Spot.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/VERL_Wand.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource VERL_Centraaldoos}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource VERL_Plafond}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource VERL_Spot}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource VERL_Wand}"/>
             </WrapPanel>
             
             <TextBlock Text="Overig"
@@ -131,14 +130,14 @@
                        FontSize="18"
                        Margin="0,5,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/OVG_Rookmelder.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/OVG_Bediening.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/OVG_Bel.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/OVG_Schel.png"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource OVG_Rookmelder}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource OVG_Bediening}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource OVG_Bel}"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource OVG_Schel}"/>
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Tag="/NijhofPanel;component/Resources/Icons/OVG_Intercom.png"/>
-                <Button Style="{StaticResource ElectricalButton}" Content="Grond- kabel"/>
+                <Button Style="{StaticResource ElectricalButtonSVG}" Tag="{StaticResource OVG_Intercom}"/>
+                <Button Style="{StaticResource ElectricalButtonPNG}" Content="Grond- kabel"/>
             </WrapPanel>
             
             <TextBlock Text="Tools"
@@ -147,9 +146,9 @@
                        FontSize="18"
                        Margin="0,5,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource ElectricalButton}" Content="Groep nummer"/>
-                <Button Style="{StaticResource ElectricalButton}" Content="Switch code"/>
-                <Button Style="{StaticResource ElectricalButton}" Content="Code lijst"/>
+                <Button Style="{StaticResource ElectricalButtonPNG}" Content="Groep nummer"/>
+                <Button Style="{StaticResource ElectricalButtonPNG}" Content="Switch code"/>
+                <Button Style="{StaticResource ElectricalButtonPNG}" Content="Code lijst"/>
             </WrapPanel>
 
         </StackPanel>

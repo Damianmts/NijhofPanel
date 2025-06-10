@@ -70,86 +70,47 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Resource Include="Resources\Icons\RibbonIcon16.png" />
-        <Resource Include="Resources\Icons\RibbonIcon32.png" />
         <None Remove="Resources\Icons\NijhofLogo_32x32.png" />
         <Resource Include="Resources\Icons\NijhofLogo_32x32.png" />
         <None Remove="Resources\Icons\WCDTest.png" />
         <None Remove="Resources\Icons\WCDEnkel.svg" />
         <None Remove="Resources\Icons\WCD_Dubbel.png" />
-        <Resource Include="Resources\Icons\WCD_Dubbel.png" />
         <None Remove="Resources\Icons\WCD_Enkel.png" />
-        <Resource Include="Resources\Icons\WCD_Enkel.png" />
         <None Remove="Resources\Icons\DATA_Dubbel.png" />
-        <Resource Include="Resources\Icons\DATA_Dubbel.png" />
         <None Remove="Resources\Icons\DATA_Enkel.png" />
-        <Resource Include="Resources\Icons\DATA_Enkel.png" />
         <None Remove="Resources\Icons\ASP_2x 230v.png" />
-        <Resource Include="Resources\Icons\ASP_2x 230v.png" />
         <None Remove="Resources\Icons\ASP_230v.png" />
-        <Resource Include="Resources\Icons\ASP_230v.png" />
         <None Remove="Resources\Icons\ASP_400v.png" />
-        <Resource Include="Resources\Icons\ASP_400v.png" />
         <None Remove="Resources\Icons\ASP_Bedraad.png" />
-        <Resource Include="Resources\Icons\ASP_Bedraad.png" />
         <None Remove="Resources\Icons\ASP_CAP.png" />
-        <Resource Include="Resources\Icons\ASP_CAP.png" />
         <None Remove="Resources\Icons\ASP_Onbedraad.png" />
-        <Resource Include="Resources\Icons\ASP_Onbedraad.png" />
         <None Remove="Resources\Icons\DATA_Bekabeld.png" />
-        <Resource Include="Resources\Icons\DATA_Bekabeld.png" />
         <None Remove="Resources\Icons\OVG_Bediening.png" />
-        <Resource Include="Resources\Icons\OVG_Bediening.png" />
         <None Remove="Resources\Icons\OVG_Bel.png" />
-        <Resource Include="Resources\Icons\OVG_Bel.png" />
         <None Remove="Resources\Icons\OVG_Intercom.png" />
-        <Resource Include="Resources\Icons\OVG_Intercom.png" />
         <None Remove="Resources\Icons\OVG_Rookmelder.png" />
-        <Resource Include="Resources\Icons\OVG_Rookmelder.png" />
         <None Remove="Resources\Icons\OVG_Schel.png" />
-        <Resource Include="Resources\Icons\OVG_Schel.png" />
         <None Remove="Resources\Icons\SCHAK_2xWissel.png" />
-        <Resource Include="Resources\Icons\SCHAK_2xWissel.png" />
         <None Remove="Resources\Icons\SCHAK_Dimmer.png" />
-        <Resource Include="Resources\Icons\SCHAK_Dimmer.png" />
         <None Remove="Resources\Icons\SCHAK_DimmerWissel.png" />
-        <Resource Include="Resources\Icons\SCHAK_DimmerWissel.png" />
         <None Remove="Resources\Icons\SCHAK_Dubbelpolig.png" />
-        <Resource Include="Resources\Icons\SCHAK_Dubbelpolig.png" />
         <None Remove="Resources\Icons\SCHAK_Enkelpolig.png" />
-        <Resource Include="Resources\Icons\SCHAK_Enkelpolig.png" />
         <None Remove="Resources\Icons\SCHAK_Jaloezie.png" />
-        <Resource Include="Resources\Icons\SCHAK_Jaloezie.png" />
         <None Remove="Resources\Icons\SCHAK_Kruis.png" />
-        <Resource Include="Resources\Icons\SCHAK_Kruis.png" />
         <None Remove="Resources\Icons\SCHAK_Serie.png" />
-        <Resource Include="Resources\Icons\SCHAK_Serie.png" />
         <None Remove="Resources\Icons\SCHAK_Vierpolig.png" />
-        <Resource Include="Resources\Icons\SCHAK_Vierpolig.png" />
         <None Remove="Resources\Icons\SCHAK_Wissel.png" />
-        <Resource Include="Resources\Icons\SCHAK_Wissel.png" />
         <None Remove="Resources\Icons\SCHAK_WisselDubbelp.png" />
-        <Resource Include="Resources\Icons\SCHAK_WisselDubbelp.png" />
         <None Remove="Resources\Icons\VERL_Centraaldoos.png" />
-        <Resource Include="Resources\Icons\VERL_Centraaldoos.png" />
         <None Remove="Resources\Icons\VERL_Plafond.png" />
-        <Resource Include="Resources\Icons\VERL_Plafond.png" />
         <None Remove="Resources\Icons\VERL_Spot.png" />
-        <Resource Include="Resources\Icons\VERL_Spot.png" />
         <None Remove="Resources\Icons\VERL_Wand.png" />
-        <Resource Include="Resources\Icons\VERL_Wand.png" />
         <None Remove="Resources\Icons\WCD_1vWaterdicht.png" />
-        <Resource Include="Resources\Icons\WCD_1vWaterdicht.png" />
         <None Remove="Resources\Icons\WCD_2vOpbouw.png" />
-        <Resource Include="Resources\Icons\WCD_2vOpbouw.png" />
         <None Remove="Resources\Icons\WCD_2vWaterdicht.png" />
-        <Resource Include="Resources\Icons\WCD_2vWaterdicht.png" />
         <None Remove="Resources\Icons\WCD_Kracht.png" />
-        <Resource Include="Resources\Icons\WCD_Kracht.png" />
         <None Remove="Resources\Icons\WCD_Perilex.png" />
-        <Resource Include="Resources\Icons\WCD_Perilex.png" />
         <None Remove="Resources\Icons\WCD_Vloer.png" />
-        <Resource Include="Resources\Icons\WCD_Vloer.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -157,6 +118,11 @@
         <Folder Include="Commands\Tools\" />
         <Folder Include="Extensions\" />
         <Folder Include="Helpers\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Services\WindowButtonService.cs" />
+      <Compile Remove="Services\NavButtonService.cs" />
     </ItemGroup>
 
 </Project>

@@ -10,100 +10,112 @@ namespace NijhofPanel.Views;
 
 public partial class MainUserControlView : UserControl
 {
-    // Lijst om geopende vensters bij te houden
-    private readonly Dictionary<string, Window> _openWindows = new Dictionary<string, Window>();
+    private readonly Dictionary<string, Window> _openWindows = new();
+    
+    private NavButtonService? _activeNavButton;
 
     public MainUserControlView(MainUserControlViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;
         
-        // Select StartPageView at startup
-        Sidebar.SelectedIndex = 0;
-    }
-    
-    private void Sidebar_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (Sidebar.SelectedItem is NavButtonService navButton)
+        Loaded += (_, _) =>
         {
-            Navframe.Navigate(navButton.Navlink);
+            if (Sidebar.Items[0] is NavButtonService firstButton)
+            {
+                NavButton_Click(firstButton, null!);
+            }
+        };
+    }
+
+    private void NavButton_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is NavButtonService navButton)
+        {
+            if (navButton.Command != null && navButton.Command.CanExecute(null) && navButton.Navlink == null)
+            {
+                navButton.Command.Execute(null);
+                
+                Sidebar.SelectedItem = null;
+                SidebarBottom.SelectedItem = null;
+                return;
+            }
+            
+            if (_activeNavButton != null && _activeNavButton != navButton)
+                _activeNavButton.IsActive = false;
+
+            navButton.IsActive = true;
+            _activeNavButton = navButton;
+
+            if (navButton.Navlink != null)
+            {
+                try
+                {
+                    Navframe.Navigate(navButton.Navlink);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Fout bij navigatie: {ex.Message}");
+                }
+            }
+
+            Sidebar.SelectedItem = null;
+            SidebarBottom.SelectedItem = null;
         }
-        else if (Sidebar.SelectedItem is WindowButtonService windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
+    }
+
+    private void WindowButton_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is WindowButtonService windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
         {
             try
             {
-                // Controleer eerst of het venster al open is
                 if (_openWindows.ContainsKey(windowButton.Navlink))
                 {
-                    // Activeer het bestaande venster
-                    var existingWindow = _openWindows[windowButton.Navlink];
-                    if (existingWindow.IsVisible)
+                    var existing = _openWindows[windowButton.Navlink];
+                    if (existing.IsVisible)
                     {
-                        existingWindow.Activate();
+                        if (existing.WindowState == WindowState.Minimized)
+                            existing.WindowState = WindowState.Normal;
+
+                        existing.Topmost = true;
+                        existing.Topmost = false;
+                        existing.Activate();
                         return;
                     }
                     else
                     {
-                        // Verwijder het venster uit de dictionary als het gesloten is
                         _openWindows.Remove(windowButton.Navlink);
                     }
                 }
 
-                Window? window = null;
-
-                switch (windowButton.Navlink)
+                Window? newWindow = windowButton.Navlink switch
                 {
-                    case "LibraryWindowView":
-                        window = new LibraryWindowView();
-                        break;
-                    case "PrefabWindowView":
-                        window = new PrefabWindowView();
-                        break;
-                    case "FittingListWindowView":
-                        window = new FittingListWindowView();
-                        break;
-                    case "SawListWindowView":
-                        window = new SawListWindowView();
-                        break;
-                }
+                    "LibraryWindowView" => new LibraryWindowView(),
+                    "PrefabWindowView" => new PrefabWindowView(),
+                    "FittingListWindowView" => new FittingListWindowView(),
+                    "SawListWindowView" => new SawListWindowView(),
+                    _ => null
+                };
 
-                if (window != null)
+                if (newWindow != null)
                 {
-                    // Maak het venster modeless
-                    window.Owner = Window.GetWindow(this);
-                    
-                    // Voeg het venster toe aan de dictionary
-                    _openWindows[windowButton.Navlink] = window;
-                    
-                    // Registreer een handler voor als het venster sluit
-                    window.Closed += (s, args) =>
+                    newWindow.Owner = Window.GetWindow(this);
+                    windowButton.IsWindowOpen = true;
+                    _openWindows[windowButton.Navlink] = newWindow;
+
+                    newWindow.Closed += (_, _) =>
                     {
                         _openWindows.Remove(windowButton.Navlink);
-                        // Reset de selectie om de "geselecteerde" status te verwijderen
-                        Sidebar.SelectedIndex = -1;
+                        windowButton.IsWindowOpen = false;
                     };
-                    
-                    window.Show();
+
+                    newWindow.Show();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Fout bij openen venster: {ex.Message}");
-            }
-        }
-    }
-    private void OnNavButtonClick(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is NavButtonService navButton && navButton.Navlink != null)
-        {
-            try
-            {
-                Navframe.Navigate(navButton.Navlink);
-                Sidebar.SelectedItem = navButton;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Fout bij navigatie (klik): {ex.Message}");
             }
         }
     }

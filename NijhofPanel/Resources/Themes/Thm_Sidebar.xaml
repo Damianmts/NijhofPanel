@@ -6,6 +6,8 @@
     <Style TargetType="{x:Type services:NavButtonService}">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Margin" Value="3"/>
+        <Setter Property="Padding" Value="6"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type services:NavButtonService}">
@@ -21,11 +23,11 @@
                             <Setter Property="Background" TargetName="back" Value="#ffe560" />
                             <Setter Property="Fill" TargetName="icon" Value="#046434" />
                         </Trigger>
-
-                        <Trigger Property="IsSelected" Value="True">
+                        
+                        <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource Self}}" Value="True">
                             <Setter Property="Background" TargetName="back" Value="#ffe560" />
                             <Setter Property="Fill" TargetName="icon" Value="#046434" />
-                        </Trigger>
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -36,6 +38,8 @@
     <Style TargetType="{x:Type services:WindowButtonService}">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Margin" Value="3"/>
+        <Setter Property="Padding" Value="6"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type services:WindowButtonService}">
@@ -51,11 +55,11 @@
                             <Setter Property="Background" TargetName="back" Value="#ffe560" />
                             <Setter Property="Fill" TargetName="icon" Value="#046434" />
                         </Trigger>
-
-                        <Trigger Property="IsSelected" Value="True">
+                        
+                        <DataTrigger Binding="{Binding IsWindowOpen, RelativeSource={RelativeSource Self}}" Value="True">
                             <Setter Property="Background" TargetName="back" Value="#ffe560" />
                             <Setter Property="Fill" TargetName="icon" Value="#046434" />
-                        </Trigger>
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
