@@ -62,11 +62,6 @@
 
         <!-- MVVM -->
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
-        <PackageReference Include="SharpVectors.Reloaded" Version="1.8.4.2" />
-        <PackageReference Include="Syncfusion.Licensing" Version="29.2.4" />
-        <PackageReference Include="Syncfusion.SfBusyIndicator.WPF" Version="29.2.4" />
-        <PackageReference Include="Syncfusion.SfTreeView.WPF" Version="29.2.4" />
-        <PackageReference Include="Syncfusion.Shared.WPF" Version="29.2.4" />
     </ItemGroup>
 
     <ItemGroup>

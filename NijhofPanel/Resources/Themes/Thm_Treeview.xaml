@@ -2,7 +2,23 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:NijhofPanel.Views.Converters">
 
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary
+            Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <converters:TreeViewLineConverter x:Key="LineConverter" />
+
+    <!-- TreeView Style -->
+    <Style TargetType="{x:Type TreeView}">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+    </Style>
+
+    <!-- Scrollbar Style -->
+    <Style TargetType="{x:Type ScrollBar}" x:Key="VerticalModernScrollBar" BasedOn="{StaticResource ModernScrollBar}" />
 
     <!-- Toggle Button Style -->
     <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
@@ -20,8 +36,19 @@
                                 </LinearGradientBrush>
                             </Rectangle.Fill>
                         </Rectangle>
-                        <Rectangle x:Name="ExpandPath" Width="1" Height="5" Stroke="Black" SnapsToDevicePixels="true" />
-                        <Rectangle Width="5" Height="1" Stroke="Black" SnapsToDevicePixels="true" />
+                        
+                        <Grid Width="6" Height="6">
+                            <Rectangle x:Name="ExpandPath" Width="1" Height="5"
+                                       Stroke="Black"
+                                       SnapsToDevicePixels="true"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                            <Rectangle Width="5" Height="1"
+                                       Stroke="Black"
+                                       SnapsToDevicePixels="true"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Grid>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
@@ -32,9 +59,10 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+    
     <!-- TreeViewItem Style -->
     <Style x:Key="{x:Type TreeViewItem}" TargetType="{x:Type TreeViewItem}">
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Padding" Value="2,2,2,2" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Template">
@@ -56,30 +84,51 @@
                         <Rectangle x:Name="VerLn" Width="1" Stroke="#DCDCDC" Margin="0,0,1,0" Grid.RowSpan="2"
                                    SnapsToDevicePixels="true" Fill="White" />
 
-                        <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}"
+                        <ToggleButton x:Name="Expander"
+                                      Style="{StaticResource ExpandCollapseToggleStyle}"
                                       IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                                       ClickMode="Press" />
 
-                        <Border Name="Bd" Grid.Column="1" Background="{TemplateBinding Background}"
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
-                            <ContentPresenter x:Name="PART_Header" ContentSource="Header"
-                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              MinWidth="20" />
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter x:Name="PART_Header"
+                                              ContentSource="Header"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
                         </Border>
-                        <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" />
+
+                        <ItemsPresenter x:Name="ItemsHost"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Grid.ColumnSpan="2" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsExpanded" Value="false">
                             <Setter Property="Visibility" TargetName="ItemsHost" Value="Collapsed" />
                         </Trigger>
-                        <DataTrigger
-                            Binding="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource LineConverter}}"
-                            Value="true">
-                            <Setter TargetName="VerLn" Property="Height" Value="9" />
-                            <Setter TargetName="VerLn" Property="VerticalAlignment" Value="Top" />
-                        </DataTrigger>
+                        <Trigger Property="HasItems" Value="false">
+                            <Setter Property="Visibility" TargetName="Expander" Value="Hidden" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="HasHeader" Value="false" />
+                                <Condition Property="Width" Value="Auto" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="MinWidth" Value="75" TargetName="PART_Header" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" TargetName="Bd" Value="#F5F5F5" />
+                        </MultiTrigger>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" TargetName="Bd" Value="#E3F2FD" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

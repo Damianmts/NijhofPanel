@@ -1,22 +1,19 @@
 ﻿using System.Windows;
+using NijhofPanel.Models;
 using NijhofPanel.ViewModels;
 
 namespace NijhofPanel.Views;
 
 public partial class LibraryWindowView : Window
 {
-    private void SfTreeView_QueryNodeSize(object sender, Syncfusion.UI.Xaml.TreeView.QueryNodeSizeEventArgs e)
+    private void MainTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
-        if (e == null) return;
-
-        double autoFitHeight = e.GetAutoFitNodeHeight();
-
-        double minHeight = 30;
-        e.Height = Math.Max(autoFitHeight, minHeight);
-
-        e.Handled = true;
+        if (DataContext is LibraryWindowViewModel viewModel && e.NewValue is FileItemModel selectedItem)
+        {
+            viewModel.SelectedFolder = selectedItem;
+        }
     }
-    
+
     public LibraryWindowView()
     {
         InitializeComponent();

@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Controls;
 using JetBrains.Annotations;
-using Syncfusion.Licensing;
 
 namespace NijhofPanel;
 
@@ -24,9 +23,6 @@ public class Application : ExternalApplication
 {
     public override void OnStartup()
     {
-        SyncfusionLicenseProvider.RegisterLicense
-            ("Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXpccHRWRWBfV010XUdWYUA=");
-        
         System.Windows.Application.ResourceAssembly = typeof(Application).Assembly;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
         

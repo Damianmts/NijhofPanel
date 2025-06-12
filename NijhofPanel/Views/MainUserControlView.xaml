@@ -13,11 +13,14 @@
              MinHeight="700"
              MinWidth="320">
 
+    <!-- To Do -->
+    <!-- TODO - Fix/ Make Dark Mode -->
+    
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/SidebarVectorIcons.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/EToolsVectorIcons.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorSidebar.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorETools.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Sidebar.xaml"/>
             </ResourceDictionary.MergedDictionaries>

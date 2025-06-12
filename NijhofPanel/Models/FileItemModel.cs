@@ -16,6 +16,18 @@ public class FileItemModel : INotifyPropertyChanged
         SubFiles = new ObservableCollection<FileItemModel>();
     }
 
+    private bool _isSelected;
+
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            _isSelected = value;
+            OnPropertyChanged();
+        }
+    }
+
     public string ItemName { get; set; }
     public string DisplayName { get; set; }
     public string FullPath { get; set; }
