@@ -11,14 +11,14 @@ namespace NijhofPanel.Views;
 public partial class MainUserControlView : UserControl
 {
     private readonly Dictionary<string, Window> _openWindows = new();
-    
+
     private NavButtonService? _activeNavButton;
 
     public MainUserControlView(MainUserControlViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;
-        
+
         Loaded += (_, _) =>
         {
             if (Sidebar.Items[0] is NavButtonService firstButton)
@@ -35,12 +35,12 @@ public partial class MainUserControlView : UserControl
             if (navButton.Command != null && navButton.Command.CanExecute(null) && navButton.Navlink == null)
             {
                 navButton.Command.Execute(null);
-                
+
                 Sidebar.SelectedItem = null;
                 SidebarBottom.SelectedItem = null;
                 return;
             }
-            
+
             if (_activeNavButton != null && _activeNavButton != navButton)
                 _activeNavButton.IsActive = false;
 

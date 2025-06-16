@@ -35,6 +35,7 @@ public class FileItemModel : INotifyPropertyChanged
     public ObservableCollection<FileItemModel> SubFiles { get; }
 
     private BitmapImage? _thumbnail;
+
     public BitmapImage? Thumbnail
     {
         get => _thumbnail;
@@ -46,6 +47,7 @@ public class FileItemModel : INotifyPropertyChanged
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

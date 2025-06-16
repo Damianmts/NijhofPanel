@@ -9,13 +9,13 @@ using System.Windows.Media.Imaging;
 
 namespace NijhofPanel.Services;
 
-public static class ThumbnailSerivce
+public static class ThumbnailHelper
 {
     private static readonly SemaphoreSlim Semaphore = new(4);
     private static readonly ConcurrentDictionary<string, BitmapImage> Cache = new();
     private static readonly string CacheFolder = @"F:\Revit\Nijhof Tools\cache\";
 
-    static ThumbnailSerivce()
+    static ThumbnailHelper()
     {
         if (!Directory.Exists(CacheFolder))
             Directory.CreateDirectory(CacheFolder);

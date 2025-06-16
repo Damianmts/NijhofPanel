@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using NijhofPanel.Models;
 using NijhofPanel.Services;
+using NijhofPanel.Helpers;
 
 namespace NijhofPanel.ViewModels;
 
@@ -60,7 +61,7 @@ public class LibraryWindowViewModel : ObservableObject
             foreach (var file in files)
             {
                 var item = new FileItemModel(file);
-                item.Thumbnail = await ThumbnailSerivce.GetThumbnailAsync(file);
+                item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(file);
                 SelectedFolderContent.Add(item);
             }
 
@@ -84,7 +85,7 @@ public class LibraryWindowViewModel : ObservableObject
                 foreach (var file in files)
                 {
                     var item = new FileItemModel(file);
-                    item.Thumbnail = await ThumbnailSerivce.GetThumbnailAsync(file);
+                    item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(file);
                     SelectedFolderContent.Add(item);
                 }
 

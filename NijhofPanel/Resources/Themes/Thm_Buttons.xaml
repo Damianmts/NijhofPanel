@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:helpers="clr-namespace:NijhofPanel.Helpers">
 
     <!-- Basic Button -->
     <Style x:Key="BasicButton" TargetType="Button">
@@ -44,7 +45,7 @@
     </Style>
 
 
-    <!-- Electrical Button with SVG Icons -->
+    <!-- Big Button with SVG Icons -->
     <Style x:Key="BigButtonSVG" TargetType="Button">
         <Setter Property="Background" Value="#006235" />
         <Setter Property="Foreground" Value="White" />
@@ -74,7 +75,7 @@
                                    Foreground="#f5d105"
                                    TextAlignment="Center"
                                    TextWrapping="Wrap"
-                                   Visibility="Visible"/>
+                                   Visibility="Visible" />
                         <Path Data="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Tag}"
                               Width="50"
                               Height="50"
@@ -113,8 +114,16 @@
         </Setter>
     </Style>
 
+    <!-- Big Button E Page -->
+    <Style x:Key="BigButtonE" TargetType="Button" BasedOn="{StaticResource BigButtonSVG}">
+        <Setter Property="Command" 
+                Value="{Binding DataContext.PlaceElectricalComponentCommand, RelativeSource={RelativeSource AncestorType=Page}}"/>
+        <Setter Property="CommandParameter" 
+                Value="{Binding (helpers:ElectricalProperties.ComponentType), RelativeSource={RelativeSource Self}}"/>
+    </Style>
 
-    <!-- Electrical Button with SVG Icons -->
+
+    <!-- Long Button with SVG Icons -->
     <Style x:Key="LongButtonSVG" TargetType="Button">
         <Setter Property="Background" Value="#006235" />
         <Setter Property="Foreground" Value="White" />
@@ -177,7 +186,7 @@
                             <ContentPresenter HorizontalAlignment="Stretch"
                                               VerticalAlignment="Center"
                                               Content="{TemplateBinding Content}"
-                                              ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
                         </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -193,7 +202,6 @@
     </Style>
 
 
-    
     <!-- Electrical Button with PNG Icons [NOT IN USE] -->
     <Style x:Key="BigButtonPNG" TargetType="Button">
         <Setter Property="Background" Value="#006235" />

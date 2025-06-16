@@ -8,19 +8,20 @@ namespace NijhofPanel.Services;
 public class NavButtonService : ListBoxItem
 {
     private const string BasePath = "pack://application:,,,/NijhofPanel;component/Views/";
-    
+
     static NavButtonService()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(NavButtonService), new FrameworkPropertyMetadata(typeof(NavButtonService)));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(NavButtonService),
+            new FrameworkPropertyMetadata(typeof(NavButtonService)));
     }
 
     public Uri Navlink
     {
         get { return (Uri)GetValue(NavLinkProperty); }
-        set { SetValue(NavLinkProperty, value); }  
+        set { SetValue(NavLinkProperty, value); }
     }
-    
-    public static readonly DependencyProperty NavLinkProperty = 
+
+    public static readonly DependencyProperty NavLinkProperty =
         DependencyProperty.Register("Navlink", typeof(Uri), typeof(NavButtonService), new PropertyMetadata(null));
 
     public Geometry Icon
@@ -28,17 +29,17 @@ public class NavButtonService : ListBoxItem
         get { return (Geometry)GetValue(IconProperty); }
         set { SetValue(IconProperty, value); }
     }
-    
-    public static readonly DependencyProperty IconProperty = 
+
+    public static readonly DependencyProperty IconProperty =
         DependencyProperty.Register("Icon", typeof(Geometry), typeof(NavButtonService), new PropertyMetadata(null));
-    
+
     public ICommand Command
     {
         get { return (ICommand)GetValue(CommandProperty); }
         set { SetValue(CommandProperty, value); }
     }
-    
-    public static readonly DependencyProperty CommandProperty = 
+
+    public static readonly DependencyProperty CommandProperty =
         DependencyProperty.Register("Command", typeof(ICommand), typeof(NavButtonService), new PropertyMetadata(null));
 
     protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
@@ -49,12 +50,13 @@ public class NavButtonService : ListBoxItem
             Command.Execute(null);
         }
     }
-    
+
     public bool IsActive
     {
         get { return (bool)GetValue(IsActiveProperty); }
         set { SetValue(IsActiveProperty, value); }
     }
+
     public static readonly DependencyProperty IsActiveProperty =
         DependencyProperty.Register("IsActive", typeof(bool), typeof(NavButtonService), new PropertyMetadata(false));
 }
@@ -84,7 +86,7 @@ public class WindowButtonService : ListBoxItem
 
     public static readonly DependencyProperty IconProperty =
         DependencyProperty.Register("Icon", typeof(Geometry), typeof(WindowButtonService), new PropertyMetadata(null));
-    
+
     public bool IsWindowOpen
     {
         get { return (bool)GetValue(IsWindowOpenProperty); }
@@ -92,5 +94,6 @@ public class WindowButtonService : ListBoxItem
     }
 
     public static readonly DependencyProperty IsWindowOpenProperty =
-        DependencyProperty.Register("IsWindowOpen", typeof(bool), typeof(WindowButtonService), new PropertyMetadata(false));
+        DependencyProperty.Register("IsWindowOpen", typeof(bool), typeof(WindowButtonService),
+            new PropertyMetadata(false));
 }

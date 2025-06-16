@@ -9,7 +9,7 @@ public class IconService
     {
         using var stream = Assembly.GetExecutingAssembly()
             .GetManifestResourceStream(resourcePath);
-            
+
         if (stream == null) return null;
 
         var image = new BitmapImage();
@@ -17,7 +17,7 @@ public class IconService
         image.StreamSource = stream;
         image.CacheOption = BitmapCacheOption.OnLoad;
         image.EndInit();
-        
+
         return image;
     }
 }

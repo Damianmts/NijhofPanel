@@ -10,25 +10,29 @@
       MinHeight="500"
       MinWidth="270"
       Background="{DynamicResource BackgroundColor_Light}">
-    
+
     <!-- Resources -->
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorWTools.xaml"/>
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorWTools.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
-    
+
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled">
         <ScrollViewer.Style>
             <Style TargetType="ScrollViewer">
                 <Style.Resources>
-                    <Style TargetType="ScrollBar" BasedOn="{StaticResource ModernScrollBar}"/>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource ModernScrollBar}" />
                 </Style.Resources>
             </Style>
         </ScrollViewer.Style>
@@ -41,11 +45,11 @@
                        Margin="0,0,0,5" />
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ConnectElementIcon}"/>
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ConnectElementIcon}" />
                     <Button Style="{StaticResource BigButtonSVG}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Vertical">
@@ -55,63 +59,59 @@
             </Grid>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource HWANumberIcon}"/>
-                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource HWALengthIcon}"/>
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource HWANumberIcon}" />
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource HWALengthIcon}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Vertical">
                     <Button Style="{StaticResource LongButtonSVG}" />
                     <Button Style="{StaticResource LongButtonSVG}" />
                 </StackPanel>
             </Grid>
-            
-            
-            
+
+
             <TextBlock Text="Sparingen"
                        FontFamily="Arial"
                        FontWeight="Bold"
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessWallIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessFloorIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessBeamIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessUSOIcon}"/>
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessWallIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessFloorIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessBeamIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessUSOIcon}" />
             </WrapPanel>
-            
-            
-            
+
+
             <TextBlock Text="GPS"
                        FontFamily="Arial"
                        FontWeight="Bold"
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsLoadIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsAddIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsDeleteIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsUpdateIcon}"/>
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsLoadIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsAddIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsDeleteIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsUpdateIcon}" />
             </WrapPanel>
-            
-            
-            
+
+
             <TextBlock Text="Prefab"
                        FontFamily="Arial"
                        FontWeight="Bold"
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabNewIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabAddIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabDeleteIcon}"/>
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabManagerIcon}"/>
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabNewIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabAddIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabDeleteIcon}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabManagerIcon}" />
             </WrapPanel>
-            
-            
-            
+
+
             <TextBlock Text="Sheets"
                        FontFamily="Arial"
                        FontWeight="Bold"
@@ -119,26 +119,27 @@
                        Margin="0,15,0,5" />
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="VWA Lengte"/>
-                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="HWA Lengte"/>
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="VWA Lengte" />
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="HWA Lengte" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource View3DIcon}"/>
-                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ViewUpdateIcon}"/>
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource View3DIcon}" />
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ViewUpdateIcon}" />
                 </StackPanel>
             </Grid>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="MV Lengte"/>
-                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagDimensionIcon}" Content="Maatvoering"/>
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="MV Lengte" />
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagDimensionIcon}"
+                            Content="Maatvoering" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Style="{StaticResource BigButtonSVG}" />
@@ -147,5 +148,5 @@
             </Grid>
         </StackPanel>
     </ScrollViewer>
-    
+
 </Page>

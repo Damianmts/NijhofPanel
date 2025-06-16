@@ -48,7 +48,9 @@
                       SelectedItemChanged="MainTreeView_SelectedItemChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <TreeView.Resources>
-                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}"/>
+                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}">
+                        <Setter Property="MinWidth" Value="4" />
+                    </Style>
                 </TreeView.Resources>
 
                 <TreeView.ItemContainerStyle>
@@ -89,7 +91,7 @@
                       Margin="0">
 
                 <ListView.Resources>
-                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}"/>
+                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}" />
                 </ListView.Resources>
 
                 <ListView.ItemsPanel>

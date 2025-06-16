@@ -10,6 +10,7 @@ namespace NijhofPanel.ViewModels
 {
     public class MainUserControlViewModel : INotifyPropertyChanged
     {
+        public ElectricalPageViewModel ElectricalVm { get; set; }
         private static MainWindowView _windowInstance;
         private bool _isDarkMode;
 

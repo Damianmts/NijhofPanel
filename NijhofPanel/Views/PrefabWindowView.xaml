@@ -5,11 +5,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:NijhofPanel.Views"
         mc:Ignorable="d"
-        Title="Prefablijst" 
-        Height="700" 
+        Title="Prefablijst"
+        Height="700"
         Width="1000">
-    
+
     <Grid>
-        
+
     </Grid>
 </Window>

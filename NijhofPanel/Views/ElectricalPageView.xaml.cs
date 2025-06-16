@@ -10,17 +10,16 @@ public partial class ElectricalPageView : Page
     public ElectricalPageView()
     {
         InitializeComponent();
-        DataContext = new ElectricalPageViewModel();
-    }
 
-    private void Button_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button button)
+        // Februik statische instance
+        if (ElectricalPageViewModel.Instance != null)
         {
-            if (button.FindResource("SelectiePopup") is Popup popup)
-            {
-                popup.IsOpen = true;
-            }
+            DataContext = ElectricalPageViewModel.Instance;
+        }
+        else
+        {
+            // Fallback of foutmelding
+            MessageBox.Show("ElectricalViewModel niet geïnitialiseerd.");
         }
     }
 }

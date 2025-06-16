@@ -9,23 +9,24 @@
              d:DataContext="{d:DesignInstance viewModel:MainUserControlViewModel}"
              Background="{DynamicResource CurrentBackgroundColor}"
              Height="700"
-             Width="320"
+             Width="330"
              MinHeight="700"
-             MinWidth="320">
+             MinWidth="330">
 
     <!-- To Do -->
     <!-- TODO - Fix/ Make Dark Mode -->
-    
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorSidebar.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorETools.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Sidebar.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorSidebar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorETools.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Sidebar.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor_Light}}"/>
-            <SolidColorBrush x:Key="CurrentTextColor" Color="{Binding Color, Source={StaticResource TextColor_Light}}"/>
+            <SolidColorBrush x:Key="CurrentBackgroundColor"
+                             Color="{Binding Color, Source={StaticResource BackgroundColor_Light}}" />
+            <SolidColorBrush x:Key="CurrentTextColor" Color="{Binding Color, Source={StaticResource TextColor_Light}}" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -34,43 +35,61 @@
             <ColumnDefinition Width="50" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        
-        <DockPanel Grid.Column="0" LastChildFill="False">
+
+        <Border Grid.Column="0"
+                BorderThickness="0,0,1,0"
+                BorderBrush="LightGray">
+        <DockPanel LastChildFill="False">
             <ListBox x:Name="Sidebar"
                      DockPanel.Dock="Top"
                      BorderThickness="0"
                      Background="Transparent"
                      HorizontalContentAlignment="Center">
-                <services:NavButtonService Navlink="pack://application:,,,/NijhofPanel;component/Views/StartPageView.xaml" Icon="{StaticResource HomeIcon}" MouseLeftButtonUp="NavButton_Click" />
-                <Separator/><Separator/>
-                <services:NavButtonService Navlink="pack://application:,,,/NijhofPanel;component/Views/ToolsPageView.xaml" Icon="{StaticResource WToolsIcon}" MouseLeftButtonUp="NavButton_Click" />
-                <Separator/>
-                <services:NavButtonService Navlink="pack://application:,,,/NijhofPanel;component/Views/ElectricalPageView.xaml" Icon="{StaticResource EToolsIcon}" MouseLeftButtonUp="NavButton_Click" />
-                <Separator/><Separator/>
-                <services:WindowButtonService Navlink="LibraryWindowView" Icon="{StaticResource LibraryIcon}" MouseLeftButtonUp="WindowButton_Click"/>
-                <Separator/>
-                <services:WindowButtonService Navlink="PrefabWindowView" Icon="{StaticResource PrefabIcon}" MouseLeftButtonUp="WindowButton_Click"/>
-                <Separator/>
-                <services:WindowButtonService Navlink="FittingListWindowView" Icon="{StaticResource FittingsIcon}" MouseLeftButtonUp="WindowButton_Click"/>
-                <Separator/>
-                <services:WindowButtonService Navlink="SawListWindowView" Icon="{StaticResource SawIcon}" MouseLeftButtonUp="WindowButton_Click"/>
+                <services:NavButtonService
+                    Navlink="pack://application:,,,/NijhofPanel;component/Views/StartPageView.xaml"
+                    Icon="{StaticResource HomeIcon}" MouseLeftButtonUp="NavButton_Click" />
+                <Separator /><Separator />
+                <services:NavButtonService
+                    Navlink="pack://application:,,,/NijhofPanel;component/Views/ToolsPageView.xaml"
+                    Icon="{StaticResource WToolsIcon}" MouseLeftButtonUp="NavButton_Click" />
+                <Separator />
+                <services:NavButtonService
+                    Navlink="pack://application:,,,/NijhofPanel;component/Views/ElectricalPageView.xaml"
+                    Icon="{StaticResource EToolsIcon}" MouseLeftButtonUp="NavButton_Click" />
+                <Separator /><Separator />
+                <services:WindowButtonService Navlink="LibraryWindowView" Icon="{StaticResource LibraryIcon}"
+                                              MouseLeftButtonUp="WindowButton_Click" />
+                <Separator />
+                <services:WindowButtonService Navlink="PrefabWindowView" Icon="{StaticResource PrefabIcon}"
+                                              MouseLeftButtonUp="WindowButton_Click" />
+                <Separator />
+                <services:WindowButtonService Navlink="FittingListWindowView" Icon="{StaticResource FittingsIcon}"
+                                              MouseLeftButtonUp="WindowButton_Click" />
+                <Separator />
+                <services:WindowButtonService Navlink="SawListWindowView" Icon="{StaticResource SawIcon}"
+                                              MouseLeftButtonUp="WindowButton_Click" />
             </ListBox>
-            
+
             <ListBox x:Name="SidebarBottom"
                      DockPanel.Dock="Bottom"
                      BorderThickness="0"
                      Background="Transparent"
                      HorizontalContentAlignment="Center">
-                <Separator/><Separator/>
+                <Separator /><Separator />
                 <services:NavButtonService Command="{Binding Com_ToggleTheme}" Icon="{StaticResource DarkModeIcon}" />
-                <Separator/>
-                <services:NavButtonService Navlink="pack://application:,,,/NijhofPanel;component/Views/UserPageView.xaml" Icon="{StaticResource UserIcon}" MouseLeftButtonUp="NavButton_Click" />
-                <Separator/>
-                <services:NavButtonService Navlink="pack://application:,,,/NijhofPanel;component/Views/SettingsPageView.xaml" Icon="{StaticResource SettingsIcon}" MouseLeftButtonUp="NavButton_Click" />
+                <Separator />
+                <services:NavButtonService
+                    Navlink="pack://application:,,,/NijhofPanel;component/Views/UserPageView.xaml"
+                    Icon="{StaticResource UserIcon}" MouseLeftButtonUp="NavButton_Click" />
+                <Separator />
+                <services:NavButtonService
+                    Navlink="pack://application:,,,/NijhofPanel;component/Views/SettingsPageView.xaml"
+                    Icon="{StaticResource SettingsIcon}" MouseLeftButtonUp="NavButton_Click" />
             </ListBox>
         </DockPanel>
-        
+        </Border>
+
         <Frame Grid.Column="1" x:Name="Navframe" NavigationUIVisibility="Hidden" Background="#e9ecef" />
-        
+
     </Grid>
 </UserControl>
