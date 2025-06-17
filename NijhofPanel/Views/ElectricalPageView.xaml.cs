@@ -19,7 +19,7 @@ public partial class ElectricalPageView : Page
         else
         {
             // Fallback of foutmelding
-            MessageBox.Show("ElectricalViewModel niet geïnitialiseerd.");
+            MessageBox.Show("ElectricalPageViewModel niet geïnitialiseerd.");
         }
     }
 }

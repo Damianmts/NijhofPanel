@@ -197,8 +197,8 @@
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonPNG}" Content="Groep nummer" />
-                <Button Style="{StaticResource BigButtonPNG}" Content="Switch code" />
+                <Button Style="{StaticResource BigButtonPNG}" Content="Groep nummer" Command="{Binding TagGroepnummerCommand}" />
+                <Button Style="{StaticResource BigButtonPNG}" Content="Switch code" Command="{Binding TagSwitchcodeCommand}" />
                 <Button Style="{StaticResource BigButtonPNG}" Content="Code lijst" />
             </WrapPanel>
 

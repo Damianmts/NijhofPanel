@@ -39,19 +39,22 @@ public class RevitApplication : ExternalApplication
             RevitContext.SetUIApplication(uiApp);
         };
 
-        // 🔧 ExternalEvent + handler aanmaken
+        // ExternalEvent + handler aanmaken
         var handler = new FamilyPlacementHandler();
         var externalEvent = ExternalEvent.Create(handler);
 
-        // 🎛 Ribbon aanmaken
+        // Ribbon aanmaken
         var ribbonPanel = GetOrCreateRibbonPanel();
         AddButtonToPanel(ribbonPanel);
 
-        // 📌 DockablePane: view en viewmodel aanmaken en koppelen
+        // DockablePane: view en viewmodels aanmaken en koppelen
         var electricalVm = new ElectricalPageViewModel(handler, externalEvent);
+        var toolsVm = new ToolsPageViewModel(externalEvent);
+        
         var mainVm = new MainUserControlViewModel
         {
-            ElectricalVm = electricalVm // <-- Zorg dat MainVM deze property heeft
+            ElectricalVm = electricalVm,
+            ToolsVm = toolsVm
         };
 
         var mainView = new MainUserControlView(mainVm);

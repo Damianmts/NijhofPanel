@@ -3,8 +3,11 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:viewModel="clr-namespace:NijhofPanel.ViewModels"
       xmlns:local="clr-namespace:NijhofPanel.Views"
+      xmlns:helpers="clr-namespace:NijhofPanel.Helpers"
       mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance viewModel:ToolsPageViewModel}"
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
       MinHeight="500"
@@ -53,7 +56,7 @@
                     <Button Style="{StaticResource BigButtonSVG}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Vertical">
-                    <Button Style="{StaticResource LongButtonSVG}" />
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource ExcelIcon}" Content="Exporteren" Command="{Binding ExportExcelCommand}"/>
                     <Button Style="{StaticResource LongButtonSVG}" />
                 </StackPanel>
             </Grid>

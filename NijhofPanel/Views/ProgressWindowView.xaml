@@ -1,0 +1,30 @@
+﻿<Window x:Class="NijhofPanel.Views.ProgressWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:NijhofPanel.Views"
+        mc:Ignorable="d"
+        Title="Laden..." Height="100" Width="350" WindowStartupLocation="CenterScreen">
+    
+    <Window.Resources>
+        <!-- Aangepaste stijl voor ProgressBar -->
+        <Style TargetType="ProgressBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid x:Name="PART_Track" Background="#FFE5E5E5" SnapsToDevicePixels="true">
+                            <Rectangle x:Name="PART_Indicator" Fill="#f5d105" HorizontalAlignment="Left" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <!-- De tekst wordt dynamisch bijgewerkt in de code-behind -->
+        <TextBlock Name="statusTextBlock" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" FontSize="14" />
+        <ProgressBar Name="progressBar" Margin="10,10,10,10" Minimum="0" Maximum="100" Height="20" VerticalAlignment="Bottom" />
+    </Grid>
+</Window>
