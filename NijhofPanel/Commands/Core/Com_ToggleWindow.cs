@@ -34,6 +34,7 @@ public class Com_ToggleWindow : IExternalCommand
                 ToolsVm      = new ToolsPageViewModel(familyEvent),
                 PrefabVm     = new PrefabWindowViewModel(prefabHandler, prefabEvent)
             };
+            navigationService.SetMainViewModel(mainVm);
 
             // Maak de view met de VM (constructor injectie!)
             var mainView = new MainUserControlView(mainVm);

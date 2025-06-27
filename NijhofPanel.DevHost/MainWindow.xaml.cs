@@ -20,35 +20,29 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        // 1) Instantieer je UserControl
-        var mainUserControl = new MainUserControlView();
+        // 1) Maak de view model-factory aan
+        var viewModelFactory = new NijhofPanel.Services.ViewModelFactory();
 
-        // 2) Instantieer je NavigationService
-        var navService = new NijhofPanel.Services.NavigationService();
+        // 2) Haal de hoofd ViewModel op
+        var vm = viewModelFactory.CreateMainViewModel();
 
-        // 3) Instantieer je ViewModel
-        var vm = new MainUserControlViewModel(navService);
+        // 3) Instantieer de hoofd UserControl met ViewModel
+        var mainUserControl = new MainUserControlView(vm);
 
-        // 4) Stel de DataContext in
-        mainUserControl.DataContext = vm;
-
-        // 5) Stel de host in voor navigatie
-        var host = mainUserControl.FindName("MainContent") as ContentControl;
-        navService.SetHost(host);
-
-        // 6) Toon het in een window
-        var window = new Window
+        // 4) Toon alles in de MainWindowView
+        var window = new MainWindowView
         {
-            Content = mainUserControl,
             Title = "NijhofPanel",
-            Width = 800,
-            Height = 600
+            Width = 350,
+            Height = 750
         };
+
+        window.MainContent.Content = mainUserControl;
 
         Application.Current.MainWindow = window;
         window.Show();
 
-        // 7) Sluit de DevHost
+        // 5) Sluit de DevHost
         Close();
     }
 }

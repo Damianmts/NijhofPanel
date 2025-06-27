@@ -57,6 +57,7 @@ public class RevitApplication : ExternalApplication
             ToolsVm = toolsVm,
             PrefabVm = prefabVm
         };
+        navigationService.SetMainViewModel(mainVm);
 
         // Maak de view en injecteer de VM
         var mainView = new MainUserControlView(mainVm);
