@@ -26,7 +26,7 @@ public static class ThumbnailHelper
         if (Cache.TryGetValue(filePath, out var cached))
             return cached;
 
-        string cacheFilePath = GetCacheFilePath(filePath);
+        var cacheFilePath = GetCacheFilePath(filePath);
 
         if (File.Exists(cacheFilePath) && IsCacheValid(filePath, cacheFilePath))
         {
@@ -68,7 +68,7 @@ public static class ThumbnailHelper
     {
         using var md5 = MD5.Create();
         var hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(path));
-        string hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+        var hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         return Path.Combine(CacheFolder, hash + ".png");
     }
 

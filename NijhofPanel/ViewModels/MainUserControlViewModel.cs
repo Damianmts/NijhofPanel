@@ -1,91 +1,164 @@
-﻿using Autodesk.Revit.UI;
+﻿namespace NijhofPanel.ViewModels;
+
+using Autodesk.Revit.UI;
 using NijhofPanel.Views;
 using NijhofPanel.Services;
+using NijhofPanel.Helpers;
+using NijhofPanel.UI.Themes;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using Visibility = System.Windows.Visibility;
 
-namespace NijhofPanel.ViewModels
+public class MainUserControlViewModel : INotifyPropertyChanged
 {
-    public class MainUserControlViewModel : INotifyPropertyChanged
+    private readonly INavigationService _navigationService;
+    public INavigationService NavigationService => _navigationService;
+    private object _currentView;
+
+    public object CurrentView
     {
-        public ElectricalPageViewModel ElectricalVm { get; set; }
-        public ToolsPageViewModel ToolsVm { get; set; }
-        
-        private static MainWindowView _windowInstance;
-        private bool _isDarkMode;
-
-        public bool IsDarkMode
+        get => _currentView;
+        set
         {
-            get => _isDarkMode;
-            set
+            _currentView = value;
+            OnPropertyChanged(nameof(CurrentView));
+        }
+    }
+
+    public ElectricalPageViewModel ElectricalVm { get; set; }
+    public ToolsPageViewModel ToolsVm { get; set; }
+    public PrefabWindowViewModel PrefabVm { get; set; }
+
+    private static MainWindowView _windowInstance;
+    private bool _isDarkMode;
+
+    public bool IsDarkMode
+    {
+        get => _isDarkMode;
+        set
+        {
+            if (_isDarkMode != value)
             {
-                if (_isDarkMode != value)
-                {
-                    _isDarkMode = value;
-                    OnPropertyChanged(nameof(IsDarkMode));
-                    UpdateTheme();
-                }
+                _isDarkMode = value;
+                OnPropertyChanged(nameof(IsDarkMode));
+                UpdateTheme();
             }
         }
+    }
 
-        public ICommand Com_ToggleTheme { get; }
+    public ICommand Com_ToggleTheme { get; }
 
-        public MainUserControlViewModel()
+    private bool _isLoggedIn;
+
+    public bool IsLoggedIn
+    {
+        get => _isLoggedIn;
+        set
         {
-            Com_ToggleTheme = new RelayCommand(ExecuteToggleTheme);
-            IsDarkMode = false;
-        }
-
-        public void ToggleWindowMode(MainUserControlView userControl, UIApplication uiApp)
-        {
-            if (_windowInstance == null)
+            if (_isLoggedIn != value)
             {
-                var dockablePane = GetDockablePane(uiApp);
-                if (dockablePane != null)
-                    dockablePane.Hide();
-
-                _windowInstance = new MainWindowView();
-                _windowInstance.MainContent.Content = userControl;
-                _windowInstance.Closed += (s, e) =>
-                {
-                    _windowInstance = null;
-                    dockablePane?.Show();
-                };
-                _windowInstance.Show();
+                _isLoggedIn = value;
+                OnPropertyChanged(nameof(IsLoggedIn));
+                OnPropertyChanged(nameof(SidebarVisibility));
             }
-            else
+        }
+    }
+
+    public Visibility SidebarVisibility => IsLoggedIn ? Visibility.Visible : Visibility.Collapsed;
+
+    private object _currentPage;
+
+    public object CurrentPage
+    {
+        get => _currentPage;
+        set
+        {
+            if (_currentPage != value)
             {
-                _windowInstance.Close();
+                _currentPage = value;
+                OnPropertyChanged(nameof(CurrentPage));
+            }
+        }
+    }
+
+    public ICommand LoginCommand { get; }
+
+    public MainUserControlViewModel(INavigationService navigationService)
+    {
+        _navigationService = navigationService;
+        Com_ToggleTheme = new RelayCommand(ExecuteToggleTheme);
+        LoginCommand = new RelayCommand(ExecuteLogin);
+        IsDarkMode = false;
+        IsLoggedIn = false;
+        NavigateToLogin();
+    }
+
+    private void ExecuteLogin()
+    {
+        // Hier komt je login logica
+        IsLoggedIn = true;
+
+        // Na succesvolle login, navigeer naar de startpagina
+        NavigateToStartPage();
+    }
+
+    public void NavigateToLogin()
+    {
+        _navigationService.NavigateTo<UserPageView>();
+    }
+
+    public void NavigateToStartPage()
+    {
+        _navigationService.NavigateTo<StartPageView>();
+    }
+
+    public void ToggleWindowMode(MainUserControlView userControl, UIApplication uiApp)
+    {
+        if (_windowInstance == null)
+        {
+            var dockablePane = GetDockablePane(uiApp);
+            if (dockablePane != null)
+                dockablePane.Hide();
+
+            _windowInstance = new MainWindowView();
+            _windowInstance.MainContent.Content = userControl;
+            _windowInstance.Closed += (s, e) =>
+            {
                 _windowInstance = null;
-            }
+                dockablePane?.Show();
+            };
+            _windowInstance.Show();
         }
-
-        private DockablePane GetDockablePane(UIApplication uiApp)
+        else
         {
-            var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
-            return uiApp.GetDockablePane(paneId);
+            _windowInstance.Close();
+            _windowInstance = null;
         }
+    }
 
-        private void ExecuteToggleTheme()
-        {
-            IsDarkMode = !IsDarkMode;
-        }
+    private DockablePane GetDockablePane(UIApplication uiApp)
+    {
+        var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
+        return uiApp.GetDockablePane(paneId);
+    }
 
-        private void UpdateTheme()
-        {
-            if (_windowInstance != null)
-            {
-                ThemeManagerService.UpdateTheme(IsDarkMode, _windowInstance);
-            }
-        }
+    private void ExecuteToggleTheme()
+    {
+        IsDarkMode = !IsDarkMode;
+    }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+    private void UpdateTheme()
+    {
+        if (_windowInstance != null) ThemeManager.UpdateTheme(IsDarkMode, _windowInstance);
+    }
 
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

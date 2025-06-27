@@ -1,12 +1,12 @@
 ﻿using System.Windows;
 
-namespace NijhofPanel.Services;
+namespace NijhofPanel.UI.Themes;
 
-public static class ThemeManagerService
+public static class ThemeManager
 {
-    private static ResourceDictionary ThemeResources { get; } = new ResourceDictionary
+    private static ResourceDictionary ThemeResources { get; } = new()
     {
-        Source = new Uri("/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml", UriKind.RelativeOrAbsolute)
+        Source = new Uri("/NijhofPanel;component/Resources/Themes/CoreTheme.xaml", UriKind.RelativeOrAbsolute)
     };
 
     public static void UpdateTheme(bool isDarkMode, FrameworkElement element)

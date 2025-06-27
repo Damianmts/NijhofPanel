@@ -28,7 +28,14 @@ var project = new Project
     }
 };
 
-var wixEntities = Generator.GenerateWixEntities(args);
+// Definieer eerst de uitgesloten projecten
+var excludedProjects = new[]
+{
+    "NijhofPanel.Devhost",
+    "NijhofPanel.Tests"
+};
+
+var wixEntities = Generator.GenerateWixEntities(args, excludedProjects);
 project.RemoveDialogsBetween(NativeDialogs.WelcomeDlg, NativeDialogs.CustomizeDlg);
 
 BuildSingleUserMsi();

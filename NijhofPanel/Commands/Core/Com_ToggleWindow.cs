@@ -1,9 +1,11 @@
-﻿using Autodesk.Revit.UI;
+﻿using System;
+using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.Attributes;
+using NijhofPanel.Helpers;
 using NijhofPanel.Views;
 using NijhofPanel.ViewModels;
-using System;
+using NijhofPanel.Services;
 
 namespace NijhofPanel.Commands.Core;
 
@@ -14,14 +16,30 @@ public class Com_ToggleWindow : IExternalCommand
     {
         try
         {
-            UIApplication uiApp = commandData.Application;
+            var uiApp = commandData.Application;
 
-            // Maak een nieuwe MainUserControlView aan
-            var mainView = new MainUserControlView(viewModel: null);
+            // Maak de ExternalEvent-handlers (gelijk aan wat je in OnStartup doet)
+            var familyHandler   = new FamilyPlacementHandler();
+            var familyEvent     = ExternalEvent.Create(familyHandler);
+            var prefabHandler   = new RevitRequestHandler();
+            var prefabEvent     = ExternalEvent.Create(prefabHandler);
 
-            // Toggle los venster via ViewModel
-            var viewModel = new MainUserControlViewModel();
-            viewModel.ToggleWindowMode(mainView, uiApp);
+            // Maak & configureer de NavigationService
+            var navigationService = new NavigationService();
+
+            // Instantieer de Main ViewModel met alle sub-VM’s
+            var mainVm = new MainUserControlViewModel(navigationService)
+            {
+                ElectricalVm = new ElectricalPageViewModel(familyHandler, familyEvent),
+                ToolsVm      = new ToolsPageViewModel(familyEvent),
+                PrefabVm     = new PrefabWindowViewModel(prefabHandler, prefabEvent)
+            };
+
+            // Maak de view met de VM (constructor injectie!)
+            var mainView = new MainUserControlView(mainVm);
+
+            // Doe de toggle
+            mainVm.ToggleWindowMode(mainView, uiApp);
 
             return Result.Succeeded;
         }

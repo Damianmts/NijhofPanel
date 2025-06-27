@@ -5,7 +5,7 @@ namespace NijhofPanel.Helpers;
 
 public class ElectricalProperties
 {
-    public static readonly DependencyProperty ComponentTypeProperty = 
+    public static readonly DependencyProperty ComponentTypeProperty =
         DependencyProperty.RegisterAttached(
             "ComponentType",
             typeof(string),

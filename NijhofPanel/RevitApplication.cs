@@ -1,16 +1,19 @@
-﻿using System.Globalization;
+﻿namespace NijhofPanel;
+
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using Autodesk.Revit.UI;
 using JetBrains.Annotations;
 using Nice3point.Revit.Toolkit.External;
-using NijhofPanel.Commands;
-using NijhofPanel.Services;
-using NijhofPanel.ViewModels;
-using NijhofPanel.Views;
-using NijhofPanel.Helpers;
-
-namespace NijhofPanel;
+using Commands;
+using Services;
+using ViewModels;
+using Views;
+using Helpers;
+using UI;
+using Providers;
+using Core;
 
 /// <summary>
 ///     Entry point voor de Revit-plugin 'Nijhof Tools'
@@ -20,51 +23,49 @@ public class RevitApplication : ExternalApplication
 {
     public override void OnStartup()
     {
-        // Zorg dat WPF-resources juist geladen worden
+        // WPF-resources en cultuurinstelling
         System.Windows.Application.ResourceAssembly = typeof(RevitApplication).Assembly;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+        AppDomain.CurrentDomain.AssemblyResolve += (s, e) =>
+            Assembly.LoadFrom(typeof(RevitApplication).Assembly.Location);
 
-        // Laad ontbrekende dependencies dynamisch indien nodig
-        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-        {
-            var assemblyPath = typeof(RevitApplication).Assembly.Location;
-            return Assembly.LoadFrom(assemblyPath);
-        };
-
-        // Zet RevitContext zodra een document wordt geopend
+        // RevitContext instellen zodra een document opent
         Application.ControlledApplication.DocumentOpened += (_, args) =>
-        {
-            var doc = args.Document;
-            var uiApp = new UIApplication(doc.Application);
-            RevitContext.SetUIApplication(uiApp);
-        };
+            RevitContext.SetUiApplication(new UIApplication(args.Document.Application));
 
-        // ExternalEvent + handler aanmaken
-        var handler = new FamilyPlacementHandler();
-        var externalEvent = ExternalEvent.Create(handler);
+        // ExternalEvent handlers
+        var familyHandler = new FamilyPlacementHandler();
+        var familyEvent = ExternalEvent.Create(familyHandler);
+        var prefabHandler = new RevitRequestHandler();
+        var prefabEvent = ExternalEvent.Create(prefabHandler);
 
-        // Ribbon aanmaken
+        // Ribbon-buttons
         var ribbonPanel = GetOrCreateRibbonPanel();
         AddButtonToPanel(ribbonPanel);
 
-        // DockablePane: view en viewmodels aanmaken en koppelen
-        var electricalVm = new ElectricalPageViewModel(handler, externalEvent);
-        var toolsVm = new ToolsPageViewModel(externalEvent);
-        
-        var mainVm = new MainUserControlViewModel
+        // Bouw sub-VM's
+        var electricalVm = new ElectricalPageViewModel(familyHandler, familyEvent);
+        var toolsVm = new ToolsPageViewModel(familyEvent);
+        var prefabVm = new PrefabWindowViewModel(prefabHandler, prefabEvent);
+
+        // Maak de hoofd-VM met de NavigationService
+        var viewModelFactory = new ViewModelFactory();
+        var navigationService = viewModelFactory.GetNavigationService();
+        var mainVm = new MainUserControlViewModel(navigationService)
         {
             ElectricalVm = electricalVm,
-            ToolsVm = toolsVm
+            ToolsVm = toolsVm,
+            PrefabVm = prefabVm
         };
 
+        // Maak de view en injecteer de VM
         var mainView = new MainUserControlView(mainVm);
 
-        var dockablePaneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
-        var dockablePaneService = new DockablePaneService(mainView);
-
-        Application.RegisterDockablePane(dockablePaneId, "Nijhof Tools", dockablePaneService);
+        // Registreer de dockable pane
+        var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
+        var provider = new DockablePaneProvider(mainView);
+        Application.RegisterDockablePane(paneId, "Nijhof Tools", provider);
     }
-
 
     private RibbonPanel GetOrCreateRibbonPanel()
     {
@@ -80,8 +81,8 @@ public class RevitApplication : ExternalApplication
 
     private void AddButtonToPanel(RibbonPanel ribbonPanel)
     {
-        string assemblyPath = typeof(RevitApplication).Assembly.Location;
-        var iconService = new IconService();
+        var assemblyPath = typeof(RevitApplication).Assembly.Location;
+        var iconService = new ImageResource();
 
         var icon = iconService.LoadImageFromResource("NijhofPanel.Resources.Icons.NijhofLogo_32x32.png");
 

@@ -19,21 +19,21 @@ public partial class ScheduleSelectionWindowView : Window
     {
         public string Name { get; set; }
         public bool IsSelected { get; set; }
-        public ViewSchedule Schedule { get; set; }  // Verander Schedule naar ViewSchedule
+        public ViewSchedule Schedule { get; set; } // Verander Schedule naar ViewSchedule
     }
 
-    public List<ViewSchedule> SelectedSchedules { get; private set; }  // Verander Schedule naar ViewSchedule
+    public List<ViewSchedule> SelectedSchedules { get; private set; } // Verander Schedule naar ViewSchedule
 
-    public ScheduleSelectionWindowView(IEnumerable<ViewSchedule> schedules)  // Verander Schedule naar ViewSchedule
+    public ScheduleSelectionWindowView(IEnumerable<ViewSchedule> schedules) // Verander Schedule naar ViewSchedule
     {
         InitializeComponent();
-    
+
         // De rest van de code blijft hetzelfde
-        ScheduleListBox.ItemsSource = schedules.Select(s => new ScheduleItem 
-        { 
-            Name = s.Name, 
-            Schedule = s, 
-            IsSelected = false 
+        ScheduleListBox.ItemsSource = schedules.Select(s => new ScheduleItem
+        {
+            Name = s.Name,
+            Schedule = s,
+            IsSelected = false
         }).ToList();
     }
 

@@ -1,121 +1,101 @@
-﻿using System.Windows.Controls;
-using NijhofPanel.ViewModels;
-using NijhofPanel.Services;
+﻿namespace NijhofPanel.Views;
+
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using NijhofPanel.Views;
-
-namespace NijhofPanel.Views;
+using Services;
+using UI.Controls.Navigation;
+using ViewModels;
+using Views;
 
 public partial class MainUserControlView : UserControl
 {
     private readonly Dictionary<string, Window> _openWindows = new();
+    private MainUserControlViewModel _mainVm;
+    private NavButton? _activeNavButton;
 
-    private NavButtonService? _activeNavButton;
-
-    public MainUserControlView(MainUserControlViewModel viewModel)
+    public MainUserControlView(MainUserControlViewModel vm)
     {
         InitializeComponent();
-        DataContext = viewModel;
+        DataContext = vm;
+        Loaded += MainUserControlView_Loaded;
+    }
 
-        Loaded += (_, _) =>
+    private void MainUserControlView_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainUserControlViewModel vm)
         {
-            if (Sidebar.Items[0] is NavButtonService firstButton)
+            _mainVm = vm;
+            if (_mainVm.NavigationService is NavigationService navService)
             {
-                NavButton_Click(firstButton, null!);
+                navService.SetHost(NavigationFrame); // We gebruiken nu SetHost in plaats van SetFrame
             }
-        };
+        }
+        else
+        {
+            throw new InvalidOperationException("DataContext moet een MainUserControlViewModel zijn.");
+        }
     }
 
     private void NavButton_Click(object sender, MouseButtonEventArgs e)
     {
-        if (sender is NavButtonService navButton)
+        if (sender is NavButton navButton)
         {
-            if (navButton.Command != null && navButton.Command.CanExecute(null) && navButton.Navlink == null)
-            {
-                navButton.Command.Execute(null);
-
-                Sidebar.SelectedItem = null;
-                SidebarBottom.SelectedItem = null;
-                return;
-            }
-
             if (_activeNavButton != null && _activeNavButton != navButton)
                 _activeNavButton.IsActive = false;
 
             navButton.IsActive = true;
             _activeNavButton = navButton;
-
-            if (navButton.Navlink != null)
-            {
-                try
-                {
-                    Navframe.Navigate(navButton.Navlink);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Fout bij navigatie: {ex.Message}");
-                }
-            }
-
-            Sidebar.SelectedItem = null;
-            SidebarBottom.SelectedItem = null;
         }
     }
 
     private void WindowButton_Click(object sender, MouseButtonEventArgs e)
     {
-        if (sender is WindowButtonService windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
+        if (sender is WindowButton windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
         {
-            try
+            // Bestaande venster-logica onveranderd
+            if (_openWindows.ContainsKey(windowButton.Navlink))
             {
-                if (_openWindows.ContainsKey(windowButton.Navlink))
+                var existing = _openWindows[windowButton.Navlink];
+                if (existing.IsVisible)
                 {
-                    var existing = _openWindows[windowButton.Navlink];
-                    if (existing.IsVisible)
-                    {
-                        if (existing.WindowState == WindowState.Minimized)
-                            existing.WindowState = WindowState.Normal;
+                    if (existing.WindowState == WindowState.Minimized)
+                        existing.WindowState = WindowState.Normal;
 
-                        existing.Topmost = true;
-                        existing.Topmost = false;
-                        existing.Activate();
-                        return;
-                    }
-                    else
-                    {
-                        _openWindows.Remove(windowButton.Navlink);
-                    }
+                    existing.Topmost = true;
+                    existing.Topmost = false;
+                    existing.Activate();
+                    return;
                 }
-
-                Window? newWindow = windowButton.Navlink switch
+                else
                 {
-                    "LibraryWindowView" => new LibraryWindowView(),
-                    "PrefabWindowView" => new PrefabWindowView(),
-                    "FittingListWindowView" => new FittingListWindowView(),
-                    "SawListWindowView" => new SawListWindowView(),
-                    _ => null
-                };
-
-                if (newWindow != null)
-                {
-                    newWindow.Owner = Window.GetWindow(this);
-                    windowButton.IsWindowOpen = true;
-                    _openWindows[windowButton.Navlink] = newWindow;
-
-                    newWindow.Closed += (_, _) =>
-                    {
-                        _openWindows.Remove(windowButton.Navlink);
-                        windowButton.IsWindowOpen = false;
-                    };
-
-                    newWindow.Show();
+                    _openWindows.Remove(windowButton.Navlink);
                 }
             }
-            catch (Exception ex)
+
+            Window? newWindow = windowButton.Navlink switch
             {
-                MessageBox.Show($"Fout bij openen venster: {ex.Message}");
+                "LibraryWindowView" => new LibraryWindowView(),
+                "PrefabWindowView" => new PrefabWindowView(),
+                "FittingListWindowView" => new FittingListWindowView(),
+                "SawListWindowView" => new SawListWindowView(),
+                _ => null
+            };
+
+            if (newWindow != null)
+            {
+                newWindow.Owner = Window.GetWindow(this);
+                windowButton.IsWindowOpen = true;
+                _openWindows[windowButton.Navlink] = newWindow;
+
+                newWindow.Closed += (_, _) =>
+                {
+                    _openWindows.Remove(windowButton.Navlink);
+                    windowButton.IsWindowOpen = false;
+                };
+
+                newWindow.Show();
             }
         }
     }

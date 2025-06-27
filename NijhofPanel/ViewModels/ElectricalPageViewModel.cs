@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
-using NijhofPanel.Helpers;
-using NijhofPanel.Services;
-using NijhofPanel.Commands.Electrical;
+using Helpers;
+using Services;
+using Commands.Electrical;
 using System.Collections.Generic;
 using System.Windows.Input;
 using System.IO;
@@ -23,7 +23,7 @@ public class ElectricalPageViewModel
     public ICommand PlaceElectricalComponentCommand { get; }
     public ICommand TagGroepnummerCommand { get; }
     public ICommand TagSwitchcodeCommand { get; }
-    
+
     public ElectricalPageViewModel(FamilyPlacementHandler handler, ExternalEvent externalEvent)
     {
         _handler = handler;
@@ -43,7 +43,7 @@ public class ElectricalPageViewModel
         _handler.ComponentType = type;
         _externalEvent.Raise();
     }
-    
+
     private void ExecuteTagGroepnummer(object parameter)
     {
         var command = new Com_TagGroepnummer();

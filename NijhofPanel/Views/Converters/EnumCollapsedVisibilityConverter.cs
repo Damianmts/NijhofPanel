@@ -9,15 +9,10 @@ public class EnumCollapsedVisibilityConverter<TEnum> : MarkupExtension, IValueCo
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not TEnum valueEnum)
-        {
-            throw new ArgumentException($"{nameof(value)} is not type: {typeof(TEnum)}");
-        }
+        if (value is not TEnum valueEnum) throw new ArgumentException($"{nameof(value)} is not type: {typeof(TEnum)}");
 
         if (parameter is not TEnum parameterEnum)
-        {
             throw new ArgumentException($"{nameof(parameter)} is not type: {typeof(TEnum)}");
-        }
 
         return EqualityComparer<TEnum>.Default.Equals(valueEnum, parameterEnum)
             ? Visibility.Visible

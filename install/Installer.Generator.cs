@@ -12,7 +12,7 @@ public static class Generator
     /// <summary>
     ///     Generates Wix entities, features and directories for the installer.
     /// </summary>
-    public static WixEntity[] GenerateWixEntities(IEnumerable<string> args)
+    public static WixEntity[] GenerateWixEntities(IEnumerable<string> args, string[] excludedProjects = null)
     {
         var versionRegex = new Regex(@"\d+");
         var versionStorages = new Dictionary<string, List<WixEntity>>();
@@ -37,15 +37,13 @@ public static class Generator
 
             revitFeature.Add(feature);
 
-            var files = new Files(feature, $@"{directory}\*.*", FilterEntities);
+            var files = new Files(feature, $@"{directory}\*.*",
+                file => FilterEntities(file, excludedProjects));
+
             if (versionStorages.TryGetValue(fileVersion, out var storage))
-            {
                 storage.Add(files);
-            }
             else
-            {
                 versionStorages.Add(fileVersion, [files]);
-            }
 
             LogFeatureFiles(directory, fileVersion);
         }
@@ -59,9 +57,19 @@ public static class Generator
     /// <summary>
     ///     Filter installer files and exclude from output. 
     /// </summary>
-    private static bool FilterEntities(string file)
+    private static bool FilterEntities(string file, string[] excludedProjects)
     {
-        return !file.EndsWith(".pdb");
+        // Bestaande filter voor .pdb bestanden
+        if (file.EndsWith(".pdb"))
+            return false;
+
+        // Als er geen uitgesloten projecten zijn, alleen .pdb filter toepassen
+        if (excludedProjects == null || excludedProjects.Length == 0)
+            return true;
+
+        // Check of het bestand tot een uitgesloten project behoort
+        return !excludedProjects.Any(excluded =>
+            Path.GetFileName(file).StartsWith(excluded, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>
@@ -72,9 +80,6 @@ public static class Generator
         var assemblies = Directory.GetFiles(directory, "*", SearchOption.AllDirectories);
         Console.WriteLine($"Installer files for version '{fileVersion}':");
 
-        foreach (var assembly in assemblies.Where(FilterEntities))
-        {
-            Console.WriteLine($"'{assembly}'");
-        }
+        foreach (var assembly in assemblies.Where(f => FilterEntities(f, null))) Console.WriteLine($"'{assembly}'");
     }
 }

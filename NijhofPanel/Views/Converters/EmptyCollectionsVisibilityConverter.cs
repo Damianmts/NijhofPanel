@@ -11,14 +11,12 @@ public sealed class EmptyCollectionsVisibilityConverter : MarkupExtension, IMult
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
         foreach (var value in values)
-        {
             switch (value)
             {
                 case ICollection { Count: > 0 }:
                 case > 0:
                     return Visibility.Collapsed;
             }
-        }
 
         return Visibility.Visible;
     }

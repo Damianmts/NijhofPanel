@@ -82,8 +82,7 @@
                               Stretch="Uniform"
                               Fill="#f5d105"
                               HorizontalAlignment="Center"
-                              VerticalAlignment="Center">
-                        </Path>
+                              VerticalAlignment="Center" />
                     </Grid>
                 </DataTemplate>
             </Setter.Value>
@@ -116,10 +115,10 @@
 
     <!-- Big Button E Page -->
     <Style x:Key="BigButtonE" TargetType="Button" BasedOn="{StaticResource BigButtonSVG}">
-        <Setter Property="Command" 
-                Value="{Binding DataContext.PlaceElectricalComponentCommand, RelativeSource={RelativeSource AncestorType=Page}}"/>
-        <Setter Property="CommandParameter" 
-                Value="{Binding (helpers:ElectricalProperties.ComponentType), RelativeSource={RelativeSource Self}}"/>
+        <Setter Property="Command"
+                Value="{Binding DataContext.PlaceElectricalComponentCommand, RelativeSource={RelativeSource AncestorType=Page}}" />
+        <Setter Property="CommandParameter"
+                Value="{Binding (helpers:ElectricalProperties.ComponentType), RelativeSource={RelativeSource Self}}" />
     </Style>
 
 

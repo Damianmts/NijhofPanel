@@ -17,13 +17,9 @@ public partial class ToolsPageView : Page
 
         // Februik statische instance
         if (ToolsPageViewModel.Instance != null)
-        {
             DataContext = ToolsPageViewModel.Instance;
-        }
         else
-        {
             // Fallback of foutmelding
             MessageBox.Show("ToolsPageViewModel niet geïnitialiseerd.");
-        }
     }
 }

@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:NijhofPanel.Views"
       mc:Ignorable="d"
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
@@ -16,12 +15,37 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorGeneric.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
 
     <Grid>
-        <TextBlock Text="StartPageView" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,50,0,0">
+            <Grid Width="100" Height="100">
+                <Rectangle Margin="8,0,0,0"
+                           Fill="#FBD304"
+                           Width="40"
+                           Height="70"
+                           HorizontalAlignment="Left" />
+                <Path Fill="#046434"
+                      Data="{StaticResource NijhofCutoutIcon}"
+                      Stretch="Uniform" />
+            </Grid>
+
+            <TextBlock Text="Goe'n dag"
+                       HorizontalAlignment="Center"
+                       Margin="0,20,0,0"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="24"
+                       Foreground="#046434" />
+
+        </StackPanel>
     </Grid>
+
 </Page>

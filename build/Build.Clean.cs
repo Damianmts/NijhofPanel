@@ -26,13 +26,13 @@ sealed partial class Build
             }
 
             foreach (var configuration in GlobBuildConfigurations())
-            {
+            foreach (var project in Solution.AllProjects
+                         .Where(p => !ExcludedProjects.Contains(p.Name)))
                 DotNetClean(settings => settings
-                    .SetProject(Solution)
+                    .SetProject(project)
                     .SetConfiguration(configuration)
                     .SetVerbosity(DotNetVerbosity.minimal)
                     .EnableNoLogo());
-            }
         });
 
     /// <summary>

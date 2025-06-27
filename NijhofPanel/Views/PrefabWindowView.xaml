@@ -3,13 +3,205 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:NijhofPanel.Views"
+        xmlns:viewModel="clr-namespace:NijhofPanel.ViewModels"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance viewModel:PrefabWindowViewModel}"
         Title="Prefablijst"
+        Loaded="Window_Loaded"
         Height="700"
         Width="1000">
 
-    <Grid>
+    <!-- TODO - Save logica moet nog uitgebreid worden -->
 
+    <Window.Resources>
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Padding" Value="8,2" />
+        </Style>
+
+        <Style x:Key="CellContentBorder" TargetType="Border">
+            <Setter Property="Padding" Value="8,1" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <ListView ItemsSource="{Binding PrefabSets}"
+                  SelectionMode="Single"
+                  Margin="10"
+                  HorizontalContentAlignment="Stretch">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.View>
+                <GridView>
+
+                    <GridViewColumn Header="Set" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBlock Text="{Binding SetNumber}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Discipline" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBlock Text="{Binding Discipline}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Bouwnummer" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBox
+                                        Text="{Binding Bouwnummer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="1" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Verdieping" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBox
+                                        Text="{Binding Verdieping, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="1" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Tekenaar en Projectnummer Read-Only -->
+                    <GridViewColumn Header="Tekenaar" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBlock Text="{Binding HoofdTekenaar, Mode=TwoWay}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Background="Transparent" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Projectnummer" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBlock Text="{Binding ProjectNummer, Mode=TwoWay}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Background="Transparent" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Schedules -->
+                    <GridViewColumn Header="Materiaallijst" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <CheckBox
+                                        IsChecked="{Binding Materiaallijst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Zaaglijst" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <CheckBox IsChecked="{Binding Zaaglijst, Mode=TwoWay}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="" Width="20">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBlock Text="–"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Gecontroleerd -->
+                    <GridViewColumn Header="Gecontroleerd" Width="Auto">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <CheckBox IsChecked="{Binding GecontroleerdCheck, Mode=TwoWay}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Naam" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBox Text="{Binding GecontroleerdNaam, Mode=TwoWay}"
+                                             HorizontalAlignment="Stretch"
+                                             VerticalAlignment="Center"
+                                             Background="Transparent"
+                                             BorderThickness="1" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Datum" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CellContentBorder}">
+                                    <TextBox Text="{Binding GecontroleerdDatum, Mode=TwoWay}"
+                                             HorizontalAlignment="Stretch"
+                                             VerticalAlignment="Center"
+                                             Background="Transparent"
+                                             BorderThickness="1" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

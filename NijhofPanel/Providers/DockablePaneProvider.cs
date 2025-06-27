@@ -1,13 +1,13 @@
 ﻿using Autodesk.Revit.UI;
 using System.Windows.Controls;
 
-namespace NijhofPanel.Services;
+namespace NijhofPanel.Providers;
 
-public class DockablePaneService : IDockablePaneProvider
+public class DockablePaneProvider : IDockablePaneProvider
 {
     private UserControl _control;
 
-    public DockablePaneService(UserControl control)
+    public DockablePaneProvider(UserControl control)
     {
         _control = control;
     }
@@ -17,7 +17,7 @@ public class DockablePaneService : IDockablePaneProvider
         data.FrameworkElement = _control;
         data.InitialState = new DockablePaneState()
         {
-            DockPosition = DockPosition.Right,
+            DockPosition = DockPosition.Right
         };
     }
 }

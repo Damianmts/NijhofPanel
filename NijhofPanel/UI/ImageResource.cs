@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Windows.Media.Imaging;
 
-namespace NijhofPanel.Services;
+namespace NijhofPanel.UI;
 
-public class IconService
+public class ImageResource
 {
     public BitmapImage? LoadImageFromResource(string resourcePath)
     {

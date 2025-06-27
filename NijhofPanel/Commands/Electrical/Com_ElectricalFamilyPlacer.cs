@@ -5,13 +5,13 @@ using System.IO;
 using System.Diagnostics;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using NijhofPanel.Helpers;
+using Helpers;
 
 public class Com_ElectricalFamilyPlacer
 {
     private const string BASIS_PAD = @"F:\Stabiplan\Custom\Families\1 - Elektra\BJ Future Wit R24";
 
-    private readonly Dictionary<string, string> _componentMappen = new Dictionary<string, string>
+    private readonly Dictionary<string, string> _componentMappen = new()
     {
         { "WCD", "WCD" },
         { "ASP", "Aansluitpunten" },
@@ -22,7 +22,7 @@ public class Com_ElectricalFamilyPlacer
     };
 
     private readonly Dictionary<string, Dictionary<string, string>> _familieMapping =
-        new Dictionary<string, Dictionary<string, string>>
+        new()
         {
             {
                 "WCD", new Dictionary<string, string>
@@ -103,31 +103,23 @@ public class Com_ElectricalFamilyPlacer
     public (bool success, string message) PlaceElectricalFamily(string componentType, UIDocument uidoc)
     {
         string[] typeDelen = componentType.Split('_');
-        if (typeDelen.Length != 2)
-        {
-            return (false, "Ongeldig componenttype formaat");
-        }
+        if (typeDelen.Length != 2) return (false, "Ongeldig componenttype formaat");
 
-        string hoofdType = typeDelen[0];
-        string subType = typeDelen[1];
+        var hoofdType = typeDelen[0];
+        var subType = typeDelen[1];
 
-        if (!ValidateAndGetPaths(hoofdType, subType, out string volledigPad))
-        {
+        if (!ValidateAndGetPaths(hoofdType, subType, out var volledigPad))
             return (false, $"Onbekende component combinatie: {componentType}");
-        }
 
-        if (!File.Exists(volledigPad))
-        {
-            return (false, $"Familie niet gevonden: {volledigPad}");
-        }
+        if (!File.Exists(volledigPad)) return (false, $"Familie niet gevonden: {volledigPad}");
 
         try
         {
-            Document doc = uidoc.Document;
-            string familyName = Path.GetFileNameWithoutExtension(volledigPad);
+            var doc = uidoc.Document;
+            var familyName = Path.GetFileNameWithoutExtension(volledigPad);
 
             // Eerst controleren of de familie al geladen is
-            FamilySymbol symbol = new FilteredElementCollector(doc)
+            var symbol = new FilteredElementCollector(doc)
                 .OfClass(typeof(FamilySymbol))
                 .Cast<FamilySymbol>()
                 .FirstOrDefault(e => e.FamilyName.Equals(familyName));
@@ -136,31 +128,26 @@ public class Com_ElectricalFamilyPlacer
             {
                 // Familie is al geladen, activeer indien nodig
                 if (!symbol.IsActive)
-                {
-                    using (Transaction trans = new Transaction(doc, "Activeer Symbol"))
+                    using (var trans = new Transaction(doc, "Activeer Symbol"))
                     {
                         trans.Start();
                         symbol.Activate();
                         trans.Commit();
                     }
-                }
             }
             else
             {
                 // Familie moet nog geladen worden
                 Family family;
-                using (Transaction trans = new Transaction(doc, "Laad Elektrische Familie"))
+                using (var trans = new Transaction(doc, "Laad Elektrische Familie"))
                 {
                     try
                     {
                         trans.Start();
-                        if (!doc.LoadFamily(volledigPad, out family))
-                        {
-                            return (false, "Kon de familie niet laden");
-                        }
+                        if (!doc.LoadFamily(volledigPad, out family)) return (false, "Kon de familie niet laden");
 
                         // Haal het eerste family symbol op
-                        foreach (ElementId symbolId in family.GetFamilySymbolIds())
+                        foreach (var symbolId in family.GetFamilySymbolIds())
                         {
                             symbol = doc.GetElement(symbolId) as FamilySymbol;
                             if (symbol != null)
@@ -174,20 +161,14 @@ public class Com_ElectricalFamilyPlacer
                     }
                     catch (Exception ex)
                     {
-                        if (trans.GetStatus() == TransactionStatus.Started)
-                        {
-                            trans.RollBack();
-                        }
+                        if (trans.GetStatus() == TransactionStatus.Started) trans.RollBack();
 
                         return (false, $"Fout bij laden familie: {ex.Message}");
                     }
                 }
             }
 
-            if (symbol == null)
-            {
-                return (false, "Kon geen geldig family symbol vinden");
-            }
+            if (symbol == null) return (false, "Kon geen geldig family symbol vinden");
 
             // Initialiseer de symbol handler als die nog niet bestaat
             if (_symbolHandler == null)
@@ -214,10 +195,8 @@ public class Com_ElectricalFamilyPlacer
 
         if (string.IsNullOrEmpty(hoofdType) || string.IsNullOrEmpty(subType) ||
             !_familieMapping.TryGetValue(hoofdType, out var subTypeMapping) ||
-            !subTypeMapping.TryGetValue(subType, out string bestandsnaam))
-        {
+            !subTypeMapping.TryGetValue(subType, out var bestandsnaam))
             return false;
-        }
 
         volledigPad = Path.Combine(BASIS_PAD, hoofdType, bestandsnaam);
         Debug.WriteLine($"Opgebouwd pad: {volledigPad}");

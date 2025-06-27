@@ -7,7 +7,8 @@ using System.Windows.Threading;
 using System.Threading.Tasks;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using NijhofPanel.Views;
+using Views;
+using Nice3point.Revit.Toolkit;
 
 // Tagt de elementen van de opgegeven categorieën waar een Switchcode is ingevuld.
 // Inclusief batch-verwerking en een laadscherm voor grote aantallen elementen. Voorheen zat je 4 minuten naar een laad-icoon te staren.
@@ -46,7 +47,7 @@ public class Com_TagSwitchcode
 
             EnsureTagFamilyIsActive(doc, tagSymbol);
 
-            int totalElements = _categories.Sum(category => GetFilteredElements(doc, category.Key, tagSymbol).Count);
+            var totalElements = _categories.Sum(category => GetFilteredElements(doc, category.Key, tagSymbol).Count);
             if (totalElements == 0)
             {
                 TaskDialog.Show("Info", "Er zijn geen elementen gevonden om te taggen.");
@@ -80,10 +81,7 @@ public class Com_TagSwitchcode
     {
         try
         {
-            foreach (var category in _categories)
-            {
-                await ProcessCategory(doc, category, tagSymbol);
-            }
+            foreach (var category in _categories) await ProcessCategory(doc, category, tagSymbol);
         }
         finally
         {
@@ -115,8 +113,8 @@ public class Com_TagSwitchcode
             .OfCategory(category)
             .WhereElementIsNotElementType()
             .Where(el =>
-                ((el.LookupParameter("Switch code")?.AsString() is { } value && !string.IsNullOrWhiteSpace(value)) ||
-                 (el.LookupParameter("Switchcode")?.AsString() is { } value2 && !string.IsNullOrWhiteSpace(value2))))
+                (el.LookupParameter("Switch code")?.AsString() is { } value && !string.IsNullOrWhiteSpace(value)) ||
+                (el.LookupParameter("Switchcode")?.AsString() is { } value2 && !string.IsNullOrWhiteSpace(value2)))
             .ToList();
 
         var existingSwitchcodeTags = new FilteredElementCollector(doc, doc.ActiveView.Id)
@@ -132,27 +130,27 @@ public class Com_TagSwitchcode
             .ToList();
     }
 
-    private int CalculateBatchSize(int totalElements) => totalElements switch
+    private int CalculateBatchSize(int totalElements)
     {
-        <= 100 => 5,
-        <= 250 => 10,
-        <= 750 => 50,
-        _ => 100
-    };
+        return totalElements switch
+        {
+            <= 100 => 5,
+            <= 250 => 10,
+            <= 750 => 50,
+            _ => 100
+        };
+    }
 
     private IEnumerable<List<Element>> CreateBatches(IList<Element> elements, int batchSize)
     {
-        for (int i = 0; i < elements.Count; i += batchSize)
-        {
-            yield return elements.Skip(i).Take(batchSize).ToList();
-        }
+        for (var i = 0; i < elements.Count; i += batchSize) yield return elements.Skip(i).Take(batchSize).ToList();
     }
 
     private async Task ProcessBatches(Document doc, IEnumerable<List<Element>> batches, int totalElements,
         FamilySymbol tagSymbol)
     {
-        int processedElements = 0;
-        int updateFrequency = Math.Max(1, totalElements / 50);
+        var processedElements = 0;
+        var updateFrequency = Math.Max(1, totalElements / 50);
 
         foreach (var batch in batches)
         {
@@ -171,21 +169,18 @@ public class Com_TagSwitchcode
     {
         _progressWindow.Dispatcher.Invoke(() =>
         {
-            _progressWindow.UpdateProgress((processedElements * 100) / totalElements);
+            _progressWindow.UpdateProgress(processedElements * 100 / totalElements);
         });
     }
 
     private async Task ExecuteBatchAsync(Document doc, List<Element> batch, FamilySymbol tagSymbol)
     {
-        using (Transaction tx = new Transaction(doc, "Tag Elements"))
+        using (var tx = new Transaction(doc, "Tag Elements"))
         {
             tx.Start();
             try
             {
-                foreach (var element in batch)
-                {
-                    CreateTagForElement(doc, element, tagSymbol);
-                }
+                foreach (var element in batch) CreateTagForElement(doc, element, tagSymbol);
 
                 tx.Commit();
             }
@@ -210,15 +205,13 @@ public class Com_TagSwitchcode
     private void EnsureTagFamilyIsActive(Document doc, FamilySymbol tagSymbol)
     {
         if (!tagSymbol.IsActive)
-        {
-            using (Transaction t = new Transaction(doc, "Activeer Tag-familie"))
+            using (var t = new Transaction(doc, "Activeer Tag-familie"))
             {
                 t.Start();
                 tagSymbol.Activate();
                 doc.Regenerate();
                 t.Commit();
             }
-        }
     }
 
     private void CreateTagForElement(Document doc, Element element, FamilySymbol tagSymbol)

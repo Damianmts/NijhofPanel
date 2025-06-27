@@ -8,16 +8,14 @@ public partial class ProgressWindowView : Window
     {
         InitializeComponent();
     }
+
     /// <summary>
     /// Update the progress bar value.
     /// </summary>
     /// <param name="percentage">The progress percentage (0-100).</param>
     public void UpdateProgress(int percentage)
     {
-        this.Dispatcher.Invoke(() =>
-        {
-            progressBar.Value = Math.Max(0, Math.Min(percentage, 100));
-        });
+        Dispatcher.Invoke(() => { progressBar.Value = Math.Max(0, Math.Min(percentage, 100)); });
     }
 
     /// <summary>
@@ -25,10 +23,7 @@ public partial class ProgressWindowView : Window
     /// </summary>
     public void ResetProgress()
     {
-        this.Dispatcher.Invoke(() =>
-        {
-            progressBar.Value = 0;
-        });
+        Dispatcher.Invoke(() => { progressBar.Value = 0; });
     }
 
     /// <summary>
@@ -37,9 +32,6 @@ public partial class ProgressWindowView : Window
     /// <param name="category">The name of the current category being processed.</param>
     public void UpdateStatusText(string category)
     {
-        this.Dispatcher.Invoke(() =>
-        {
-            statusTextBlock.Text = $"{category}";
-        });
+        Dispatcher.Invoke(() => { statusTextBlock.Text = $"{category}"; });
     }
 }

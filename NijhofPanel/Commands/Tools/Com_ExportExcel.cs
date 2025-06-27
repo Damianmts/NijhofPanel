@@ -8,14 +8,14 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Microsoft.Win32;
-using NijhofPanel.Views;
+using Views;
 using System;
 
 public class Com_ExportExcel : IExternalEventHandler
 {
     public void Execute(UIApplication uiApp)
     {
-        Document doc = uiApp.ActiveUIDocument.Document;
+        var doc = uiApp.ActiveUIDocument.Document;
 
         // Verzamel alle ViewSchedules uit het document
         var allSchedules = new FilteredElementCollector(doc)
@@ -30,15 +30,15 @@ public class Com_ExportExcel : IExternalEventHandler
         if (selectionWindow.ShowDialog() == true && selectionWindow.SelectedSchedules.Any())
         {
             // Vraag gebruiker om map te selecteren
-            var folderDialog = new System.Windows.Forms.FolderBrowserDialog
+            var folderDialog = new FolderBrowserDialog
             {
                 Description = "Selecteer map om Excel bestanden op te slaan"
             };
 
-            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (folderDialog.ShowDialog() == DialogResult.OK)
             {
-                int successCount = 0;
-                int failCount = 0;
+                var successCount = 0;
+                var failCount = 0;
 
                 foreach (var schedule in selectionWindow.SelectedSchedules)
                 {
@@ -48,8 +48,8 @@ public class Com_ExportExcel : IExternalEventHandler
                     try
                     {
                         // Maak een schone bestandsnaam
-                        string fileName = CleanSheetName(schedule.Name) + ".xlsx";
-                        string fullPath = System.IO.Path.Combine(folderDialog.SelectedPath, fileName);
+                        var fileName = CleanSheetName(schedule.Name) + ".xlsx";
+                        var fullPath = System.IO.Path.Combine(folderDialog.SelectedPath, fileName);
 
                         excelApp = new Excel.Application();
                         excelApp.Visible = false;
@@ -62,11 +62,11 @@ public class Com_ExportExcel : IExternalEventHandler
                         var worksheet = (Excel.Worksheet)workbook.Worksheets[1];
 
                         // Titel (rij 1)
-                        Excel.Range titleCell = (Excel.Range)worksheet.Cells[1, 1];
+                        var titleCell = (Excel.Range)worksheet.Cells[1, 1];
                         titleCell.Value = schedule.Name;
                         titleCell.Font.Bold = true;
                         titleCell.Font.Size = 14;
-                        Excel.Range titleMergeRange = worksheet.Range[
+                        var titleMergeRange = worksheet.Range[
                             worksheet.Cells[1, 1],
                             worksheet.Cells[1, body.NumberOfColumns]
                         ];
@@ -74,31 +74,28 @@ public class Com_ExportExcel : IExternalEventHandler
                         titleCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
 
                         // Headers (rijen 2 t/m 7)
-                        int headerRowCount = header.NumberOfRows;
-                        for (int row = 1; row < headerRowCount; row++)
+                        var headerRowCount = header.NumberOfRows;
+                        for (var row = 1; row < headerRowCount; row++)
+                        for (var col = 0; col < header.NumberOfColumns; col++)
                         {
-                            for (int col = 0; col < header.NumberOfColumns; col++)
-                            {
-                                string headerText = schedule.GetCellText(SectionType.Header, row, col);
-                                Excel.Range headerCell = (Excel.Range)worksheet.Cells[row + 1, col + 1];
-                                headerCell.Value = headerText;
-                                headerCell.Font.Bold = true;
-                                headerCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-                            }
+                            var headerText = schedule.GetCellText(SectionType.Header, row, col);
+                            var headerCell = (Excel.Range)worksheet.Cells[row + 1, col + 1];
+                            headerCell.Value = headerText;
+                            headerCell.Font.Bold = true;
+                            headerCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
                         }
 
                         // Data (vanaf rij 8)
-                        for (int row = 0; row < body.NumberOfRows; row++)
+                        for (var row = 0; row < body.NumberOfRows; row++)
+                        for (var col = 0; col < body.NumberOfColumns; col++)
                         {
-                            for (int col = 0; col < body.NumberOfColumns; col++)
-                            {
-                                string cellValue = schedule.GetCellText(SectionType.Body, row, col);
-                                Excel.Range cell = (Excel.Range)worksheet.Cells[row + headerRowCount + 2, col + 1]; // +2 voor titel en offset
-                                cell.Value = cellValue;
-                                cell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-                            }
+                            var cellValue = schedule.GetCellText(SectionType.Body, row, col);
+                            var cell = (Excel.Range)worksheet.Cells[row + headerRowCount + 2,
+                                col + 1]; // +2 voor titel en offset
+                            cell.Value = cellValue;
+                            cell.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
                         }
-                        
+
                         worksheet.Columns.AutoFit();
 
                         // Sla het bestand op
@@ -106,7 +103,7 @@ public class Com_ExportExcel : IExternalEventHandler
                         successCount++;
 
                         // Expliciet opruimen van worksheet COM object
-                        System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                        Marshal.ReleaseComObject(worksheet);
                     }
                     catch (Exception ex)
                     {
@@ -120,13 +117,13 @@ public class Com_ExportExcel : IExternalEventHandler
                         if (workbook != null)
                         {
                             workbook.Close();
-                            System.Runtime.InteropServices.Marshal.ReleaseComObject(workbook);
+                            Marshal.ReleaseComObject(workbook);
                         }
 
                         if (excelApp != null)
                         {
                             excelApp.Quit();
-                            System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+                            Marshal.ReleaseComObject(excelApp);
                         }
                     }
                 }
@@ -145,8 +142,8 @@ public class Com_ExportExcel : IExternalEventHandler
     private string CleanSheetName(string name)
     {
         // Verwijder ongeldige karakters voor Excel sheet namen
-        char[] invalid = System.IO.Path.GetInvalidFileNameChars();
-        string cleanName = string.Join("_", name.Split(invalid, StringSplitOptions.RemoveEmptyEntries));
+        var invalid = System.IO.Path.GetInvalidFileNameChars();
+        var cleanName = string.Join("_", name.Split(invalid, StringSplitOptions.RemoveEmptyEntries));
 
         // Excel sheet namen mogen maximaal 31 karakters zijn
         if (cleanName.Length > 31)

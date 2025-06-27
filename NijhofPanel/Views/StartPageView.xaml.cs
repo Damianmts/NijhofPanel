@@ -5,9 +5,9 @@ namespace NijhofPanel.Views;
 
 public partial class StartPageView : Page
 {
-    public StartPageView()
+    public StartPageView(MainUserControlViewModel mainVm)
     {
         InitializeComponent();
-        DataContext = new StartPageViewModel();
+        DataContext = new StartPageViewModel(mainVm);
     }
 }

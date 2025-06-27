@@ -4,8 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:viewModel="clr-namespace:NijhofPanel.ViewModels"
-      xmlns:local="clr-namespace:NijhofPanel.Views"
-      xmlns:helpers="clr-namespace:NijhofPanel.Helpers"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance viewModel:ToolsPageViewModel}"
       HorizontalAlignment="Stretch"
@@ -21,9 +19,9 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorWTools.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -52,11 +50,13 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ConnectElementIcon}" />
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ConnectElementIcon}"
+                            Command="{Binding ConnectElementCommand}" />
                     <Button Style="{StaticResource BigButtonSVG}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Vertical">
-                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource ExcelIcon}" Content="Exporteren" Command="{Binding ExportExcelCommand}"/>
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource ExcelIcon}"
+                            Content="Exporteren" Command="{Binding ExportExcelCommand}" />
                     <Button Style="{StaticResource LongButtonSVG}" />
                 </StackPanel>
             </Grid>

@@ -17,13 +17,13 @@ public class FamilyPlacementHandler : IExternalEventHandler
         var placer = new Com_ElectricalFamilyPlacer();
         var (success, message) = placer.PlaceElectricalFamily(ComponentType, uidoc);
 
-        if (!success)
-        {
-            TaskDialog.Show("Fout bij plaatsen", message);
-        }
+        if (!success) TaskDialog.Show("Fout bij plaatsen", message);
     }
 
-    public string GetName() => nameof(FamilyPlacementHandler);
+    public string GetName()
+    {
+        return nameof(FamilyPlacementHandler);
+    }
 }
 
 public class SymbolPlacementHandler : IExternalEventHandler
@@ -32,11 +32,11 @@ public class SymbolPlacementHandler : IExternalEventHandler
 
     public void Execute(UIApplication app)
     {
-        if (Symbol != null)
-        {
-            app.ActiveUIDocument.PostRequestForElementTypePlacement(Symbol);
-        }
+        if (Symbol != null) app.ActiveUIDocument.PostRequestForElementTypePlacement(Symbol);
     }
 
-    public string GetName() => nameof(SymbolPlacementHandler);
+    public string GetName()
+    {
+        return nameof(SymbolPlacementHandler);
+    }
 }

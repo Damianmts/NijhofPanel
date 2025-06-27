@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:NijhofPanel.Views"
         mc:Ignorable="d"
         Title="Nijhof Library"
         Height="700"
@@ -18,9 +17,9 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Treeview.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/Treeview.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -49,7 +48,6 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <TreeView.Resources>
                     <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}">
-                        <Setter Property="MinWidth" Value="4" />
                     </Style>
                 </TreeView.Resources>
 

@@ -4,7 +4,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary
-            Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml" />
+            Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/ModernScrollbar.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <converters:TreeViewLineConverter x:Key="LineConverter" />

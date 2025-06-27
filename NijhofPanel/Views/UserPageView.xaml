@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:NijhofPanel.Views"
       mc:Ignorable="d"
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
@@ -16,12 +15,108 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorGeneric.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
 
     <Grid>
-        <TextBlock Text="UserPageView" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,50,0,0">
+            <Grid Width="100" Height="100">
+                <Rectangle Margin="8,0,0,0"
+                           Fill="#FBD304"
+                           Width="40"
+                           Height="70"
+                           HorizontalAlignment="Left" /> <!-- Alleen links, gele achtergrond -->
+                <Path Fill="#046434"
+                      Data="{StaticResource NijhofCutoutIcon}"
+                      Stretch="Uniform" />
+            </Grid>
+
+            <TextBlock Text="Login"
+                       HorizontalAlignment="Center"
+                       Margin="0,20,0,0"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="24"
+                       Foreground="#046434" />
+
+            <!-- Email Label en TextBox -->
+            <TextBlock Text="Email"
+                       FontSize="12"
+                       Foreground="#666666"
+                       HorizontalAlignment="Left"
+                       Margin="0,30,0,5" />
+            <TextBox Width="230"
+                     Height="30"
+                     Background="#F5F5F5"
+                     Foreground="#333333"
+                     FontSize="14"
+                     Padding="10,8"
+                     BorderThickness="1"
+                     BorderBrush="#E0E0E0"
+                     VerticalContentAlignment="Center"
+                     TextWrapping="NoWrap">
+                <TextBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="0" />
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+
+            <!-- Password Label en PasswordBox -->
+            <TextBlock Text="Wachtwoord"
+                       FontSize="12"
+                       Foreground="#666666"
+                       HorizontalAlignment="Left"
+                       Margin="0,20,0,5" />
+            <PasswordBox Width="230"
+                         Height="30"
+                         Background="#F5F5F5"
+                         Foreground="#333333"
+                         FontSize="14"
+                         Padding="10,8"
+                         BorderThickness="1"
+                         BorderBrush="#E0E0E0"
+                         VerticalContentAlignment="Center">
+                <PasswordBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="0" />
+                    </Style>
+                </PasswordBox.Resources>
+            </PasswordBox>
+
+            <!-- Login Button -->
+            <Button Content="Inloggen"
+                    Command="{Binding LoginCommand}"
+                    Width="150"
+                    Height="40"
+                    Margin="0,50,0,0"
+                    Background="#046434"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="SemiBold">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FBD304" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8" />
+                    </Style>
+                </Button.Resources>
+            </Button>
+
+        </StackPanel>
     </Grid>
+
 </Page>

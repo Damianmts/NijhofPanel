@@ -4,9 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:viewModel="clr-namespace:NijhofPanel.ViewModels"
-      xmlns:services="clr-namespace:NijhofPanel.Services"
       xmlns:helpers="clr-namespace:NijhofPanel.Helpers"
-      xmlns:local="clr-namespace:NijhofPanel.Views"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance viewModel:ElectricalPageViewModel}"
       HorizontalAlignment="Stretch"
@@ -23,11 +21,11 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_DarkMode.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_ModernScrollbar.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorETools.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -197,8 +195,10 @@
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonPNG}" Content="Groep nummer" Command="{Binding TagGroepnummerCommand}" />
-                <Button Style="{StaticResource BigButtonPNG}" Content="Switch code" Command="{Binding TagSwitchcodeCommand}" />
+                <Button Style="{StaticResource BigButtonPNG}" Content="Groep nummer"
+                        Command="{Binding TagGroepnummerCommand}" />
+                <Button Style="{StaticResource BigButtonPNG}" Content="Switch code"
+                        Command="{Binding TagSwitchcodeCommand}" />
                 <Button Style="{StaticResource BigButtonPNG}" Content="Code lijst" />
             </WrapPanel>
 

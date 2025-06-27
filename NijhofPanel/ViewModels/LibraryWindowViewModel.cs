@@ -26,10 +26,7 @@ public class LibraryWindowViewModel : ObservableObject
         get => _selectedFolder;
         set
         {
-            if (SetProperty(ref _selectedFolder, value))
-            {
-                _ = LoadSelectedFolderContentAsync();
-            }
+            if (SetProperty(ref _selectedFolder, value)) _ = LoadSelectedFolderContentAsync();
         }
     }
 
@@ -100,13 +97,13 @@ public class LibraryWindowViewModel : ObservableObject
 
     private void LoadFolderStructure()
     {
-        string rootPath = @"F:\Stabiplan\Custom\Families";
+        var rootPath = @"F:\Stabiplan\Custom\Families";
         if (!Directory.Exists(rootPath)) return;
 
         var directories = Directory.GetDirectories(rootPath);
         foreach (var dir in directories)
         {
-            var dirItem = new FileItemModel(dir, isDirectory: true);
+            var dirItem = new FileItemModel(dir, true);
             LoadSubFolders(dirItem);
             RootFiles.Add(dirItem);
         }
@@ -119,7 +116,7 @@ public class LibraryWindowViewModel : ObservableObject
             var directories = Directory.GetDirectories(parentItemModel.FullPath);
             foreach (var dir in directories)
             {
-                var subItem = new FileItemModel(dir, isDirectory: true);
+                var subItem = new FileItemModel(dir, true);
                 LoadSubFolders(subItem); // recursief
                 parentItemModel.SubFiles.Add(subItem);
             }

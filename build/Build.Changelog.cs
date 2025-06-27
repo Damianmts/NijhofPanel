@@ -54,10 +54,7 @@ sealed partial class Build
                 continue;
             }
 
-            if (line.StartsWith(separator) && line.Contains(ReleaseVersion))
-            {
-                hasEntry = true;
-            }
+            if (line.StartsWith(separator) && line.Contains(ReleaseVersion)) hasEntry = true;
         }
 
         TrimEmptyLines(changelog);
@@ -71,14 +68,8 @@ sealed partial class Build
     {
         if (builder.Length == 0) return;
 
-        while (builder[^1] == '\r' || builder[^1] == '\n')
-        {
-            builder.Remove(builder.Length - 1, 1);
-        }
+        while (builder[^1] == '\r' || builder[^1] == '\n') builder.Remove(builder.Length - 1, 1);
 
-        while (builder[0] == '\r' || builder[0] == '\n')
-        {
-            builder.Remove(0, 1);
-        }
+        while (builder[0] == '\r' || builder[0] == '\n') builder.Remove(0, 1);
     }
 }

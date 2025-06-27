@@ -11,7 +11,7 @@ sealed partial class Build
     ///     Create the .msi installers.
     /// </summary>
     Target CreateInstaller => _ => _
-        .DependsOn(Compile)
+        .DependsOn(CompileSolution)
         .Executes(() =>
         {
             const string configuration = "Release";
