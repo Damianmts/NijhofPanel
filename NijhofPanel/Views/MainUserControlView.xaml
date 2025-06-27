@@ -49,8 +49,7 @@
         <Border Grid.Column="0"
                 BorderThickness="0,0,1,0"
                 BorderBrush="LightGray"
-                Visibility="{Binding SidebarVisibility}"
-                d:Visibility="Visible">
+                Visibility="{Binding SidebarVisibility, RelativeSource={RelativeSource AncestorType=UserControl}}">
             <DockPanel LastChildFill="False">
                 <ListBox x:Name="Sidebar"
                          DockPanel.Dock="Top"
@@ -100,8 +99,12 @@
         <!-- Frame met ColumnSpan binding -->
         <Frame x:Name="NavigationFrame"
                x:FieldModifier="public"
-               Grid.Column="{Binding IsLoggedIn, Converter={StaticResource BoolToColumnConverter}}"
-               Grid.ColumnSpan="{Binding IsLoggedIn, Converter={StaticResource BoolToColumnSpanConverter}}"
+               Grid.Column="{Binding DataContext.IsLoggedIn,
+                             RelativeSource={RelativeSource AncestorType=UserControl},
+                             Converter={StaticResource BoolToColumnConverter}}"
+               Grid.ColumnSpan="{Binding DataContext.IsLoggedIn,
+                                  RelativeSource={RelativeSource AncestorType=UserControl},
+                                  Converter={StaticResource BoolToColumnSpanConverter}}"
                NavigationUIVisibility="Hidden"
                Background="#e9ecef" />
 

@@ -29,7 +29,8 @@ public partial class MainUserControlView : UserControl
             _mainVm = vm;
             if (_mainVm.NavigationService is NavigationService navService)
             {
-                navService.SetHost(NavigationFrame); // We gebruiken nu SetHost in plaats van SetFrame
+                navService.SetHost(NavigationFrame);
+                _mainVm.NavigateToLogin();
             }
         }
         else
