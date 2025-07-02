@@ -6,7 +6,8 @@
         mc:Ignorable="d"
         Title="Selecteer Schedules"
         Height="600"
-        Width="400">
+        Width="400"
+        Background="{DynamicResource CurrentBackgroundColor}">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -15,11 +16,13 @@
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Margin="10">
+    <Grid Margin="10" Background="{DynamicResource CurrentBackgroundColor}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />

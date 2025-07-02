@@ -9,18 +9,26 @@
         Title="Prefablijst"
         Loaded="Window_Loaded"
         Height="700"
-        Width="1000">
+        Width="1000"
+        Background="{DynamicResource CurrentBackgroundColor}">
 
     <!-- TODO - Save logica moet nog uitgebreid worden -->
 
     <Window.Resources>
-        <Style TargetType="GridViewColumnHeader">
-            <Setter Property="Padding" Value="8,2" />
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="GridViewColumnHeader">
+                <Setter Property="Padding" Value="8,2" />
+            </Style>
 
-        <Style x:Key="CellContentBorder" TargetType="Border">
-            <Setter Property="Padding" Value="8,1" />
-        </Style>
+            <Style x:Key="CellContentBorder" TargetType="Border">
+                <Setter Property="Padding" Value="8,1" />
+            </Style>
+
+            <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid>

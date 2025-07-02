@@ -11,7 +11,7 @@
       VerticalAlignment="Stretch"
       MinHeight="500"
       MinWidth="270"
-      Background="{DynamicResource BackgroundColor}">
+      Background="{DynamicResource CurrentBackgroundColor}">
 
     <!-- To Do -->
     <!-- TODO - Add tooltips -->
@@ -29,6 +29,8 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorETools.xaml" />
             </ResourceDictionary.MergedDictionaries>
+        <SolidColorBrush x:Key="CurrentBackgroundColor"
+                         Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
         </ResourceDictionary>
     </Page.Resources>
 

@@ -6,7 +6,8 @@
         mc:Ignorable="d"
         Title="Nijhof Library"
         Height="700"
-        Width="1150">
+        Width="1150"
+        Background="{DynamicResource CurrentBackgroundColor}">
 
     <!-- To Do -->
     <!-- TODO - -->
@@ -20,11 +21,13 @@
                     Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/Treeview.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Background="#e9ecef">
+    <Grid Background="{DynamicResource CurrentBackgroundColor}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="*" />
