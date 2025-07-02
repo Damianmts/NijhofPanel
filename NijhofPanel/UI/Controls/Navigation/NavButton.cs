@@ -52,10 +52,24 @@ public class NavButton : ListBoxItem
     public static readonly DependencyProperty IconProperty =
         DependencyProperty.Register("Icon", typeof(Geometry), typeof(NavButton), new PropertyMetadata(null));
 
+    public ICommand Command
+    {
+        get => (ICommand)GetValue(CommandProperty);
+        set => SetValue(CommandProperty, value);
+    }
+
+    public static readonly DependencyProperty CommandProperty =
+        DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(NavButton), new PropertyMetadata(null));
+    
     protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
     {
         base.OnMouseLeftButtonUp(e);
-        if (ViewType != null && NavigationService != null)
+        if (Command != null)
+        {
+            if (Command.CanExecute(null))
+                Command.Execute(null);
+        }
+        else if (ViewType != null && NavigationService != null)
         {
             var method = typeof(INavigationService).GetMethod(nameof(INavigationService.NavigateTo))
                 ?.MakeGenericMethod(ViewType);

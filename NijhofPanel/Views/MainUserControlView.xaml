@@ -84,8 +84,9 @@
                          Background="Transparent"
                          HorizontalContentAlignment="Center">
                     <Separator /><Separator />
-                    <services:NavButton 
-                                        Icon="{StaticResource DarkModeIcon}" />
+                    <services:NavButton
+                        Icon="{StaticResource DarkModeIcon}"
+                        Command="{Binding Com_ToggleTheme}" />
                     <Separator />
                     <services:NavButton ViewType="{x:Type views:UserPageView}"
                                         Icon="{StaticResource UserIcon}" MouseLeftButtonUp="NavButton_Click" />

@@ -6,7 +6,7 @@ public static class ThemeManager
 {
     private static ResourceDictionary ThemeResources { get; } = new()
     {
-        Source = new Uri("/NijhofPanel;component/Resources/Themes/CoreTheme.xaml", UriKind.RelativeOrAbsolute)
+        Source = new Uri("/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml", UriKind.RelativeOrAbsolute)
     };
 
     public static void UpdateTheme(bool isDarkMode, FrameworkElement element)
