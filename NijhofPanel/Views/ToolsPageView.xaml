@@ -10,7 +10,7 @@
       VerticalAlignment="Stretch"
       MinHeight="500"
       MinWidth="270"
-      Background="{DynamicResource BackgroundColor}">
+      Background="{DynamicResource CurrentBackgroundColor}">
 
     <!-- Resources -->
     <Page.Resources>
@@ -25,6 +25,8 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorWTools.xaml" />
             </ResourceDictionary.MergedDictionaries>
+        <SolidColorBrush x:Key="CurrentBackgroundColor"
+                         Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
         </ResourceDictionary>
     </Page.Resources>
 

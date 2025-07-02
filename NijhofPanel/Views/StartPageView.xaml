@@ -8,19 +8,21 @@
       VerticalAlignment="Stretch"
       MinHeight="500"
       MinWidth="270"
-      Background="{DynamicResource BackgroundColor}">
+      Background="{DynamicResource CurrentBackgroundColor}">
 
     <!-- Resources -->
     <Page.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorGeneric.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary
+                Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
+            <ResourceDictionary
+                Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+            <ResourceDictionary
+                Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorGeneric.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+        <SolidColorBrush x:Key="CurrentBackgroundColor"
+                         Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
         </ResourceDictionary>
     </Page.Resources>
 

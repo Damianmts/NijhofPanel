@@ -6,7 +6,17 @@
         mc:Ignorable="d"
         Title="Materiaallijst"
         Height="700"
-        Width="1000">
+        Width="1000"
+        Background="{DynamicResource CurrentBackgroundColor}">
 
-    <Grid />
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Background="{DynamicResource CurrentBackgroundColor}" />
 </Window>

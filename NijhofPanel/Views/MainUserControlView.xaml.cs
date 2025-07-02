@@ -4,7 +4,10 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.ComponentModel;
+using System.Collections.Generic;
 using Services;
+using NijhofPanel.UI.Themes;
 using UI.Controls.Navigation;
 using ViewModels;
 using Views;
@@ -27,6 +30,8 @@ public partial class MainUserControlView : UserControl
         if (DataContext is MainUserControlViewModel vm)
         {
             _mainVm = vm;
+            _mainVm.PropertyChanged += MainVm_PropertyChanged;
+            ThemeManager.UpdateTheme(_mainVm.IsDarkMode, this);
             if (_mainVm.NavigationService is NavigationService navService)
             {
                 navService.SetHost(NavigationFrame);
@@ -70,12 +75,12 @@ public partial class MainUserControlView : UserControl
                     return;
                 }
                 else
-                {
-                    _openWindows.Remove(windowButton.Navlink);
-                }
+            {
+                _openWindows.Remove(windowButton.Navlink);
             }
+        }
 
-            Window? newWindow = windowButton.Navlink switch
+        Window? newWindow = windowButton.Navlink switch
             {
                 "LibraryWindowView" => new LibraryWindowView(),
                 "PrefabWindowView" => new PrefabWindowView(),
@@ -97,7 +102,18 @@ public partial class MainUserControlView : UserControl
                 };
 
                 newWindow.Show();
+                ThemeManager.UpdateTheme(_mainVm.IsDarkMode, newWindow);
             }
+        }
+    }
+
+    private void MainVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainUserControlViewModel.IsDarkMode))
+        {
+            ThemeManager.UpdateTheme(_mainVm.IsDarkMode, this);
+            foreach (var window in _openWindows.Values)
+                ThemeManager.UpdateTheme(_mainVm.IsDarkMode, window);
         }
     }
 }
