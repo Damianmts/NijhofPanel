@@ -11,8 +11,8 @@ public static class ThemeManager
 
     public static void UpdateTheme(bool isDarkMode, FrameworkElement element)
     {
-        var backgroundKey = isDarkMode ? "BackgroundColor_Dark" : "BackgroundColor_Light";
-        var textKey = isDarkMode ? "TextColor_Dark" : "TextColor_Light";
+        var backgroundKey = isDarkMode ? "BackgroundColor_Dark" : "BackgroundColor";
+        var textKey = isDarkMode ? "TextColor_Dark" : "TextColor";
 
         if (element.Resources.Contains("CurrentBackgroundColor"))
             element.Resources["CurrentBackgroundColor"] = ThemeResources[backgroundKey];

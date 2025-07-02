@@ -5,6 +5,12 @@ namespace NijhofPanel.Views;
 
 public partial class SettingsPageView : Page
 {
+    public SettingsPageView(MainUserControlViewModel mainVm)
+    {
+        InitializeComponent();
+        DataContext = new SettingsPageViewModel();
+    }
+    
     public SettingsPageView()
     {
         InitializeComponent();

@@ -10,7 +10,7 @@
       VerticalAlignment="Stretch"
       MinHeight="500"
       MinWidth="270"
-      Background="{DynamicResource BackgroundColor_Light}">
+      Background="{DynamicResource BackgroundColor}">
 
     <!-- Resources -->
     <Page.Resources>
@@ -149,6 +149,16 @@
                     <Button Style="{StaticResource BigButtonSVG}" />
                 </StackPanel>
             </Grid>
+            
+            <TextBlock Text="Experimental"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PlaceHolderIcon}" />
+            </WrapPanel>
+            
         </StackPanel>
     </ScrollViewer>
 

@@ -2,8 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Light Theme -->
-    <SolidColorBrush x:Key="BackgroundColor_Light" Color="White" />
-    <SolidColorBrush x:Key="TextColor_Light" Color="Black" />
+    <SolidColorBrush x:Key="BackgroundColor" Color="White" />
+    <SolidColorBrush x:Key="TextColor" Color="Black" />
 
     <!-- Dark Theme -->
     <SolidColorBrush x:Key="BackgroundColor_Dark" Color="#3B4453" />

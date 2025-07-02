@@ -11,7 +11,7 @@
       VerticalAlignment="Stretch"
       MinHeight="500"
       MinWidth="270"
-      Background="{DynamicResource BackgroundColor_Light}">
+      Background="{DynamicResource BackgroundColor}">
 
     <!-- To Do -->
     <!-- TODO - Add tooltips -->

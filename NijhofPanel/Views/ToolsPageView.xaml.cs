@@ -11,15 +11,20 @@ namespace NijhofPanel.Views;
 
 public partial class ToolsPageView : Page
 {
-    public ToolsPageView()
+    public ToolsPageView(MainUserControlViewModel? mainVm = null)
     {
         InitializeComponent();
 
-        // Februik statische instance
-        if (ToolsPageViewModel.Instance != null)
-            DataContext = ToolsPageViewModel.Instance;
+        // Bepaal de viewmodel‐instance: geef prioriteit aan de geleverde mainVm, anders de singleton
+        var vm = mainVm?.ToolsVm ?? ToolsPageViewModel.Instance;
+
+        if (vm != null)
+        {
+            DataContext = vm;
+        }
         else
-            // Fallback of foutmelding
+        {
             MessageBox.Show("ToolsPageViewModel niet geïnitialiseerd.");
+        }
     }
 }

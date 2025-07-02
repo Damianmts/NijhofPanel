@@ -32,7 +32,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <SolidColorBrush x:Key="CurrentBackgroundColor"
-                             Color="{Binding Color, Source={StaticResource BackgroundColor_Light}}" />
+                             Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
 
             <local:BooleanToColumnConverter x:Key="BoolToColumnConverter" />
             <local:BooleanToColumnSpanConverter x:Key="BoolToColumnSpanConverter" />

@@ -7,15 +7,20 @@ namespace NijhofPanel.Views;
 
 public partial class ElectricalPageView : Page
 {
-    public ElectricalPageView()
+    public ElectricalPageView(MainUserControlViewModel? mainVm = null)
     {
         InitializeComponent();
 
-        // Februik statische instance
-        if (ElectricalPageViewModel.Instance != null)
-            DataContext = ElectricalPageViewModel.Instance;
+        // Kies eerst de ElectricalVm uit mainVm, anders de singleton
+        var vm = mainVm?.ElectricalVm ?? ElectricalPageViewModel.Instance;
+
+        if (vm != null)
+        {
+            DataContext = vm;
+        }
         else
-            // Fallback of foutmelding
+        {
             MessageBox.Show("ElectricalPageViewModel niet geïnitialiseerd.");
+        }
     }
 }
