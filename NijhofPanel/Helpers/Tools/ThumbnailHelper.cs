@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Media.Imaging;
 
-namespace NijhofPanel.Services;
+namespace NijhofPanel.Helpers.Tools;
 
 public static class ThumbnailHelper
 {

@@ -1,24 +1,23 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using NijhofPanel.Helpers;
-using NijhofPanel.Views;
+using NijhofPanel.Helpers.Core;
 
 namespace NijhofPanel.ViewModels;
 
 public class UserPageViewModel : INotifyPropertyChanged
 {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null!)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        PropertyChanged!(this, new PropertyChangedEventArgs(propertyName));
     }
 
     private readonly MainUserControlViewModel _mainViewModel;
 
     // Login command zonder MVVM toolkit
-    private ICommand _loginCommand;
+    private ICommand? _loginCommand;
 
     public ICommand LoginCommand =>
         _loginCommand

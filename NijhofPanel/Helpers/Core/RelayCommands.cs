@@ -1,7 +1,6 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
-namespace NijhofPanel.Helpers;
+namespace NijhofPanel.Helpers.Core;
 
 public class RelayCommands
 {
@@ -10,7 +9,7 @@ public class RelayCommands
         private readonly Action<T> _execute;
         private readonly Func<T, bool> _canExecute;
 
-        public RelayCommand(Action<T> execute, Func<T, bool> canExecute = null)
+        public RelayCommand(Action<T> execute, Func<T, bool> canExecute = null!)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
@@ -35,7 +34,7 @@ public class RelayCommands
 
     public class RelayCommand : RelayCommand<object>
     {
-        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
+        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null!)
             : base(execute, canExecute)
         {
         }

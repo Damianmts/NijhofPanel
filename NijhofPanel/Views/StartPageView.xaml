@@ -15,8 +15,6 @@
         <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
             <ResourceDictionary
-                Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
-            <ResourceDictionary
                 Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
             <ResourceDictionary
                 Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorGeneric.xaml" />

@@ -17,7 +17,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/BigButtonSVG.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/LongButtonSVG.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
                 <ResourceDictionary
@@ -152,7 +154,7 @@
                 </StackPanel>
             </Grid>
             
-            <TextBlock Text="Experimental"
+            <TextBlock Text="Experimenteel"
                        FontFamily="Arial"
                        FontWeight="Bold"
                        FontSize="20"

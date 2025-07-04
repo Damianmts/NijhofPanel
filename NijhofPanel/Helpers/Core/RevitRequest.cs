@@ -1,4 +1,4 @@
-﻿namespace NijhofPanel.Helpers;
+﻿namespace NijhofPanel.Helpers.Core;
 
 using System;
 using Autodesk.Revit.DB;

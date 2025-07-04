@@ -1,27 +1,24 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using NijhofPanel.Models;
-using NijhofPanel.Services;
-using NijhofPanel.Helpers;
+using NijhofPanel.Helpers.Tools;
 
 namespace NijhofPanel.ViewModels;
 
 public class LibraryWindowViewModel : ObservableObject
 {
-    private ObservableCollection<FileItemModel> _rootFiles;
-    private FileItemModel _selectedFolder;
-    private ObservableCollection<FileItemModel> _selectedFolderContent;
+    private ObservableCollection<FileItemModel>? _rootFiles;
+    private FileItemModel? _selectedFolder;
+    private ObservableCollection<FileItemModel>? _selectedFolderContent;
 
-    public ObservableCollection<FileItemModel> RootFiles
+    public ObservableCollection<FileItemModel>? RootFiles
     {
         get => _rootFiles;
         set => SetProperty(ref _rootFiles, value);
     }
 
-    public FileItemModel SelectedFolder
+    public FileItemModel? SelectedFolder
     {
         get => _selectedFolder;
         set
@@ -30,7 +27,7 @@ public class LibraryWindowViewModel : ObservableObject
         }
     }
 
-    public ObservableCollection<FileItemModel> SelectedFolderContent
+    public ObservableCollection<FileItemModel>? SelectedFolderContent
     {
         get => _selectedFolderContent;
         set => SetProperty(ref _selectedFolderContent, value);
@@ -45,7 +42,7 @@ public class LibraryWindowViewModel : ObservableObject
 
     private async Task LoadSelectedFolderContentAsync()
     {
-        SelectedFolderContent.Clear();
+        SelectedFolderContent?.Clear();
 
         if (SelectedFolder == null || !Directory.Exists(SelectedFolder.FullPath))
             return;
@@ -59,7 +56,7 @@ public class LibraryWindowViewModel : ObservableObject
             {
                 var item = new FileItemModel(file);
                 item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(file);
-                SelectedFolderContent.Add(item);
+                SelectedFolderContent?.Add(item);
             }
 
             await LoadFilesFromSubfoldersAsync(SelectedFolder.FullPath);
@@ -83,7 +80,7 @@ public class LibraryWindowViewModel : ObservableObject
                 {
                     var item = new FileItemModel(file);
                     item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(file);
-                    SelectedFolderContent.Add(item);
+                    SelectedFolderContent?.Add(item);
                 }
 
                 await LoadFilesFromSubfoldersAsync(subDir); // recursief
@@ -105,7 +102,7 @@ public class LibraryWindowViewModel : ObservableObject
         {
             var dirItem = new FileItemModel(dir, true);
             LoadSubFolders(dirItem);
-            RootFiles.Add(dirItem);
+            RootFiles?.Add(dirItem);
         }
     }
 

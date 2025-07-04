@@ -1,7 +1,6 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
-namespace NijhofPanel.Helpers;
+namespace NijhofPanel.Helpers.Electrical;
 
 public class ElectricalProperties
 {

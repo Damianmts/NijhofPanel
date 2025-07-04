@@ -81,10 +81,11 @@
 
                         <Rectangle x:Name="HorLn" Height="1" Stroke="#DCDCDC" Margin="9,1,0,0"
                                    SnapsToDevicePixels="True" />
-                        <Rectangle x:Name="VerLn" Width="1" Stroke="#DCDCDC" Margin="0,0,1,0" Grid.RowSpan="2"
+                        <Rectangle x:Name="VerLn" Width="1" Stroke="#DCDCDC" Margin="0,0,1,0" Grid.Row="0"
+                                   Grid.RowSpan="2" Grid.Column="0"
                                    SnapsToDevicePixels="true" Fill="White" />
 
-                        <ToggleButton x:Name="Expander"
+                        <ToggleButton Grid.Row="0" Grid.Column="0" x:Name="Expander"
                                       Style="{StaticResource ExpandCollapseToggleStyle}"
                                       IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                                       ClickMode="Press" />
@@ -94,7 +95,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 Grid.Column="1"
-                                Grid.ColumnSpan="2"
+                                Grid.Row="0" Grid.ColumnSpan="2"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter x:Name="PART_Header"
                                               ContentSource="Header"

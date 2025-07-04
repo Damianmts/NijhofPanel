@@ -19,6 +19,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
             <Style TargetType="GridViewColumnHeader">
                 <Setter Property="Padding" Value="8,2" />
             </Style>

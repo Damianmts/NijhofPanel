@@ -1,7 +1,6 @@
 ﻿namespace NijhofPanel.Services;
 
 using ViewModels;
-using Services;
 
 public class ViewModelFactory
 {

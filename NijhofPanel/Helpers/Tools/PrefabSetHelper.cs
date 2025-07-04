@@ -1,12 +1,10 @@
-﻿namespace NijhofPanel.Services;
+﻿namespace NijhofPanel.Helpers.Tools;
 
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Helpers;
+using Core;
 
 public class PrefabSetHelper : INotifyPropertyChanged
 {

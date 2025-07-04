@@ -1,15 +1,13 @@
-﻿namespace NijhofPanel.UI.Controls.Navigation;
-
-using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Input;
+using System.Windows.Media;
 using NijhofPanel.Services;
+
+namespace NijhofPanel.UI.Controls.Navigation;
 
 public class NavButton : ListBoxItem
 {
-    private readonly INavigationService _navigationService;
     public static readonly DependencyProperty NavigationServiceProperty =
         DependencyProperty.Register(nameof(NavigationService), typeof(INavigationService), typeof(NavButton));
     
@@ -18,13 +16,8 @@ public class NavButton : ListBoxItem
         get => (INavigationService)GetValue(NavigationServiceProperty);
         set => SetValue(NavigationServiceProperty, value);
     }
-    
-    public NavButton()
-    {
-        
-    }
 
-    
+
     public static readonly DependencyProperty IsActiveProperty =
         DependencyProperty.Register(nameof(IsActive), typeof(bool), typeof(NavButton), new PropertyMetadata(false));
 

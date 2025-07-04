@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.UI;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
@@ -20,7 +17,7 @@ public class Com_ConnectElement : IExternalEventHandler
 
         try
         {
-            var success = ConnectElements(uidoc, doc);
+            ConnectElements(uidoc, doc);
             // je kunt hier eventueel een notificatie geven bij success/failure
         }
         catch (OperationCanceledException)
@@ -34,7 +31,7 @@ public class Com_ConnectElement : IExternalEventHandler
         return "Com_ConnectElement";
     }
 
-    private bool ConnectElements(UIDocument uidoc, Document doc)
+    private void ConnectElements(UIDocument uidoc, Document doc)
     {
         // selectie van element om te verplaatsen
         var movedReference = uidoc.Selection
@@ -54,7 +51,7 @@ public class Com_ConnectElement : IExternalEventHandler
         {
             TaskDialog.Show("Foutmelding",
                 "Oeps, het lijkt erop dat je hetzelfde element hebt geselecteerd.");
-            return false;
+            return;
         }
 
         var movedConnector = GetClosestConnector(movedElement, movedPoint);
@@ -64,14 +61,14 @@ public class Com_ConnectElement : IExternalEventHandler
         {
             TaskDialog.Show("Foutmelding",
                 "Het lijkt erop dat het geselecteerde element geen ongebruikte connector heeft.");
-            return false;
+            return;
         }
 
         if (movedConnector.Domain != targetConnector.Domain)
         {
             TaskDialog.Show("Foutmelding",
                 "Je hebt 2 elementen van verschillende systemen geselecteerd.");
-            return false;
+            return;
         }
 
         // roteer indien nodig
@@ -103,13 +100,11 @@ public class Com_ConnectElement : IExternalEventHandler
             movedConnector.ConnectTo(targetConnector);
             t.Commit();
         }
-
-        return true;
     }
 
-    private Connector GetClosestConnector(Element element, XYZ point)
+    private Connector? GetClosestConnector(Element element, XYZ point)
     {
-        ConnectorSet connectors = null;
+        ConnectorSet? connectors = null;
         switch (element)
         {
             case FamilyInstance fi:
@@ -125,11 +120,11 @@ public class Com_ConnectElement : IExternalEventHandler
 
         if (connectors == null) return null;
 
-        Connector closest = null;
+        Connector? closest = null;
         var minDist = double.MaxValue;
-        foreach (Connector c in connectors)
+        foreach (Connector? c in connectors)
         {
-            if (c.IsConnected) continue;
+            if (c!.IsConnected) continue;
             var d = c.Origin.DistanceTo(point);
             if (d < minDist)
             {

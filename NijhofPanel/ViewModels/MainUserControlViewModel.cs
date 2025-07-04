@@ -1,14 +1,11 @@
 ﻿namespace NijhofPanel.ViewModels;
 
 using Autodesk.Revit.UI;
-using NijhofPanel.Views;
-using NijhofPanel.Services;
-using NijhofPanel.Helpers;
-using NijhofPanel.UI.Themes;
+using Views;
+using Services;
+using UI.Themes;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Windows;
 using System.Windows.Input;
 using Visibility = System.Windows.Visibility;
 
@@ -16,9 +13,9 @@ public class MainUserControlViewModel : INotifyPropertyChanged
 {
     private readonly INavigationService _navigationService;
     public INavigationService NavigationService => _navigationService;
-    private object _currentView;
+    private object? _currentView;
 
-    public object CurrentView
+    public object? CurrentView
     {
         get => _currentView;
         set
@@ -28,9 +25,9 @@ public class MainUserControlViewModel : INotifyPropertyChanged
         }
     }
 
-    public ElectricalPageViewModel ElectricalVm { get; set; }
-    public ToolsPageViewModel ToolsVm { get; set; }
-    public PrefabWindowViewModel PrefabVm { get; set; }
+    public ElectricalPageViewModel? ElectricalVm { get; set; }
+    public ToolsPageViewModel? ToolsVm { get; set; }
+    public PrefabWindowViewModel? PrefabVm { get; set; }
 
     private static MainWindowView _windowInstance;
     private bool _isDarkMode;
@@ -69,9 +66,9 @@ public class MainUserControlViewModel : INotifyPropertyChanged
 
     public Visibility SidebarVisibility => IsLoggedIn ? Visibility.Visible : Visibility.Collapsed;
 
-    private object _currentPage;
+    private object? _currentPage;
 
-    public object CurrentPage
+    public object? CurrentPage
     {
         get => _currentPage;
         set
@@ -155,7 +152,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
         if (_windowInstance != null) ThemeManager.UpdateTheme(IsDarkMode, _windowInstance);
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged(string propertyName)
     {

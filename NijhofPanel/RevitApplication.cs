@@ -6,18 +6,21 @@ using System.Threading;
 using Autodesk.Revit.UI;
 using JetBrains.Annotations;
 using Nice3point.Revit.Toolkit.External;
-using Commands;
 using Services;
 using ViewModels;
 using Views;
-using Helpers;
 using UI;
-using Providers;
 using Core;
+using Providers;
+using Helpers.Core;
+using Helpers.Electrical;
 
 /// <summary>
 ///     Entry point voor de Revit-plugin 'Nijhof Tools'
 /// </summary>
+
+// TODO - Fix all warnings in project :/
+
 [UsedImplicitly]
 public class RevitApplication : ExternalApplication
 {
@@ -26,7 +29,7 @@ public class RevitApplication : ExternalApplication
         // WPF-resources en cultuurinstelling
         System.Windows.Application.ResourceAssembly = typeof(RevitApplication).Assembly;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-        AppDomain.CurrentDomain.AssemblyResolve += (s, e) =>
+        AppDomain.CurrentDomain.AssemblyResolve += (_, _) =>
             Assembly.LoadFrom(typeof(RevitApplication).Assembly.Location);
 
         // RevitContext instellen zodra een document opent
@@ -45,7 +48,7 @@ public class RevitApplication : ExternalApplication
 
         // Bouw sub-VM's
         var electricalVm = new ElectricalPageViewModel(familyHandler, familyEvent);
-        var toolsVm = new ToolsPageViewModel(familyEvent);
+        var toolsVm = new ToolsPageViewModel();
         var prefabVm = new PrefabWindowViewModel(prefabHandler, prefabEvent);
 
         // Maak de hoofd-VM met de NavigationService

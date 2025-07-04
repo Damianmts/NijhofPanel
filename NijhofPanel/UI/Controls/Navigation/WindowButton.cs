@@ -1,9 +1,8 @@
-﻿namespace NijhofPanel.UI.Controls.Navigation;
-
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows;
 using System.Windows.Media;
-using System.Windows.Input;
+
+namespace NijhofPanel.UI.Controls.Navigation;
 
 public class WindowButton : ListBoxItem
 {

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Views;
-using Nice3point.Revit.Toolkit;
 
 // Tagt de elementen van de opgegeven categorieën waar een Switchcode is ingevuld.
 // Inclusief batch-verwerking en een laadscherm voor grote aantallen elementen. Voorheen zat je 4 minuten naar een laad-icoon te staren.
@@ -19,7 +18,7 @@ using Nice3point.Revit.Toolkit;
 public class Com_TagSwitchcode
 {
     private readonly Dictionary<BuiltInCategory, string> _categories;
-    private ProgressWindowView _progressWindow;
+    private ProgressWindowView? _progressWindow;
 
     public Com_TagSwitchcode()
     {
@@ -58,7 +57,7 @@ public class Com_TagSwitchcode
 
             var task = ProcessCategories(doc, tagSymbol);
             var frame = new DispatcherFrame();
-            task.ContinueWith(t => frame.Continue = false, TaskScheduler.FromCurrentSynchronizationContext());
+            task.ContinueWith(_ => frame.Continue = false, TaskScheduler.FromCurrentSynchronizationContext());
             Dispatcher.PushFrame(frame);
 
             return Result.Succeeded;
@@ -85,7 +84,7 @@ public class Com_TagSwitchcode
         }
         finally
         {
-            _progressWindow.Dispatcher.Invoke(() => _progressWindow.Close());
+            _progressWindow?.Dispatcher.Invoke(() => _progressWindow.Close());
         }
     }
 
@@ -104,7 +103,7 @@ public class Com_TagSwitchcode
 
     private void UpdateProgressWindowStatus(string categoryName)
     {
-        _progressWindow.Dispatcher.Invoke(() => _progressWindow.UpdateStatusText(categoryName));
+        _progressWindow?.Dispatcher.Invoke(() => _progressWindow.UpdateStatusText(categoryName));
     }
 
     private IList<Element> GetFilteredElements(Document doc, BuiltInCategory category, FamilySymbol tagSymbol)
@@ -159,7 +158,7 @@ public class Com_TagSwitchcode
             if (processedElements % updateFrequency == 0 || processedElements == totalElements)
             {
                 UpdateProgress(processedElements, totalElements);
-                _progressWindow.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+                _progressWindow?.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
                 await Task.Delay(50);
             }
         }
@@ -167,9 +166,9 @@ public class Com_TagSwitchcode
 
     private void UpdateProgress(int processedElements, int totalElements)
     {
-        _progressWindow.Dispatcher.Invoke(() =>
+        _progressWindow?.Dispatcher.Invoke(() =>
         {
-            _progressWindow.UpdateProgress(processedElements * 100 / totalElements);
+            _progressWindow?.UpdateProgress(processedElements * 100 / totalElements);
         });
     }
 
@@ -194,7 +193,7 @@ public class Com_TagSwitchcode
         await Task.Yield();
     }
 
-    private FamilySymbol GetTagFamily(Document doc, string tagName)
+    private FamilySymbol? GetTagFamily(Document doc, string tagName)
     {
         return new FilteredElementCollector(doc)
             .OfClass(typeof(FamilySymbol))

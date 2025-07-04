@@ -3,13 +3,11 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System.Linq;
-using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using Microsoft.Win32;
 using Views;
 using System;
+using Excel = Microsoft.Office.Interop.Excel;
 
 public class Com_ExportExcel : IExternalEventHandler
 {
@@ -42,8 +40,8 @@ public class Com_ExportExcel : IExternalEventHandler
 
                 foreach (var schedule in selectionWindow.SelectedSchedules)
                 {
-                    Excel.Application excelApp = null;
-                    Excel.Workbook workbook = null;
+                    Excel.Application? excelApp = null;
+                    Excel.Workbook? workbook = null;
 
                     try
                     {
@@ -108,7 +106,7 @@ public class Com_ExportExcel : IExternalEventHandler
                     catch (Exception ex)
                     {
                         failCount++;
-                        TaskDialog.Show("Fout",
+                        Autodesk.Revit.UI.TaskDialog.Show("Fout",
                             $"Fout bij het exporteren van schedule '{schedule.Name}': {ex.Message}");
                     }
                     finally
@@ -133,7 +131,7 @@ public class Com_ExportExcel : IExternalEventHandler
                 GC.WaitForPendingFinalizers();
 
                 // Toon resultaat
-                TaskDialog.Show("Export Voltooid",
+                Autodesk.Revit.UI.TaskDialog.Show("Export Voltooid",
                     $"Export voltooid!\nSuccesvol: {successCount} schedules\nMislukt: {failCount} schedules");
             }
         }

@@ -3,6 +3,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using NijhofPanel.ViewModels;
+using UI.Themes;
 
 public interface INavigationService
 {
@@ -15,14 +16,10 @@ public interface INavigationService
 
 public class NavigationService : INavigationService
 {
-    private MainUserControlViewModel _mainViewModel;
+    private MainUserControlViewModel _mainViewModel = null!;
     private ContentControl? _host;
-    private Frame _navigationFrame;
+    private Frame _navigationFrame = null!;
 
-    public NavigationService()
-    {
-    }
-    
     public void SetMainViewModel(MainUserControlViewModel viewModel)
     {
         _mainViewModel = viewModel;
@@ -40,7 +37,12 @@ public class NavigationService : INavigationService
 
     public void Navigate(UIElement view)
     {
-        if (_host != null) _host.Content = view;
+        if (_host != null)
+        {
+            _host.Content = view;
+            if (view is FrameworkElement element)
+                ThemeManager.UpdateTheme(_mainViewModel.IsDarkMode, element);
+        }
     }
 
     public void NavigateTo<T>() where T : UIElement

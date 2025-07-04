@@ -7,9 +7,9 @@ using System.Windows;
 using System.Windows.Input;
 using Autodesk.Revit.UI;
 using Newtonsoft.Json;
-using NijhofPanel.Helpers;
-using NijhofPanel.Services;
 using NijhofPanel.Core;
+using NijhofPanel.Helpers.Tools;
+using NijhofPanel.Helpers.Core;
 
 namespace NijhofPanel.ViewModels;
 

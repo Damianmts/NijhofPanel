@@ -1,17 +1,10 @@
 ﻿namespace NijhofPanel.ViewModels;
 
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
-using Helpers;
-using Services;
+using Helpers.Core;
+using Helpers.Electrical;
 using Commands.Electrical;
-using System.Collections.Generic;
 using System.Windows.Input;
-using System.IO;
 using Autodesk.Revit.UI;
-using Autodesk.Revit.DB;
 
 public class ElectricalPageViewModel
 {
@@ -29,7 +22,7 @@ public class ElectricalPageViewModel
         _handler = handler;
         _externalEvent = externalEvent;
 
-        PlaceElectricalComponentCommand = new RelayCommand<object>(OnPlaceElectricalComponent);
+        PlaceElectricalComponentCommand = new RelayCommand<object>(OnPlaceElectricalComponent!);
         TagGroepnummerCommand = new RelayCommands.RelayCommand(ExecuteTagGroepnummer);
         TagSwitchcodeCommand = new RelayCommands.RelayCommand(ExecuteTagSwitchcode);
 

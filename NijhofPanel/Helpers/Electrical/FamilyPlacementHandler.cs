@@ -1,7 +1,7 @@
 ﻿using Autodesk.Revit.UI;
 using NijhofPanel.Commands.Electrical;
 
-namespace NijhofPanel.Helpers;
+namespace NijhofPanel.Helpers.Electrical;
 
 public class FamilyPlacementHandler : IExternalEventHandler
 {
@@ -28,7 +28,7 @@ public class FamilyPlacementHandler : IExternalEventHandler
 
 public class SymbolPlacementHandler : IExternalEventHandler
 {
-    public FamilySymbol Symbol { get; set; }
+    public FamilySymbol? Symbol { get; set;}
 
     public void Execute(UIApplication app)
     {

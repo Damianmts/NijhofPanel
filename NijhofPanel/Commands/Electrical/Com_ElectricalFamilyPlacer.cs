@@ -5,7 +5,8 @@ using System.IO;
 using System.Diagnostics;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Helpers;
+using Helpers.Electrical;
+
 
 public class Com_ElectricalFamilyPlacer
 {
@@ -97,8 +98,8 @@ public class Com_ElectricalFamilyPlacer
             }
         };
 
-    private SymbolPlacementHandler _symbolHandler;
-    private ExternalEvent _symbolEvent;
+    private SymbolPlacementHandler? _symbolHandler;
+    private ExternalEvent? _symbolEvent;
 
     public (bool success, string message) PlaceElectricalFamily(string componentType, UIDocument uidoc)
     {
@@ -179,7 +180,7 @@ public class Com_ElectricalFamilyPlacer
 
             // Stel het symbol in en activeer de externe gebeurtenis
             _symbolHandler.Symbol = symbol;
-            _symbolEvent.Raise();
+            _symbolEvent?.Raise();
 
             return (true, "Plaatsingsgereedschap geactiveerd");
         }
@@ -192,13 +193,18 @@ public class Com_ElectricalFamilyPlacer
     private bool ValidateAndGetPaths(string hoofdType, string subType, out string volledigPad)
     {
         volledigPad = string.Empty;
-
+        Debug.WriteLine($"Samengesteld volledig pad: {volledigPad}");
+        
+        volledigPad = string.Empty;
         if (string.IsNullOrEmpty(hoofdType) || string.IsNullOrEmpty(subType) ||
             !_familieMapping.TryGetValue(hoofdType, out var subTypeMapping) ||
             !subTypeMapping.TryGetValue(subType, out var bestandsnaam))
             return false;
 
-        volledigPad = Path.Combine(BASIS_PAD, hoofdType, bestandsnaam);
+        if (!_componentMappen.TryGetValue(hoofdType, out var mapNaam))
+            return false;
+
+        volledigPad = Path.Combine(BASIS_PAD, mapNaam, bestandsnaam);
         Debug.WriteLine($"Opgebouwd pad: {volledigPad}");
         Debug.WriteLine($"Bestand bestaat: {File.Exists(volledigPad)}");
         return true;

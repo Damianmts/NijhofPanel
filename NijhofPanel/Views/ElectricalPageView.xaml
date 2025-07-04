@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:viewModel="clr-namespace:NijhofPanel.ViewModels"
-      xmlns:helpers="clr-namespace:NijhofPanel.Helpers"
+      xmlns:helpers="clr-namespace:NijhofPanel.Helpers.Electrical"
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance viewModel:ElectricalPageViewModel}"
       HorizontalAlignment="Stretch"
@@ -23,7 +23,7 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
                 <ResourceDictionary
-                    Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_Buttons.xaml" />
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/BigButtonSVG.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
                 <ResourceDictionary
@@ -103,11 +103,11 @@
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource DATA_Enkel}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource DATA_Enkel}"
                         helpers:ElectricalProperties.ComponentType="DATA_Enkel" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource DATA_Dubbel}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource DATA_Dubbel}"
                         helpers:ElectricalProperties.ComponentType="DATA_Dubbel" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource DATA_Bekabeld}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource DATA_Bekabeld}"
                         helpers:ElectricalProperties.ComponentType="DATA_Bekabeld" />
             </WrapPanel>
 
@@ -117,39 +117,39 @@
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_Enkelpolig}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Enkelpolig}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Enkelpolig" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_Dubbelpolig}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Dubbelpolig}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Dubbelpolig" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_Vierpolig}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Vierpolig}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Vierpolig" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_Wissel}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Wissel}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Wissel" />
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_WisselDubbelP}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_WisselDubbelP}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_WisselDubbelpolig" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_2xWissel}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_2xWissel}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_2xWissel" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_Serie}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Serie}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Serie" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_Kruis}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Kruis}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Kruis" />
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_Dimmer}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Dimmer}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Dimmer" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_DimmerWissel}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_DimmerWissel}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_DimmerWissel" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SCHAK_Jaloezie}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Jaloezie}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Jaloezie" />
-                <Button Style="{StaticResource BigButtonPNG}" Content="Beweging Wand"
+                <Button Style="{StaticResource BigButtonE}" Content="Beweging Wand"
                         helpers:ElectricalProperties.ComponentType="SCHAK_BewegingWand" />
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonPNG}" Content="Beweging Plafond"
+                <Button Style="{StaticResource BigButtonE}" Content="Beweging Plafond"
                         helpers:ElectricalProperties.ComponentType="SCHAK_BewegingPlafond" />
-                <Button Style="{StaticResource BigButtonPNG}" Content="Schemer- schakelaar"
+                <Button Style="{StaticResource BigButtonE}" Content="Schemer- schakelaar"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Schemer" />
             </WrapPanel>
 
@@ -159,13 +159,13 @@
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource VERL_Centraaldoos}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource VERL_Centraaldoos}"
                         helpers:ElectricalProperties.ComponentType="VERL_Centraaldoos" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource VERL_Plafond}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource VERL_Plafond}"
                         helpers:ElectricalProperties.ComponentType="VERL_Plafond" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource VERL_Spot}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource VERL_Spot}"
                         helpers:ElectricalProperties.ComponentType="VERL_Spot" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource VERL_Wand}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource VERL_Wand}"
                         helpers:ElectricalProperties.ComponentType="VERL_Wand" />
             </WrapPanel>
 
@@ -175,19 +175,19 @@
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource OVG_Rookmelder}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Rookmelder}"
                         helpers:ElectricalProperties.ComponentType="OVG_Rookmelder" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource OVG_Bediening}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Bediening}"
                         helpers:ElectricalProperties.ComponentType="OVG_Bediening" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource OVG_Bel}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Bel}"
                         helpers:ElectricalProperties.ComponentType="OVG_Bel" />
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource OVG_Schel}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Schel}"
                         helpers:ElectricalProperties.ComponentType="OVG_Schel" />
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource OVG_Intercom}"
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Intercom}"
                         helpers:ElectricalProperties.ComponentType="OVG_Intercom" />
-                <Button Style="{StaticResource BigButtonPNG}" Content="Grond- kabel"
+                <Button Style="{StaticResource BigButtonE}" Content="Grond- kabel"
                         helpers:ElectricalProperties.ComponentType="OVG_Grondkabel" />
             </WrapPanel>
 
@@ -197,11 +197,11 @@
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonPNG}" Content="Groep nummer"
+                <Button Style="{StaticResource BigButtonE}" Content="Groep nummer"
                         Command="{Binding TagGroepnummerCommand}" />
-                <Button Style="{StaticResource BigButtonPNG}" Content="Switch code"
+                <Button Style="{StaticResource BigButtonE}" Content="Switch code"
                         Command="{Binding TagSwitchcodeCommand}" />
-                <Button Style="{StaticResource BigButtonPNG}" Content="Code lijst" />
+                <Button Style="{StaticResource BigButtonE}" Content="Code lijst" />
             </WrapPanel>
 
         </StackPanel>

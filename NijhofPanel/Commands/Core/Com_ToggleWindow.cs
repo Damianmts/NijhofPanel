@@ -1,8 +1,7 @@
-﻿using System;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.UI;
 using Autodesk.Revit.Attributes;
-using NijhofPanel.Helpers;
+using NijhofPanel.Helpers.Core;
+using NijhofPanel.Helpers.Electrical;
 using NijhofPanel.Views;
 using NijhofPanel.ViewModels;
 using NijhofPanel.Services;
@@ -31,7 +30,7 @@ public class Com_ToggleWindow : IExternalCommand
             var mainVm = new MainUserControlViewModel(navigationService)
             {
                 ElectricalVm = new ElectricalPageViewModel(familyHandler, familyEvent),
-                ToolsVm      = new ToolsPageViewModel(familyEvent),
+                ToolsVm      = new ToolsPageViewModel(),
                 PrefabVm     = new PrefabWindowViewModel(prefabHandler, prefabEvent)
             };
             navigationService.SetMainViewModel(mainVm);
