@@ -1,7 +1,6 @@
 ﻿using System.Windows.Controls;
 using NijhofPanel.ViewModels;
-using System.Windows;
-using System.Windows.Controls.Primitives;
+using NijhofPanel.Services;
 
 namespace NijhofPanel.Views;
 
@@ -20,7 +19,7 @@ public partial class ElectricalPageView : Page
         }
         else
         {
-            MessageBox.Show("ElectricalPageViewModel niet geïnitialiseerd.");
+            WarningService.Instance.ShowWarning("ElectricalPageViewModel niet geïnitialiseerd.");
         }
     }
 }

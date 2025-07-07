@@ -24,6 +24,10 @@ using Helpers.Electrical;
 [UsedImplicitly]
 public class RevitApplication : ExternalApplication
 {
+    
+    public static RevitRequestHandler LibraryHandler { get; private set; }
+    public static ExternalEvent LibraryEvent { get; private set; }
+    
     public override void OnStartup()
     {
         // WPF-resources en cultuurinstelling
@@ -41,6 +45,9 @@ public class RevitApplication : ExternalApplication
         var familyEvent = ExternalEvent.Create(familyHandler);
         var prefabHandler = new RevitRequestHandler();
         var prefabEvent = ExternalEvent.Create(prefabHandler);
+        
+        LibraryHandler = new RevitRequestHandler();
+        LibraryEvent   = ExternalEvent.Create(LibraryHandler);
 
         // Ribbon-buttons
         var ribbonPanel = GetOrCreateRibbonPanel();
@@ -50,6 +57,7 @@ public class RevitApplication : ExternalApplication
         var electricalVm = new ElectricalPageViewModel(familyHandler, familyEvent);
         var toolsVm = new ToolsPageViewModel();
         var prefabVm = new PrefabWindowViewModel(prefabHandler, prefabEvent);
+        var libraryVm = new LibraryWindowViewModel(LibraryHandler, LibraryEvent);
 
         // Maak de hoofd-VM met de NavigationService
         var viewModelFactory = new ViewModelFactory();
@@ -58,7 +66,8 @@ public class RevitApplication : ExternalApplication
         {
             ElectricalVm = electricalVm,
             ToolsVm = toolsVm,
-            PrefabVm = prefabVm
+            PrefabVm = prefabVm,
+            LibraryVm = libraryVm
         };
         navigationService.SetMainViewModel(mainVm);
 
@@ -70,7 +79,7 @@ public class RevitApplication : ExternalApplication
         var provider = new DockablePaneProvider(mainView);
         Application.RegisterDockablePane(paneId, "Nijhof Tools", provider);
     }
-
+    
     private RibbonPanel GetOrCreateRibbonPanel()
     {
         try

@@ -1,11 +1,6 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
+﻿using System.Windows.Controls;
 using NijhofPanel.ViewModels;
-using NijhofPanel.Helpers;
-using NijhofPanel.Commands;
+using NijhofPanel.Services;
 
 namespace NijhofPanel.Views;
 
@@ -24,7 +19,7 @@ public partial class ToolsPageView : Page
         }
         else
         {
-            MessageBox.Show("ToolsPageViewModel niet geïnitialiseerd.");
+            WarningService.Instance.ShowWarning("ToolsPageViewModel niet geïnitialiseerd.");
         }
     }
 }

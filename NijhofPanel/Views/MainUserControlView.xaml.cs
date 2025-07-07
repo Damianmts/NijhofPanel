@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.ComponentModel;
 using System.Collections.Generic;
 using Services;
-using NijhofPanel.UI.Themes;
+using UI.Themes;
 using UI.Controls.Navigation;
 using ViewModels;
 using Views;
@@ -22,6 +22,7 @@ public partial class MainUserControlView : UserControl
     {
         InitializeComponent();
         DataContext = vm;
+        WarningService.Instance.Initialize(vm);
         Loaded += MainUserControlView_Loaded;
     }
 
@@ -75,12 +76,12 @@ public partial class MainUserControlView : UserControl
                     return;
                 }
                 else
-            {
-                _openWindows.Remove(windowButton.Navlink);
+                {
+                    _openWindows.Remove(windowButton.Navlink);
+                }
             }
-        }
 
-        Window? newWindow = windowButton.Navlink switch
+            Window? newWindow = windowButton.Navlink switch
             {
                 "LibraryWindowView" => new LibraryWindowView(),
                 "PrefabWindowView" => new PrefabWindowView(),
@@ -105,6 +106,11 @@ public partial class MainUserControlView : UserControl
                 ThemeManager.UpdateTheme(_mainVm.IsDarkMode, newWindow);
             }
         }
+    }
+
+    private void CloseWarningButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainUserControlViewModel viewModel) viewModel.HideWarning();
     }
 
     private void MainVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)

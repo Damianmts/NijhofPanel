@@ -36,17 +36,23 @@
 
             <local:BooleanToColumnConverter x:Key="BoolToColumnConverter" />
             <local:BooleanToColumnSpanConverter x:Key="BoolToColumnSpanConverter" />
+            <local:BooleanHiddenVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar met Visibility binding -->
-        <Border Grid.Column="0"
+        <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
                 BorderThickness="0,0,1,0"
                 BorderBrush="LightGray"
                 Visibility="{Binding SidebarVisibility, RelativeSource={RelativeSource AncestorType=UserControl}}">
@@ -88,7 +94,7 @@
                         Icon="{StaticResource DarkModeIcon}"
                         Command="{Binding Com_ToggleTheme}" />
                     <Separator />
-                    <services:NavButton ViewType="{x:Type views:UserPageView}"
+                    <services:NavButton ViewType="{x:Type views:LogInPageView}"
                                         Icon="{StaticResource UserIcon}" MouseLeftButtonUp="NavButton_Click" />
                     <Separator />
                     <services:NavButton ViewType="{x:Type views:SettingsPageView}"
@@ -97,8 +103,9 @@
             </DockPanel>
         </Border>
 
+
         <!-- Frame met ColumnSpan binding -->
-        <Frame x:Name="NavigationFrame"
+        <Frame Grid.Row="0" x:Name="NavigationFrame"
                x:FieldModifier="public"
                Grid.Column="{Binding DataContext.IsLoggedIn,
                              RelativeSource={RelativeSource AncestorType=UserControl},
@@ -109,5 +116,32 @@
                NavigationUIVisibility="Hidden"
                Background="#e9ecef" />
 
+        <Border x:Name="WarningBar"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Grid.Column="1"
+                Background="#CC0000"
+                BorderBrush="#CC0000"
+                BorderThickness="0,1,0,0"
+                Visibility="{Binding IsWarningVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                Padding="8,4"
+                VerticalAlignment="Bottom"
+                Panel.ZIndex="100">
+            <DockPanel LastChildFill="True">
+                <Button DockPanel.Dock="Right"
+                        Content="X"
+                        Click="CloseWarningButton_Click"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        FontWeight="Bold"
+                        Foreground="Black"
+                        Margin="8,0,0,0"
+                        Padding="4,0" />
+                <TextBlock Text="{Binding WarningMessage}"
+                           Foreground="Black"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
     </Grid>
 </UserControl>

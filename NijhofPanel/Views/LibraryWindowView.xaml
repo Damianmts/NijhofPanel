@@ -85,6 +85,7 @@
                                   Color="Black" />
             </Border.Effect>
             <ListView ItemsSource="{Binding SelectedFolderContent}"
+                      SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
                       BorderThickness="0"
                       Background="Transparent"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -127,9 +128,9 @@
                     Orientation="Horizontal"
                     Margin="10,0,5,5">
 
-            <Button Style="{StaticResource BasicButton}" Content="Laden" />
-            <Button Style="{StaticResource BasicButton}" Content="Plaatsen" />
-            <Button Style="{StaticResource BasicButton}" Content="Sluiten" />
+            <Button Style="{StaticResource BasicButton}" Content="Laden" Command="{Binding LoadCommand}" />
+            <Button Style="{StaticResource BasicButton}" Content="Plaatsen" Command="{Binding PlaceCommand}" />
+            <Button Style="{StaticResource BasicButton}" Content="Sluiten" Command="{Binding CloseCommand}"/>
         </StackPanel>
     </Grid>
 </Window>

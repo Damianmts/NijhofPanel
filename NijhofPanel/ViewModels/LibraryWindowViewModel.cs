@@ -1,10 +1,14 @@
-﻿using System.Collections.ObjectModel;
-using System.IO;
-using System.Windows;
-using NijhofPanel.Models;
-using NijhofPanel.Helpers.Tools;
+﻿using Autodesk.Revit.UI;
 
 namespace NijhofPanel.ViewModels;
+
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows;
+using System.Windows.Input;
+using Models;
+using Helpers.Tools;
+using Helpers.Core;
 
 public class LibraryWindowViewModel : ObservableObject
 {
@@ -12,6 +16,63 @@ public class LibraryWindowViewModel : ObservableObject
     private FileItemModel? _selectedFolder;
     private ObservableCollection<FileItemModel>? _selectedFolderContent;
 
+    private ICommand? _loadCommand;
+    private ICommand? _placeCommand;
+    private ICommand? _closeCommand;
+
+    public ICommand LoadCommand => _loadCommand ??= new RelayCommand(ExecuteLoad);
+    public ICommand PlaceCommand => _placeCommand ??= new RelayCommand(ExecutePlace);
+    public ICommand CloseCommand => _closeCommand ??= new RelayCommand(ExecuteClose);
+    
+    private readonly RevitRequestHandler _handler;
+    private readonly ExternalEvent         _event;
+
+    public LibraryWindowViewModel(RevitRequestHandler handler,
+        ExternalEvent         ev)
+    {
+        _handler = handler;
+        _event   = ev;
+
+        RootFiles               = new ObservableCollection<FileItemModel>();
+        SelectedFolderContent   = new ObservableCollection<FileItemModel>();
+        LoadFolderStructure();
+    }
+    
+    private void ExecuteLoad()
+    {
+        if (SelectedFile == null ||
+            !SelectedFile.FullPath.EndsWith(".rfa", StringComparison.OrdinalIgnoreCase))
+        {
+            MessageBox.Show("Selecteer eerst een geldig .rfa-bestand.", "Waarschuwing",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        // wrap the actual load inside a RevitRequest
+        var path = SelectedFile.FullPath;
+        _handler.Request = new RevitRequest(doc =>
+        {
+            var loader = new Commands.Tools.Com_LoadFamily();
+            loader.Execute(doc, path);
+        });
+
+        // this queues it to run in the Revit API thread
+        _event.Raise();
+    }
+
+    private void ExecutePlace()
+    {
+        var placeFamilyCommand = new Commands.Tools.Com_PlaceFamily();
+        placeFamilyCommand.Execute();
+    }
+    
+    private void ExecuteClose()
+    {
+        Application.Current.Windows.OfType<Window>()
+            .FirstOrDefault(w => w.DataContext == this)?.Close();
+    }
+
+    
     public ObservableCollection<FileItemModel>? RootFiles
     {
         get => _rootFiles;
@@ -32,12 +93,17 @@ public class LibraryWindowViewModel : ObservableObject
         get => _selectedFolderContent;
         set => SetProperty(ref _selectedFolderContent, value);
     }
+    
+    private FileItemModel _selectedFile;
 
-    public LibraryWindowViewModel()
+    public FileItemModel SelectedFile
     {
-        RootFiles = new ObservableCollection<FileItemModel>();
-        SelectedFolderContent = new ObservableCollection<FileItemModel>();
-        LoadFolderStructure();
+        get => _selectedFile;
+        set
+        {
+            _selectedFile = value;
+            OnPropertyChanged(nameof(SelectedFile));
+        }
     }
 
     private async Task LoadSelectedFolderContentAsync()

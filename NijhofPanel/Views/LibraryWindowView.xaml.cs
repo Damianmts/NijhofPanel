@@ -6,15 +6,23 @@ namespace NijhofPanel.Views;
 
 public partial class LibraryWindowView : Window
 {
-    private void MainTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-    {
-        if (DataContext is LibraryWindowViewModel viewModel && e.NewValue is FileItemModel selectedItem)
-            viewModel.SelectedFolder = selectedItem;
-    }
-
     public LibraryWindowView()
     {
         InitializeComponent();
-        DataContext = new LibraryWindowViewModel();
+
+        // Resolve the static handler/event you registered in RevitApplication
+        DataContext = new LibraryWindowViewModel(
+            RevitApplication.LibraryHandler,
+            RevitApplication.LibraryEvent);
+    }
+
+    private void MainTreeView_SelectedItemChanged(object sender, 
+        RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (DataContext is LibraryWindowViewModel vm
+            && e.NewValue is FileItemModel item)
+        {
+            vm.SelectedFolder = item;
+        }
     }
 }

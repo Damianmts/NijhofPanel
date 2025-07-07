@@ -28,6 +28,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
     public ElectricalPageViewModel? ElectricalVm { get; set; }
     public ToolsPageViewModel? ToolsVm { get; set; }
     public PrefabWindowViewModel? PrefabVm { get; set; }
+    public LibraryWindowViewModel? LibraryVm { get; set; }
 
     private static MainWindowView _windowInstance;
     private bool _isDarkMode;
@@ -104,7 +105,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
 
     public void NavigateToLogin()
     {
-        _navigationService.NavigateTo<UserPageView>();
+        _navigationService.NavigateTo<LogInPageView>();
     }
 
     public void NavigateToStartPage()
@@ -152,6 +153,43 @@ public class MainUserControlViewModel : INotifyPropertyChanged
         if (_windowInstance != null) ThemeManager.UpdateTheme(IsDarkMode, _windowInstance);
     }
 
+    private bool _isWarningVisible;
+
+    public bool IsWarningVisible
+    {
+        get => _isWarningVisible;
+        set
+        {
+            _isWarningVisible = value;
+            OnPropertyChanged(nameof(IsWarningVisible));
+        }
+    }
+
+    private string _warningMessage = "";
+
+    public string WarningMessage
+    {
+        get => _warningMessage;
+        set
+        {
+            _warningMessage = value;
+            OnPropertyChanged(nameof(WarningMessage));
+        }
+    }
+
+    // Methode om waarschuwing te tonen
+    public void ShowWarning(string message)
+    {
+        WarningMessage = message;
+        IsWarningVisible = true;
+    }
+
+    // Methode om waarschuwing te verbergen
+    public void HideWarning()
+    {
+        IsWarningVisible = false;
+    }
+    
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged(string propertyName)

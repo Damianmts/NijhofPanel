@@ -3,9 +3,9 @@ using NijhofPanel.ViewModels;
 
 namespace NijhofPanel.Views;
 
-public partial class UserPageView : Page
+public partial class LogInPageView : Page
 {
-    public UserPageView(MainUserControlViewModel mainVm)
+    public LogInPageView(MainUserControlViewModel mainVm)
     {
         InitializeComponent();
         DataContext = new UserPageViewModel(mainVm);
