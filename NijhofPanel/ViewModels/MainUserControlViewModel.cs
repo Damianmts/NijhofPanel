@@ -162,7 +162,7 @@ public class MainUserControlViewModel : ObservableObject
         Window? newWindow = windowButton.Navlink switch
         {
             "LibraryWindowView" => new LibraryWindowView(),
-            "PrefabWindowView" => new PrefabWindowView(),
+            "PrefabWindowView" => PrefabVm != null ? new PrefabWindowView(PrefabVm) : null,
             "FittingListWindowView" => new FittingListWindowView(),
             "SawListWindowView" => new SawListWindowView(),
             _ => null

@@ -6,12 +6,11 @@ namespace NijhofPanel.Views;
 
 public partial class ElectricalPageView : Page
 {
-    public ElectricalPageView(MainUserControlViewModel? mainVm = null)
+    public ElectricalPageView(MainUserControlViewModel mainVm)
     {
         InitializeComponent();
-
-        // Kies eerst de ElectricalVm uit mainVm, anders de singleton
-        var vm = mainVm?.ElectricalVm ?? ElectricalPageViewModel.Instance;
+        
+        var vm = mainVm.ElectricalVm;
 
         if (vm != null)
         {

@@ -36,7 +36,6 @@ public class PrefabWindowViewModel : ObservableObject
 
     private readonly ExternalEvent _externalEvent;
     private readonly RevitRequestHandler _requestHandler;
-    public static PrefabWindowViewModel? Instance { get; private set; }
 
     public PrefabWindowViewModel(
         RevitRequestHandler requestHandler,
@@ -44,7 +43,6 @@ public class PrefabWindowViewModel : ObservableObject
     {
         _requestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
         _externalEvent = externalEvent ?? throw new ArgumentNullException(nameof(externalEvent));
-        Instance = this;
 
         // Initialiseer command
         ExecuteMaterialListScheduleCommand = new RelayCommand<PrefabSetHelper>(OnExecuteMaterialListSchedule!);

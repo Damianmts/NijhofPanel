@@ -11,13 +11,13 @@ namespace NijhofPanel.Views;
 
 public partial class PrefabWindowView : Window
 {
-    public PrefabWindowView()
+    public PrefabWindowView(PrefabWindowViewModel viewModel)
     {
         InitializeComponent();
 
         // Februik statische instance
-        if (PrefabWindowViewModel.Instance != null)
-            DataContext = PrefabWindowViewModel.Instance;
+        if (viewModel != null)
+            DataContext = viewModel;
         else
             // Fallback of foutmelding
             MessageBox.Show("PrefabWindowViewModel niet geïnitialiseerd.");

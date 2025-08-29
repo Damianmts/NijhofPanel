@@ -10,8 +10,6 @@ public class ToolsPageViewModel : ObservableObject
     private readonly ExternalEvent _exportExcelEvent;
     private readonly ExternalEvent _connectElementEvent;
 
-    public static ToolsPageViewModel? Instance { get; private set; }
-
     public ICommand ConnectElementCommand { get; }
     public ICommand ExportExcelCommand { get; }
 
@@ -25,8 +23,6 @@ public class ToolsPageViewModel : ObservableObject
 
         ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement);
         ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel);
-
-        Instance = this;
     }
 
     private void ExecuteConnectElement(object parameter)

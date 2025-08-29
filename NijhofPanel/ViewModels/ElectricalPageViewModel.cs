@@ -10,9 +10,7 @@ public class ElectricalPageViewModel : ObservableObject
 {
     private readonly FamilyPlacementHandler _handler;
     private readonly ExternalEvent _externalEvent;
-
-    public static ElectricalPageViewModel? Instance { get; private set; }
-
+    
     public ICommand PlaceElectricalComponentCommand { get; }
     public ICommand TagGroepnummerCommand { get; }
     public ICommand TagSwitchcodeCommand { get; }
@@ -25,8 +23,6 @@ public class ElectricalPageViewModel : ObservableObject
         PlaceElectricalComponentCommand = new RelayCommand<object>(OnPlaceElectricalComponent!);
         TagGroepnummerCommand = new RelayCommands.RelayCommand(ExecuteTagGroepnummer);
         TagSwitchcodeCommand = new RelayCommands.RelayCommand(ExecuteTagSwitchcode);
-
-        Instance = this;
     }
 
     private void OnPlaceElectricalComponent(object componentType)
