@@ -102,7 +102,7 @@ public class LibraryWindowViewModel : ObservableObject
         set
         {
             _selectedFile = value;
-            OnPropertyChanged(nameof(SelectedFile));
+            OnPropertyChanged();
         }
     }
 

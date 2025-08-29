@@ -1,5 +1,5 @@
 ﻿namespace NijhofPanel.ViewModels;
 
-public class SettingsPageViewModel
+public class SettingsPageViewModel : ObservableObject
 {
 }

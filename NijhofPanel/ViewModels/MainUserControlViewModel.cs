@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using UI.Controls.Navigation;
 using Visibility = System.Windows.Visibility;
 
-public class MainUserControlViewModel : INotifyPropertyChanged
+public class MainUserControlViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;
     private readonly IWindowService _windowService;
@@ -25,7 +25,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
         set
         {
             _currentView = value;
-            OnPropertyChanged(nameof(CurrentView));
+            OnPropertyChanged();
         }
     }
 
@@ -46,7 +46,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
             if (_isDarkMode != value)
             {
                 _isDarkMode = value;
-                OnPropertyChanged(nameof(IsDarkMode));
+                OnPropertyChanged();
                 _windowService.UpdateTheme(IsDarkMode);
             }
         }
@@ -66,7 +66,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
             if (_isLoggedIn != value)
             {
                 _isLoggedIn = value;
-                OnPropertyChanged(nameof(IsLoggedIn));
+                OnPropertyChanged();
                 OnPropertyChanged(nameof(SidebarVisibility));
             }
         }
@@ -84,7 +84,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
             if (_currentPage != value)
             {
                 _currentPage = value;
-                OnPropertyChanged(nameof(CurrentPage));
+                OnPropertyChanged();
             }
         }
     }
@@ -204,7 +204,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
         set
         {
             _isWarningVisible = value;
-            OnPropertyChanged(nameof(IsWarningVisible));
+            OnPropertyChanged();
         }
     }
 
@@ -216,7 +216,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
         set
         {
             _warningMessage = value;
-            OnPropertyChanged(nameof(WarningMessage));
+            OnPropertyChanged();
         }
     }
 
@@ -231,12 +231,5 @@ public class MainUserControlViewModel : INotifyPropertyChanged
     public void HideWarning()
     {
         IsWarningVisible = false;
-    }
-    
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

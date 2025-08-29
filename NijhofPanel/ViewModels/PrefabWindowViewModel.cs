@@ -13,7 +13,7 @@ using NijhofPanel.Helpers.Core;
 
 namespace NijhofPanel.ViewModels;
 
-public class PrefabWindowViewModel : INotifyPropertyChanged
+public class PrefabWindowViewModel : ObservableObject
 {
     private ObservableCollection<PrefabSetHelper> _prefabSets = new();
 
@@ -245,12 +245,5 @@ public class PrefabWindowViewModel : INotifyPropertyChanged
         public string? ElementId { get; set; }
         public string? Category { get; set; }
         public Dictionary<string, string>? Parameters { get; set; }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

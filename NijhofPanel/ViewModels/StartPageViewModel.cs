@@ -1,6 +1,6 @@
 ﻿namespace NijhofPanel.ViewModels;
 
-public class StartPageViewModel
+public class StartPageViewModel : ObservableObject
 {
     private readonly MainUserControlViewModel _mainVm;
 

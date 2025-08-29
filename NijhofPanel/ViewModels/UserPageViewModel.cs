@@ -5,15 +5,8 @@ using NijhofPanel.Helpers.Core;
 
 namespace NijhofPanel.ViewModels;
 
-public class UserPageViewModel : INotifyPropertyChanged
+public class UserPageViewModel : ObservableObject
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null!)
-    {
-        PropertyChanged!(this, new PropertyChangedEventArgs(propertyName));
-    }
-
     private readonly MainUserControlViewModel _mainViewModel;
 
     // Login command zonder MVVM toolkit

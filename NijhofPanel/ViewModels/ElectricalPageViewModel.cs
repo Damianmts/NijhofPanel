@@ -6,7 +6,7 @@ using Commands.Electrical;
 using System.Windows.Input;
 using Autodesk.Revit.UI;
 
-public class ElectricalPageViewModel
+public class ElectricalPageViewModel : ObservableObject
 {
     private readonly FamilyPlacementHandler _handler;
     private readonly ExternalEvent _externalEvent;

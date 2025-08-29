@@ -1,5 +1,5 @@
 ﻿namespace NijhofPanel.ViewModels;
 
-public class MainWindowViewModel
+public class MainWindowViewModel : ObservableObject
 {
 }

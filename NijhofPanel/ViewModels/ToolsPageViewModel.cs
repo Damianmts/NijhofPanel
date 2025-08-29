@@ -5,7 +5,7 @@ using Autodesk.Revit.UI;
 using Commands.Tools;
 using NijhofPanel.Helpers.Core;
 
-public class ToolsPageViewModel
+public class ToolsPageViewModel : ObservableObject
 {
     private readonly ExternalEvent _exportExcelEvent;
     private readonly ExternalEvent _connectElementEvent;

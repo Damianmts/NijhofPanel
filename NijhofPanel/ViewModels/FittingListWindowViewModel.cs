@@ -1,5 +1,5 @@
 ﻿namespace NijhofPanel.ViewModels;
 
-public class FittingListWindowViewModel
+public class FittingListWindowViewModel : ObservableObject
 {
 }
