@@ -59,8 +59,8 @@ public class NavButton : ListBoxItem
         base.OnMouseLeftButtonUp(e);
         if (Command != null)
         {
-            if (Command.CanExecute(null))
-                Command.Execute(null);
+            if (Command.CanExecute(this))
+                Command.Execute(this);
         }
         else if (ViewType != null && NavigationService != null)
         {

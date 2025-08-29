@@ -63,25 +63,28 @@
                          Background="Transparent"
                          HorizontalContentAlignment="Center">
                     <services:NavButton ViewType="{x:Type views:StartPageView}"
-                                        Icon="{StaticResource HomeIcon}" MouseLeftButtonUp="NavButton_Click" />
+                                        Icon="{StaticResource HomeIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <Separator /><Separator />
                     <services:NavButton ViewType="{x:Type views:ToolsPageView}"
-                                        Icon="{StaticResource WToolsIcon}" MouseLeftButtonUp="NavButton_Click" />
+                                        Icon="{StaticResource WToolsIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <Separator />
                     <services:NavButton ViewType="{x:Type views:ElectricalPageView}"
-                                        Icon="{StaticResource EToolsIcon}" MouseLeftButtonUp="NavButton_Click" />
+                                        Icon="{StaticResource EToolsIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <Separator /><Separator />
                     <services:WindowButton Navlink="LibraryWindowView" Icon="{StaticResource LibraryIcon}"
-                                           MouseLeftButtonUp="WindowButton_Click" />
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <Separator />
                     <services:WindowButton Navlink="PrefabWindowView" Icon="{StaticResource PrefabIcon}"
-                                           MouseLeftButtonUp="WindowButton_Click" />
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <Separator />
                     <services:WindowButton Navlink="FittingListWindowView" Icon="{StaticResource FittingsIcon}"
-                                           MouseLeftButtonUp="WindowButton_Click" />
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <Separator />
                     <services:WindowButton Navlink="SawListWindowView" Icon="{StaticResource SawIcon}"
-                                           MouseLeftButtonUp="WindowButton_Click" />
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 </ListBox>
 
                 <ListBox x:Name="SidebarBottom"
@@ -95,10 +98,12 @@
                         Command="{Binding Com_ToggleTheme}" />
                     <Separator />
                     <services:NavButton ViewType="{x:Type views:LogInPageView}"
-                                        Icon="{StaticResource UserIcon}" MouseLeftButtonUp="NavButton_Click" />
+                                        Icon="{StaticResource UserIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <Separator />
                     <services:NavButton ViewType="{x:Type views:SettingsPageView}"
-                                        Icon="{StaticResource SettingsIcon}" MouseLeftButtonUp="NavButton_Click" />
+                                        Icon="{StaticResource SettingsIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 </ListBox>
             </DockPanel>
         </Border>

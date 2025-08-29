@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 
 namespace NijhofPanel.UI.Controls.Navigation;
 
@@ -39,4 +40,23 @@ public class WindowButton : ListBoxItem
     public static readonly DependencyProperty IsWindowOpenProperty =
         DependencyProperty.Register("IsWindowOpen", typeof(bool), typeof(WindowButton),
             new PropertyMetadata(false));
+    
+    public ICommand Command
+    {
+        get => (ICommand)GetValue(CommandProperty);
+        set => SetValue(CommandProperty, value);
+    }
+
+    public static readonly DependencyProperty CommandProperty =
+        DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(WindowButton), new PropertyMetadata(null));
+
+    protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+    {
+        base.OnMouseLeftButtonUp(e);
+        if (Command != null)
+        {
+            if (Command.CanExecute(this))
+                Command.Execute(this);
+        }
+    }
 }

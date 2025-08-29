@@ -62,7 +62,8 @@ public class RevitApplication : ExternalApplication
         // Maak de hoofd-VM met de NavigationService
         var viewModelFactory = new ViewModelFactory();
         var navigationService = viewModelFactory.GetNavigationService();
-        var mainVm = new MainUserControlViewModel(navigationService)
+        var windowService = new WindowService();
+        var mainVm = new MainUserControlViewModel(navigationService, windowService)
         {
             ElectricalVm = electricalVm,
             ToolsVm = toolsVm,

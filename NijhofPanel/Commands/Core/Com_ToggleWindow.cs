@@ -23,11 +23,12 @@ public class Com_ToggleWindow : IExternalCommand
             var prefabHandler   = new RevitRequestHandler();
             var prefabEvent     = ExternalEvent.Create(prefabHandler);
 
-            // Maak & configureer de NavigationService
+            // Maak & configureer de services
             var navigationService = new NavigationService();
+            var windowService = new WindowService();
 
             // Instantieer de Main ViewModel met alle sub-VM’s
-            var mainVm = new MainUserControlViewModel(navigationService)
+            var mainVm = new MainUserControlViewModel(navigationService, windowService)
             {
                 ElectricalVm = new ElectricalPageViewModel(familyHandler, familyEvent),
                 ToolsVm      = new ToolsPageViewModel(),
@@ -39,7 +40,7 @@ public class Com_ToggleWindow : IExternalCommand
             var mainView = new MainUserControlView(mainVm);
 
             // Doe de toggle
-            mainVm.ToggleWindowMode(mainView, uiApp);
+            windowService.ToggleWindow(mainView, uiApp);
 
             return Result.Succeeded;
         }

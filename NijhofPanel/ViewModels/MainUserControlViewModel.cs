@@ -5,13 +5,17 @@ using Views;
 using Services;
 using UI.Themes;
 using System;
+using System.Windows;
 using System.ComponentModel;
 using System.Windows.Input;
+using System.Collections.Generic;
+using UI.Controls.Navigation;
 using Visibility = System.Windows.Visibility;
 
 public class MainUserControlViewModel : INotifyPropertyChanged
 {
     private readonly INavigationService _navigationService;
+    private readonly IWindowService _windowService;
     public INavigationService NavigationService => _navigationService;
     private object? _currentView;
 
@@ -29,9 +33,10 @@ public class MainUserControlViewModel : INotifyPropertyChanged
     public ToolsPageViewModel? ToolsVm { get; set; }
     public PrefabWindowViewModel? PrefabVm { get; set; }
     public LibraryWindowViewModel? LibraryVm { get; set; }
-
-    private static MainWindowView _windowInstance;
+    
     private bool _isDarkMode;
+    private readonly Dictionary<string, Window> _openWindows = new();
+    private NavButton? _activeNavButton;
 
     public bool IsDarkMode
     {
@@ -42,12 +47,14 @@ public class MainUserControlViewModel : INotifyPropertyChanged
             {
                 _isDarkMode = value;
                 OnPropertyChanged(nameof(IsDarkMode));
-                UpdateTheme();
+                _windowService.UpdateTheme(IsDarkMode);
             }
         }
     }
 
     public ICommand Com_ToggleTheme { get; }
+    public ICommand NavigateCommand { get; }
+    public ICommand OpenWindowCommand { get; }
 
     private bool _isLoggedIn;
 
@@ -84,11 +91,14 @@ public class MainUserControlViewModel : INotifyPropertyChanged
 
     public ICommand LoginCommand { get; }
 
-    public MainUserControlViewModel(INavigationService navigationService)
+    public MainUserControlViewModel(INavigationService navigationService, IWindowService windowService)
     {
         _navigationService = navigationService;
+        _windowService = windowService;
         Com_ToggleTheme = new RelayCommand(ExecuteToggleTheme);
         LoginCommand = new RelayCommand(ExecuteLogin);
+        NavigateCommand = new RelayCommand<NavButton>(ExecuteNavigate);
+        OpenWindowCommand = new RelayCommand<WindowButton>(ExecuteOpenWindow);
         IsDarkMode = false;
         IsLoggedIn = false;
         NavigateToLogin();
@@ -112,31 +122,69 @@ public class MainUserControlViewModel : INotifyPropertyChanged
     {
         _navigationService.NavigateTo<StartPageView>();
     }
-
-    public void ToggleWindowMode(MainUserControlView userControl, UIApplication uiApp)
+    
+    private void ExecuteNavigate(NavButton navButton)
     {
-        if (_windowInstance == null)
-        {
-            var dockablePane = GetDockablePane(uiApp);
-            if (dockablePane != null)
-                dockablePane.Hide();
+        if (_activeNavButton != null && _activeNavButton != navButton)
+            _activeNavButton.IsActive = false;
 
-            _windowInstance = new MainWindowView();
-            _windowInstance.MainContent.Content = userControl;
-            _windowInstance.Closed += (s, e) =>
-            {
-                _windowInstance = null;
-                dockablePane?.Show();
-            };
-            _windowInstance.Show();
-        }
-        else
+        navButton.IsActive = true;
+        _activeNavButton = navButton;
+
+        if (navButton.ViewType != null)
         {
-            _windowInstance.Close();
-            _windowInstance = null;
+            var method = typeof(INavigationService).GetMethod(nameof(INavigationService.NavigateTo))
+                ?.MakeGenericMethod(navButton.ViewType);
+            method?.Invoke(_navigationService, null);
         }
     }
 
+    private void ExecuteOpenWindow(WindowButton windowButton)
+    {
+        if (string.IsNullOrEmpty(windowButton.Navlink)) return;
+
+        if (_openWindows.TryGetValue(windowButton.Navlink, out var existing))
+        {
+            if (existing.IsVisible)
+            {
+                if (existing.WindowState == WindowState.Minimized)
+                    existing.WindowState = WindowState.Normal;
+
+                existing.Topmost = true;
+                existing.Topmost = false;
+                existing.Activate();
+                return;
+            }
+
+            _openWindows.Remove(windowButton.Navlink);
+        }
+
+        Window? newWindow = windowButton.Navlink switch
+        {
+            "LibraryWindowView" => new LibraryWindowView(),
+            "PrefabWindowView" => new PrefabWindowView(),
+            "FittingListWindowView" => new FittingListWindowView(),
+            "SawListWindowView" => new SawListWindowView(),
+            _ => null
+        };
+
+        if (newWindow != null)
+        {
+            newWindow.Owner = Application.Current.MainWindow;
+            windowButton.IsWindowOpen = true;
+            _openWindows[windowButton.Navlink] = newWindow;
+
+            newWindow.Closed += (_, _) =>
+            {
+                _openWindows.Remove(windowButton.Navlink);
+                windowButton.IsWindowOpen = false;
+            };
+
+            newWindow.Show();
+            ThemeManager.UpdateTheme(IsDarkMode, newWindow);
+        }
+    }
+    
     private DockablePane GetDockablePane(UIApplication uiApp)
     {
         var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
@@ -147,12 +195,7 @@ public class MainUserControlViewModel : INotifyPropertyChanged
     {
         IsDarkMode = !IsDarkMode;
     }
-
-    private void UpdateTheme()
-    {
-        if (_windowInstance != null) ThemeManager.UpdateTheme(IsDarkMode, _windowInstance);
-    }
-
+    
     private bool _isWarningVisible;
 
     public bool IsWarningVisible

@@ -32,6 +32,11 @@
                            Width="40"
                            Height="70"
                            HorizontalAlignment="Left" />
+                <Rectangle Margin="0,0,10,0"
+                           Fill="White"
+                           Width="40"
+                           Height="70"
+                           HorizontalAlignment="Right" />
                 <Path Fill="#046434"
                       Data="{StaticResource NijhofCutoutIcon}"
                       Stretch="Uniform" />
