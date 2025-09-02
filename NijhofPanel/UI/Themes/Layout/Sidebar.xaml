@@ -15,19 +15,19 @@
                     <Border x:Name="back" CornerRadius="8" Padding="{TemplateBinding Padding}" Background="Transparent"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <Path x:Name="icon" Height="25" Width="25" Stretch="Uniform" Fill="#046434"
+                        <Path x:Name="icon" Height="25" Width="25" Stretch="Uniform" Fill="{DynamicResource CurrentSidebarIconColor}"
                               Data="{TemplateBinding Icon}" />
                     </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="back" Value="#ffe560" />
-                            <Setter Property="Fill" TargetName="icon" Value="#046434" />
+                            <Setter Property="Background" TargetName="back" Value="#f5d105" />
+                            <Setter Property="Fill" TargetName="icon" Value="{DynamicResource CurrentSidebarIconColor}" />
                         </Trigger>
 
                         <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource Self}}" Value="True">
-                            <Setter Property="Background" TargetName="back" Value="#ffe560" />
-                            <Setter Property="Fill" TargetName="icon" Value="#046434" />
+                            <Setter Property="Background" TargetName="back" Value="#f5d105" />
+                            <Setter Property="Fill" TargetName="icon" Value="{DynamicResource CurrentSidebarIconColor}" />
                         </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -47,20 +47,20 @@
                     <Border x:Name="back" CornerRadius="8" Padding="{TemplateBinding Padding}" Background="Transparent"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <Path x:Name="icon" Height="25" Width="25" Stretch="Uniform" Fill="#046434"
+                        <Path x:Name="icon" Height="25" Width="25" Stretch="Uniform" Fill="{DynamicResource CurrentSidebarIconColor}"
                               Data="{TemplateBinding Icon}" />
                     </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="back" Value="#ffe560" />
-                            <Setter Property="Fill" TargetName="icon" Value="#046434" />
+                            <Setter Property="Background" TargetName="back" Value="#f5d105" />
+                            <Setter Property="Fill" TargetName="icon" Value="{DynamicResource CurrentSidebarIconColor}" />
                         </Trigger>
 
                         <DataTrigger Binding="{Binding IsWindowOpen, RelativeSource={RelativeSource Self}}"
                                      Value="True">
-                            <Setter Property="Background" TargetName="back" Value="#ffe560" />
-                            <Setter Property="Fill" TargetName="icon" Value="#046434" />
+                            <Setter Property="Background" TargetName="back" Value="#f5d105" />
+                            <Setter Property="Fill" TargetName="icon" Value="{DynamicResource CurrentSidebarIconColor}" />
                         </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

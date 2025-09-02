@@ -6,8 +6,10 @@
     <!-- Light Theme -->
     <SolidColorBrush x:Key="BackgroundColor" Color="White" />
     <SolidColorBrush x:Key="TextColor" Color="Black" />
+    <SolidColorBrush x:Key="SidebarIconColor" Color="#046434"/>
 
     <!-- Dark Theme -->
-    <SolidColorBrush x:Key="BackgroundColor_Dark" Color="#3B4453" />
+    <SolidColorBrush x:Key="BackgroundColor_Dark" Color="#3b4453" />
     <SolidColorBrush x:Key="TextColor_Dark" Color="White" />
+    <SolidColorBrush x:Key="SidebarIconColor_Dark" Color="#046434" />
 </ResourceDictionary>

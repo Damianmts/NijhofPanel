@@ -11,7 +11,8 @@
       VerticalAlignment="Stretch"
       MinHeight="500"
       MinWidth="270"
-      Background="{DynamicResource CurrentBackgroundColor}">
+      Background="{DynamicResource CurrentBackgroundColor}"
+      Foreground="{DynamicResource CurrentTextColor}">
 
     <!-- To Do -->
     <!-- TODO - Add tooltips -->
@@ -31,6 +32,8 @@
             </ResourceDictionary.MergedDictionaries>
         <SolidColorBrush x:Key="CurrentBackgroundColor"
                          Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+        <SolidColorBrush x:Key="CurrentTextColor"
+                         Color="{Binding Color, Source={StaticResource TextColor}}" />
         </ResourceDictionary>
     </Page.Resources>
 

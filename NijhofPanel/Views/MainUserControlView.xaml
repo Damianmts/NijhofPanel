@@ -33,6 +33,9 @@
 
             <SolidColorBrush x:Key="CurrentBackgroundColor"
                              Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+            
+            <SolidColorBrush x:Key="CurrentSidebarIconColor"
+                             Color="{Binding Color, Source={StaticResource SidebarIconColor}}" />
 
             <local:BooleanToColumnConverter x:Key="BoolToColumnConverter" />
             <local:BooleanToColumnSpanConverter x:Key="BoolToColumnSpanConverter" />
@@ -64,27 +67,34 @@
                          HorizontalContentAlignment="Center">
                     <services:NavButton ViewType="{x:Type views:StartPageView}"
                                         Icon="{StaticResource HomeIcon}"
-                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        ToolTip="Home" />
                     <Separator /><Separator />
                     <services:NavButton ViewType="{x:Type views:ToolsPageView}"
                                         Icon="{StaticResource WToolsIcon}"
-                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        ToolTip="W-Tools" />
                     <Separator />
                     <services:NavButton ViewType="{x:Type views:ElectricalPageView}"
                                         Icon="{StaticResource EToolsIcon}"
-                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        ToolTip="E-Tools" />
                     <Separator /><Separator />
                     <services:WindowButton Navlink="LibraryWindowView" Icon="{StaticResource LibraryIcon}"
-                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           ToolTip="Library" />
                     <Separator />
                     <services:WindowButton Navlink="PrefabWindowView" Icon="{StaticResource PrefabIcon}"
-                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           ToolTip="Prefab Manager" />
                     <Separator />
                     <services:WindowButton Navlink="FittingListWindowView" Icon="{StaticResource FittingsIcon}"
-                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           ToolTip="Materiaallijst" />
                     <Separator />
                     <services:WindowButton Navlink="SawListWindowView" Icon="{StaticResource SawIcon}"
-                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           ToolTip="Zaaglijst" />
                 </ListBox>
 
                 <ListBox x:Name="SidebarBottom"
@@ -95,15 +105,18 @@
                     <Separator /><Separator />
                     <services:NavButton
                         Icon="{StaticResource DarkModeIcon}"
-                        Command="{Binding Com_ToggleTheme}" />
+                        Command="{Binding Com_ToggleTheme}"
+                        ToolTip="Thema" />
                     <Separator />
                     <services:NavButton ViewType="{x:Type views:LogInPageView}"
                                         Icon="{StaticResource UserIcon}"
-                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        ToolTip="Log-In"/>
                     <Separator />
                     <services:NavButton ViewType="{x:Type views:SettingsPageView}"
                                         Icon="{StaticResource SettingsIcon}"
-                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        ToolTip="Instellingen" />
                 </ListBox>
             </DockPanel>
         </Border>
