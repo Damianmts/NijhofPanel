@@ -21,29 +21,7 @@
             </Setter.Value>
         </Setter>
 
-        <Setter Property="ContentTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <Grid>
-                        <TextBlock Text="{Binding}"
-                                   FontFamily="Arial"
-                                   Foreground="#f5d105"
-                                   TextAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   TextWrapping="Wrap"
-                                   Visibility="Visible" />
-                        <Path Data="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Tag}"
-                              Width="50"
-                              Height="50"
-                              Stretch="Uniform"
-                              Fill="#f5d105"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center" />
-                    </Grid>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-
+        <!-- Verwijderde ContentTemplate en vervangen door Template die zelf icoon + label tekent -->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -52,17 +30,94 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 CornerRadius="2">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
+                                <!-- Icoon -->
+                                <Path x:Name="IconPath"
+                                      Data="{TemplateBinding Tag}"
+                                      Width="50"
+                                      Height="50"
+                                      Stretch="Uniform"
+                                      Fill="#f5d105"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center">
+                                    <Path.RenderTransform>
+                                        <TranslateTransform Y="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+
+                                <!-- Label (functienaam) -->
+                                <TextBlock x:Name="LabelText"
+                                           Grid.Row="1"
+                                           Text="{TemplateBinding Content}"
+                                           FontSize="11"
+                                           FontFamily="Arial"
+                                           Foreground="#f5d105"
+                                           FontWeight="Normal"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,2"
+                                           Opacity="0"
+                                           Visibility="Collapsed" />
+                            </Grid>
                         </Border>
                     </Grid>
+
                     <ControlTemplate.Triggers>
+                        <!-- Hover achtergrond -->
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border"
-                                    Property="Background"
-                                    Value="#004525" />
+                            <Setter TargetName="Border" Property="Background" Value="#004525" />
                         </Trigger>
+
+                        <!-- Start animatie na ... seconden hover -->
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard x:Name="HoverRevealStoryboard">
+                                <Storyboard BeginTime="0:0:1">
+                                    <!-- Icoon iets omhoog -->
+                                    <DoubleAnimation Storyboard.TargetName="IconPath"
+                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                     To="-2"
+                                                     Duration="0:0:0.15"
+                                                     FillBehavior="HoldEnd" />
+                                    <!-- Label zichtbaar + fade-in -->
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LabelText"
+                                                                   Storyboard.TargetProperty="Visibility">
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <DoubleAnimation Storyboard.TargetName="LabelText"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="1"
+                                                     Duration="0:0:0.15"
+                                                     FillBehavior="HoldEnd" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <!-- Reset bij MouseLeave -->
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <StopStoryboard BeginStoryboardName="HoverRevealStoryboard" />
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="IconPath"
+                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                     To="0"
+                                                     Duration="0:0:0.1" />
+                                    <DoubleAnimation Storyboard.TargetName="LabelText"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0"
+                                                     Duration="0:0:0.1" />
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LabelText"
+                                                                   Storyboard.TargetProperty="Visibility">
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.1" Value="{x:Static Visibility.Collapsed}" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

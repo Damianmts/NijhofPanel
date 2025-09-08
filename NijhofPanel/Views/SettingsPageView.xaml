@@ -6,7 +6,7 @@
       mc:Ignorable="d"
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
-      MinHeight="500"
+      MinHeight="700"
       MinWidth="270"
       Background="{DynamicResource CurrentBackgroundColor}">
 

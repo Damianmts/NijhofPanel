@@ -170,7 +170,7 @@ public class MainUserControlViewModel : ObservableObject
 
         if (newWindow != null)
         {
-            newWindow.Owner = Application.Current.MainWindow;
+            newWindow.Owner = Application.Current?.MainWindow;
             windowButton.IsWindowOpen = true;
             _openWindows[windowButton.Navlink] = newWindow;
 
