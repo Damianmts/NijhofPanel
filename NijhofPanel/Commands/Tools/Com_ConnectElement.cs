@@ -33,19 +33,62 @@ public class Com_ConnectElement : IExternalEventHandler
 
     private void ConnectElements(UIDocument uidoc, Document doc)
     {
-        // selectie van element om te verplaatsen
-        var movedReference = uidoc.Selection
-            .PickObject(ObjectType.Element, new NoInsulationFilter(),
-                "Selecteer het element wat je wilt verbinden");
-        var movedElement = doc.GetElement(movedReference);
-        var movedPoint = movedReference.GlobalPoint;
+        // --- Stap 1: hoofd-element kiezen ---
+        Reference movedRef;
+        try
+        {
+            movedRef = uidoc.Selection.PickObject(ObjectType.Element, new NoInsulationFilter(),
+                "Selecteer het eerste element wat je wilt verbinden");
+        }
+        catch (OperationCanceledException)
+        {
+            return; // gebruiker annuleerde selectie
+        }
 
-        // selectie van doel-element
-        var targetReference = uidoc.Selection
-            .PickObject(ObjectType.Element, new NoInsulationFilter(),
+        var movedElement = doc.GetElement(movedRef);
+        var movedPoint = movedRef.GlobalPoint;
+
+        if (movedElement == null) return;
+
+        // --- Stap 2: check of er verbonden elementen zijn ---
+        var connectedElements = GetConnectedElements(movedElement);
+        List<Element> elementsToMove = new List<Element> { movedElement };
+
+        if (connectedElements.Any())
+        {
+            IList<Reference> extraRefs;
+            try
+            {
+                extraRefs = uidoc.Selection.PickObjects(ObjectType.Element, new NoInsulationFilter(),
+                    "Selecteer de extra elementen die mee moeten bewegen (Finish bij klaar)");
+            }
+            catch (OperationCanceledException)
+            {
+                return; // gebruiker annuleerde selectie
+            }
+
+            foreach (var r in extraRefs)
+            {
+                var e = doc.GetElement(r);
+                if (e != null && !elementsToMove.Contains(e))
+                    elementsToMove.Add(e);
+            }
+        }
+
+        // --- Stap 3: target-element kiezen ---
+        Reference targetRef;
+        try
+        {
+            targetRef = uidoc.Selection.PickObject(ObjectType.Element, new NoInsulationFilter(),
                 "Selecteer het element waarmee je wilt verbinden");
-        var targetElement = doc.GetElement(targetReference);
-        var targetPoint = targetReference.GlobalPoint;
+        }
+        catch (OperationCanceledException)
+        {
+            return; // gebruiker annuleerde selectie
+        }
+
+        var targetElement = doc.GetElement(targetRef);
+        var targetPoint = targetRef.GlobalPoint;
 
         if (targetElement.Id == movedElement.Id)
         {
@@ -54,13 +97,14 @@ public class Com_ConnectElement : IExternalEventHandler
             return;
         }
 
+        // --- Stap 4: connectors ophalen ---
         var movedConnector = GetClosestConnector(movedElement, movedPoint);
         var targetConnector = GetClosestConnector(targetElement, targetPoint);
 
         if (movedConnector == null || targetConnector == null)
         {
             TaskDialog.Show("Foutmelding",
-                "Het lijkt erop dat het geselecteerde element geen ongebruikte connector heeft.");
+                "Het lijkt erop dat een van de elementen geen vrije connector heeft.");
             return;
         }
 
@@ -71,18 +115,22 @@ public class Com_ConnectElement : IExternalEventHandler
             return;
         }
 
-        // roteer indien nodig
+        // --- Rotatie check ---
         var movedDir = movedConnector.CoordinateSystem.BasisZ;
         var targetDir = targetConnector.CoordinateSystem.BasisZ;
         var angle = movedDir.AngleTo(targetDir);
 
-        if (Math.Abs(angle - Math.PI) > 1e-6)
+        if (angle > 1e-6 && Math.Abs(angle - Math.PI) > 1e-6)
         {
-            var axisDir = angle == 0
-                ? movedConnector.CoordinateSystem.BasisY
-                : movedDir.CrossProduct(targetDir);
+            var axisDir = movedDir.CrossProduct(targetDir);
+            if (axisDir.IsZeroLength())
+            {
+                axisDir = movedDir.IsAlmostEqualTo(XYZ.BasisZ)
+                    ? XYZ.BasisX
+                    : XYZ.BasisZ.CrossProduct(movedDir).Normalize();
+            }
 
-            var axis = Line.CreateBound(movedPoint, movedPoint + axisDir);
+            var axis = Line.CreateBound(movedPoint, movedPoint + axisDir.Normalize() * 5);
             using (var t = new Transaction(doc, "Draai Element"))
             {
                 t.Start();
@@ -91,13 +139,22 @@ public class Com_ConnectElement : IExternalEventHandler
             }
         }
 
-        // verplaats en verbind
-        using (var t = new Transaction(doc, "Verplaats En Verbind Elementen"))
+        // --- Stap 5: verplaatsen en verbinden ---
+        var moveVec = targetConnector.Origin - movedConnector.Origin;
+
+        using (var t = new Transaction(doc, "Verplaats stelsel en verbind"))
         {
             t.Start();
-            ((LocationPoint)movedElement.Location)
-                .Move(targetConnector.Origin - movedConnector.Origin);
+
+            var idsToMove = elementsToMove
+                .Select(e => e.Id)
+                .Distinct()
+                .ToList();
+
+            ElementTransformUtils.MoveElements(doc, idsToMove, moveVec);
+
             movedConnector.ConnectTo(targetConnector);
+
             t.Commit();
         }
     }
@@ -134,6 +191,41 @@ public class Com_ConnectElement : IExternalEventHandler
         }
 
         return closest;
+    }
+
+    private List<Element> GetConnectedElements(Element element)
+    {
+        List<Element> result = new List<Element>();
+
+        ConnectorSet? connectors = null;
+        switch (element)
+        {
+            case FamilyInstance fi:
+                connectors = fi.MEPModel?.ConnectorManager?.Connectors;
+                break;
+            case Pipe pipe:
+                connectors = pipe.ConnectorManager?.Connectors;
+                break;
+            case Duct duct:
+                connectors = duct.ConnectorManager?.Connectors;
+                break;
+        }
+
+        if (connectors == null) return result;
+
+        foreach (Connector c in connectors)
+        {
+            if (c.IsConnected)
+            {
+                foreach (Connector refC in c.AllRefs)
+                {
+                    if (refC.Owner.Id != element.Id)
+                        result.Add(refC.Owner);
+                }
+            }
+        }
+
+        return result;
     }
 
     private class NoInsulationFilter : ISelectionFilter
