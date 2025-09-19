@@ -14,6 +14,7 @@ using Core;
 using Providers;
 using Helpers.Core;
 using Helpers.Electrical;
+using Commands.Tools;
 
 /// <summary>
 ///     Entry point voor de Revit-plugin 'Nijhof Tools'
@@ -27,6 +28,8 @@ public class RevitApplication : ExternalApplication
     
     public static RevitRequestHandler LibraryHandler { get; private set; }
     public static ExternalEvent LibraryEvent { get; private set; }
+    public static Com_ConnectElement ConnectElementHandler { get; private set; } // <-- toegevoegd
+    public static ExternalEvent ConnectElementEvent { get; private set; }        // <-- toegevoegd
     
     public override void OnStartup()
     {
@@ -48,6 +51,8 @@ public class RevitApplication : ExternalApplication
         
         LibraryHandler = new RevitRequestHandler();
         LibraryEvent   = ExternalEvent.Create(LibraryHandler);
+        ConnectElementHandler = new Com_ConnectElement();                  // <-- toegevoegd
+        ConnectElementEvent   = ExternalEvent.Create(ConnectElementHandler); // <-- toegevoegd
 
         // Ribbon-buttons
         var ribbonPanel = GetOrCreateRibbonPanel();
@@ -111,12 +116,11 @@ public class RevitApplication : ExternalApplication
             LargeImage = icon,
             Image = icon
         };
-
         ribbonPanel.AddItem(buttonData);
 
         var toggleButtonData = new PushButtonData(
             "Toggle Window",
-            "Open als Venster",
+            "Open Venster",
             assemblyPath,
             "NijhofPanel.Commands.Core.Com_ToggleWindow")
         {
@@ -125,7 +129,21 @@ public class RevitApplication : ExternalApplication
             LargeImage = icon,
             Image = icon
         };
-
         ribbonPanel.AddItem(toggleButtonData);
+        
+        ribbonPanel.AddSlideOut();
+        var connectShortcutButton = new PushButtonData(
+            "Aansluiten\nElementen",
+            "Aansluiten\nElementen",
+            assemblyPath,
+            "NijhofPanel.Commands.Tools.Shortcuts.Cmd_ConnectElementShortcut")
+        
+        {
+            ToolTip = "Verbind elementen",
+            LongDescription = "Langere beschrijving",
+            LargeImage = icon,
+            Image = icon
+        };
+        ribbonPanel.AddItem(connectShortcutButton);
     }
 }
