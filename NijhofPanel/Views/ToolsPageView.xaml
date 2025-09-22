@@ -58,8 +58,9 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ConnectElementIcon}"
-                            Command="{Binding ConnectElementCommand}" Content="Element Aansluiten" />
-                    <Button Style="{StaticResource BigButtonSVG}" />
+                            Content="Element Aansluiten" Command="{Binding ConnectElementCommand}"/>
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SplitIcon}"
+                            Content="Opdelen" Command="{Binding SplitPipeCommand}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Vertical">
                     <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource ExcelIcon}"
@@ -74,9 +75,9 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource HWANumberIcon}"
-                            Content="HWA Artikelnr." />
+                            Content="HWA Artikelnr." Command="{Binding UpdateHWACommand}" />
                     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource HWALengthIcon}"
-                            Content="HWA Lengte" />
+                            Content="HWA Lengte" Command="{Binding UpdateHWALengthCommand}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Vertical">
                     <Button Style="{StaticResource LongButtonSVG}" />
@@ -84,7 +85,7 @@
                 </StackPanel>
             </Grid>
 
-
+            
             <TextBlock Text="Sparingen"
                        FontFamily="Arial"
                        FontWeight="Bold"
@@ -92,13 +93,13 @@
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
                 <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessWallIcon}" 
-                        Content="Muur" />
+                        Content="Muur" Command="{Binding RecessPlaceWallCommand}" />
                 <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessFloorIcon}"
-                        Content="Vloer" />
+                        Content="Vloer" Command="{Binding RecessPlaceFloorCommand}" />
                 <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessBeamIcon}"
-                        Content="Balk" />
+                        Content="Fundering" Command="{Binding RecessPlaceBeamCommand}" />
                 <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessUSOIcon}" 
-                        Content="Sparing Tool"/>
+                        Content="Sparing Tool" />
             </WrapPanel>
 
 
@@ -126,11 +127,11 @@
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
                 <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabNewIcon}" 
-                        Command="{Binding PrefabNewCommand}" Content="Nieuwe Set" />
+                        Content="Nieuwe Set" Command="{Binding PrefabNewCommand}" />
                 <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabAddIcon}"
-                        Command="{Binding PrefabAddCommand}" Content="Toevoegen"/>
+                        Content="Toevoegen" Command="{Binding PrefabAddCommand}" />
                 <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabDeleteIcon}"
-                        Command="{Binding PrefabDeleteCommand}" Content="Verwijderen" />
+                        Content="Verwijderen" Command="{Binding PrefabDeleteCommand}" />
                 <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabManagerIcon}"
                         Content="Manager" />
             </WrapPanel>
@@ -147,8 +148,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="VWA Lengte" />
-                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="HWA Lengte" />
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
+                            Content="VWA Lengte" />
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
+                            Content="HWA Lengte" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource View3DIcon}"
@@ -163,7 +166,8 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}" Content="MV Lengte" />
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
+                            Content="MV Lengte" />
                     <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagDimensionIcon}"
                             Content="Maatvoering" />
                 </StackPanel>

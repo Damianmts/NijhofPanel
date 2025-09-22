@@ -133,8 +133,8 @@ public class RevitApplication : ExternalApplication
         
         ribbonPanel.AddSlideOut();
         var connectShortcutButton = new PushButtonData(
-            "Aansluiten\nElementen",
-            "Aansluiten\nElementen",
+            "Aansluiten \nElementen",
+            "Aansluiten \nElementen",
             assemblyPath,
             "NijhofPanel.Commands.Tools.Shortcuts.Cmd_ConnectElementShortcut")
         

@@ -9,6 +9,13 @@ public class ToolsPageViewModel : ObservableObject
 {
     private readonly ExternalEvent _exportExcelEvent;
     private readonly ExternalEvent _connectElementEvent;
+    private readonly ExternalEvent _updateHWAEvent;
+    private readonly ExternalEvent _updateHWALengthEvent;
+    private readonly ExternalEvent _splitPipeEvent;
+    
+    private readonly ExternalEvent _recessPlaceWallEvent;
+    private readonly ExternalEvent _recessPlaceBeamEvent;
+    private readonly ExternalEvent _recessPlaceFloorEvent;
     
     private readonly ExternalEvent _prefabNewEvent;
     private readonly ExternalEvent _prefabAddEvent;
@@ -17,6 +24,14 @@ public class ToolsPageViewModel : ObservableObject
     // Toolstrip commands
     public ICommand ConnectElementCommand { get; }
     public ICommand ExportExcelCommand { get; }
+    public ICommand UpdateHWACommand { get; }
+    public ICommand UpdateHWALengthCommand { get; }
+    public ICommand SplitPipeCommand { get; }
+    
+    // Recess commands
+    public ICommand RecessPlaceWallCommand { get; }
+    public ICommand RecessPlaceBeamCommand { get; }
+    public ICommand RecessPlaceFloorCommand { get; }
     
     // Prefab commands
     public ICommand PrefabNewCommand { get; }
@@ -31,6 +46,28 @@ public class ToolsPageViewModel : ObservableObject
         var connectElementHandler = new Com_ConnectElement();
         _connectElementEvent = ExternalEvent.Create(connectElementHandler);
 
+        var updateHWAHandler = new Com_UpdateHWA();
+        _updateHWAEvent = ExternalEvent.Create(updateHWAHandler);
+        
+        var updateHWALengthHandler = new Com_UpdateHWALength();
+        _updateHWALengthEvent = ExternalEvent.Create(updateHWALengthHandler);
+        
+        var splitPipeHandler = new Com_SplitPipe();
+        _splitPipeEvent = ExternalEvent.Create(splitPipeHandler);
+        
+        
+        
+        var recessPlaceWallHandler = new Com_RecessPlaceWall();
+        _recessPlaceWallEvent = ExternalEvent.Create(recessPlaceWallHandler);
+
+        var recessPlaceBeamHandler = new Com_RecessPlaceBeam();
+        _recessPlaceBeamEvent = ExternalEvent.Create(recessPlaceBeamHandler);
+
+        var recessPlaceFloorHandler = new Com_RecessPlaceFloor();
+        _recessPlaceFloorEvent = ExternalEvent.Create(recessPlaceFloorHandler);
+
+        
+        
         var prefabNewHandler = new Com_PrefabCreate();
         _prefabNewEvent = ExternalEvent.Create(prefabNewHandler);
 
@@ -42,7 +79,14 @@ public class ToolsPageViewModel : ObservableObject
 
         ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement);
         ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel);
+        UpdateHWACommand = new RelayCommands.RelayCommand(ExecuteUpdateHWA);
+        UpdateHWALengthCommand = new RelayCommands.RelayCommand(ExecuteUpdateHWALength);
+        SplitPipeCommand = new RelayCommands.RelayCommand(ExecuteSplitPipe);
 
+        RecessPlaceWallCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceWall);
+        RecessPlaceBeamCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceBeam);
+        RecessPlaceFloorCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceFloor);
+        
         PrefabNewCommand = new RelayCommands.RelayCommand(ExecutePrefabCreate);
         PrefabAddCommand = new RelayCommands.RelayCommand(ExecutePrefabAdd);
         PrefabDeleteCommand = new RelayCommands.RelayCommand(ExecutePrefabDelete);
@@ -58,6 +102,40 @@ public class ToolsPageViewModel : ObservableObject
         _exportExcelEvent.Raise();
     }
 
+    private void ExecuteUpdateHWA(object parameter)
+    {
+        _updateHWAEvent.Raise();
+    }
+    
+    private void ExecuteUpdateHWALength(object parameter)
+    {
+        _updateHWALengthEvent.Raise();
+    }
+
+    private void ExecuteSplitPipe(object parameter)
+    {
+        _splitPipeEvent.Raise();
+    }
+    
+    
+    
+    private void ExecuteRecessPlaceWall(object parameter)
+    {
+        _recessPlaceWallEvent.Raise();
+    }
+
+    private void ExecuteRecessPlaceBeam(object parameter)
+    {
+        _recessPlaceBeamEvent.Raise();
+    }
+
+    private void ExecuteRecessPlaceFloor(object parameter)
+    {
+        _recessPlaceFloorEvent.Raise();
+    }
+
+    
+    
     private void ExecutePrefabCreate(object parameter)
     {
         _prefabNewEvent.Raise();

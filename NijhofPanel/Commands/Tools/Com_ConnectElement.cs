@@ -18,7 +18,6 @@ public class Com_ConnectElement : IExternalEventHandler
         try
         {
             ConnectElements(uidoc, doc);
-            // je kunt hier eventueel een notificatie geven bij success/failure
         }
         catch (OperationCanceledException)
         {
@@ -33,7 +32,6 @@ public class Com_ConnectElement : IExternalEventHandler
 
     private void ConnectElements(UIDocument uidoc, Document doc)
     {
-        // --- Stap 1: hoofd-element kiezen ---
         Reference movedRef;
         try
         {
@@ -49,8 +47,7 @@ public class Com_ConnectElement : IExternalEventHandler
         var movedPoint = movedRef.GlobalPoint;
 
         if (movedElement == null) return;
-
-        // --- Stap 2: check of er verbonden elementen zijn ---
+        
         var connectedElements = GetConnectedElements(movedElement);
         List<Element> elementsToMove = new List<Element> { movedElement };
 
@@ -74,8 +71,7 @@ public class Com_ConnectElement : IExternalEventHandler
                     elementsToMove.Add(e);
             }
         }
-
-        // --- Stap 3: target-element kiezen ---
+        
         Reference targetRef;
         try
         {
@@ -96,8 +92,7 @@ public class Com_ConnectElement : IExternalEventHandler
                 "Oeps, het lijkt erop dat je hetzelfde element hebt geselecteerd.");
             return;
         }
-
-        // --- Stap 4: connectors ophalen ---
+        
         var movedConnector = GetClosestConnector(movedElement, movedPoint);
         var targetConnector = GetClosestConnector(targetElement, targetPoint);
 
@@ -114,8 +109,7 @@ public class Com_ConnectElement : IExternalEventHandler
                 "Je hebt 2 elementen van verschillende systemen geselecteerd.");
             return;
         }
-
-        // --- Rotatie check ---
+        
         var movedDir = movedConnector.CoordinateSystem.BasisZ;
         var targetDir = targetConnector.CoordinateSystem.BasisZ;
         var angle = movedDir.AngleTo(targetDir);
@@ -138,8 +132,7 @@ public class Com_ConnectElement : IExternalEventHandler
                 t.Commit();
             }
         }
-
-        // --- Stap 5: verplaatsen en verbinden ---
+        
         var moveVec = targetConnector.Origin - movedConnector.Origin;
 
         using (var t = new Transaction(doc, "Verplaats stelsel en verbind"))

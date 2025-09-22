@@ -39,7 +39,7 @@ public class Com_LoadFamily
                 // TODO - Remove 'success' messages
                 if (loaded && fam != null)
                 {
-                    MessageBox.Show($"Family '{fam.Name}' succesvol ingeladen!", "Succes",
+                    MessageBox.Show($"Family '{fam.Name}' ingeladen!", "Succes",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                     return true;
                 }
