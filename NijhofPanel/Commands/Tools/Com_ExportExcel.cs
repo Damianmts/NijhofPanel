@@ -37,6 +37,22 @@ public class Com_ExportExcel : IExternalEventHandler
             {
                 var successCount = 0;
                 var failCount = 0;
+                
+                Excel.Application? testExcelApp = null;
+                try
+                {
+                    testExcelApp = new Excel.Application();
+                    testExcelApp.Quit();
+                    Marshal.ReleaseComObject(testExcelApp);
+                }
+                catch (COMException)
+                {
+                    TaskDialog.Show("Excel fout",
+                        "Excel kan niet gestart worden.\n\n" +
+                        "Mogelijke oorzaak: verschil tussen 32- en 64-bit versies van Revit en Microsoft Office.\n" +
+                        "Oplossing: installeer de 64-bit versie van Office of gebruik een andere exportmethode.");
+                    return; // Stop de hele export
+                }
 
                 foreach (var schedule in selectionWindow.SelectedSchedules)
                 {
@@ -131,7 +147,7 @@ public class Com_ExportExcel : IExternalEventHandler
                 GC.WaitForPendingFinalizers();
 
                 // Toon resultaat
-                Autodesk.Revit.UI.TaskDialog.Show("Export Voltooid",
+                TaskDialog.Show("Export Voltooid",
                     $"Export voltooid!\nSuccesvol: {successCount} schedules\nMislukt: {failCount} schedules");
             }
         }

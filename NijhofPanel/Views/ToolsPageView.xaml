@@ -149,9 +149,9 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
-                            Content="VWA Lengte" />
+                            Content="VWA Lengte" Command="{Binding TagVWALengthCommand}"/>
                     <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
-                            Content="HWA Lengte" />
+                            Content="HWA Lengte" Command="{Binding TagHWALengthCommand}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource View3DIcon}"
@@ -167,7 +167,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
-                            Content="MV Lengte" />
+                            Content="MV Lengte" Command="{Binding TagMVLengthCommand}"/>
                     <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagDimensionIcon}"
                             Content="Maatvoering" />
                 </StackPanel>
@@ -177,14 +177,14 @@
                 </StackPanel>
             </Grid>
             
-            <TextBlock Text="Experimenteel"
-                       FontFamily="Arial"
-                       FontWeight="Bold"
-                       FontSize="20"
-                       Margin="0,15,0,5" />
-            <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PlaceHolderIcon}" />
-            </WrapPanel>
+            <!-- <TextBlock Text="Experimenteel" -->
+            <!--            FontFamily="Arial" -->
+            <!--            FontWeight="Bold" -->
+            <!--            FontSize="20" -->
+            <!--            Margin="0,15,0,5" /> -->
+            <!-- <WrapPanel Orientation="Horizontal"> -->
+            <!--     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PlaceHolderIcon}" /> -->
+            <!-- </WrapPanel> -->
             
         </StackPanel>
     </ScrollViewer>

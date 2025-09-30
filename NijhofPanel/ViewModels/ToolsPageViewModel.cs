@@ -20,6 +20,10 @@ public class ToolsPageViewModel : ObservableObject
     private readonly ExternalEvent _prefabNewEvent;
     private readonly ExternalEvent _prefabAddEvent;
     private readonly ExternalEvent _prefabDeleteEvent;
+    
+    private readonly ExternalEvent _tagMVLengthEvent;
+    private readonly ExternalEvent _tagHWALengthEvent;
+    private readonly ExternalEvent _tagVWALengthEvent;
 
     // Toolstrip commands
     public ICommand ConnectElementCommand { get; }
@@ -37,6 +41,11 @@ public class ToolsPageViewModel : ObservableObject
     public ICommand PrefabNewCommand { get; }
     public ICommand PrefabAddCommand { get; }
     public ICommand PrefabDeleteCommand { get; }
+    
+    // Tag commands
+    public ICommand TagMVLengthCommand { get; }
+    public ICommand TagHWALengthCommand { get; }
+    public ICommand TagVWALengthCommand { get; }
 
     public ToolsPageViewModel()
     {
@@ -76,6 +85,17 @@ public class ToolsPageViewModel : ObservableObject
 
         var prefabDeleteHandler = new Com_PrefabDelete();
         _prefabDeleteEvent = ExternalEvent.Create(prefabDeleteHandler);
+        
+        
+        
+        var tagMVLengthHandler = new Com_TagMVLength();
+        _tagMVLengthEvent = ExternalEvent.Create(tagMVLengthHandler);
+        
+        var tagHWALengthHandler = new Com_TagHWALength();
+        _tagHWALengthEvent = ExternalEvent.Create(tagHWALengthHandler);
+        
+        var tagVWALengthHandler = new Com_TagVWALength();
+        _tagVWALengthEvent = ExternalEvent.Create(tagVWALengthHandler);
 
         ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement);
         ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel);
@@ -90,6 +110,10 @@ public class ToolsPageViewModel : ObservableObject
         PrefabNewCommand = new RelayCommands.RelayCommand(ExecutePrefabCreate);
         PrefabAddCommand = new RelayCommands.RelayCommand(ExecutePrefabAdd);
         PrefabDeleteCommand = new RelayCommands.RelayCommand(ExecutePrefabDelete);
+        
+        TagMVLengthCommand = new RelayCommands.RelayCommand(ExecuteTagMVLength);
+        TagHWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagHWALength);
+        TagVWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagVWALength);
     }
 
     private void ExecuteConnectElement(object parameter)
@@ -149,5 +173,22 @@ public class ToolsPageViewModel : ObservableObject
     private void ExecutePrefabDelete(object parameter)
     {
         _prefabDeleteEvent.Raise();
+    }
+    
+    
+    
+    private void ExecuteTagMVLength(object parameter)
+    {
+        _tagMVLengthEvent.Raise();
+    }
+    
+    private void ExecuteTagHWALength(object parameter)
+    {
+        _tagHWALengthEvent.Raise();
+    }
+    
+    private void ExecuteTagVWALength(object parameter)
+    {
+        _tagVWALengthEvent.Raise();
     }
 }
