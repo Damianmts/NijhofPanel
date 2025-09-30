@@ -2,19 +2,14 @@
 
 using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
 using System.ComponentModel;
-using System.Collections.Generic;
 using Services;
 using UI.Themes;
-using UI.Controls.Navigation;
 using ViewModels;
-using Views;
 
-public partial class MainUserControlView : UserControl
+public partial class MainUserControlView
 {
-    private MainUserControlViewModel _mainVm;
+    private MainUserControlViewModel _mainVm = null!;
 
     public MainUserControlView(MainUserControlViewModel vm)
     {

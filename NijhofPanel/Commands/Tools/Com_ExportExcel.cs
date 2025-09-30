@@ -38,7 +38,7 @@ public class Com_ExportExcel : IExternalEventHandler
                 var successCount = 0;
                 var failCount = 0;
                 
-                Excel.Application? testExcelApp = null;
+                Excel.Application? testExcelApp;
                 try
                 {
                     testExcelApp = new Excel.Application();

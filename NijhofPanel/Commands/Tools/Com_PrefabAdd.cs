@@ -1,10 +1,10 @@
-﻿using System;
+﻿namespace NijhofPanel.Commands.Tools;
+
+using System;
 using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
-
-namespace NijhofPanel.Commands.Tools;
 
 public class Com_PrefabAdd : IExternalEventHandler
 {

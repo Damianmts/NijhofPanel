@@ -1,6 +1,4 @@
-﻿using Autodesk.Revit.UI;
-
-namespace NijhofPanel.ViewModels;
+﻿namespace NijhofPanel.ViewModels;
 
 using System.Collections.ObjectModel;
 using System.IO;
@@ -9,6 +7,7 @@ using System.Windows.Input;
 using Models;
 using Helpers.Tools;
 using Helpers.Core;
+using Autodesk.Revit.UI;
 
 public class LibraryWindowViewModel : ObservableObject
 {
@@ -94,7 +93,7 @@ public class LibraryWindowViewModel : ObservableObject
         set => SetProperty(ref _selectedFolderContent, value);
     }
     
-    private FileItemModel _selectedFile;
+    private FileItemModel _selectedFile = null!;
 
     public FileItemModel SelectedFile
     {

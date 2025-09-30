@@ -1,7 +1,7 @@
-﻿using Autodesk.Revit.UI;
-using NijhofPanel.Commands.Electrical;
+﻿namespace NijhofPanel.Helpers.Electrical;
 
-namespace NijhofPanel.Helpers.Electrical;
+using Autodesk.Revit.UI;
+using NijhofPanel.Commands.Electrical;
 
 public class FamilyPlacementHandler : IExternalEventHandler
 {

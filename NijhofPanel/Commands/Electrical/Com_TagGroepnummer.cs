@@ -1,8 +1,8 @@
-﻿using System.Windows.Threading;
-using Autodesk.Revit.UI;
-using NijhofPanel.Views;
+﻿namespace NijhofPanel.Commands.Electrical;
 
-namespace NijhofPanel.Commands.Electrical;
+using System.Windows.Threading;
+using Autodesk.Revit.UI;
+using Views;
 
 // Tagt de elementen van de opgegeven categorieën waar een Groepnummer is ingevuld.
 // Inclusief batch-verwerking en een laadscherm voor grote aantallen elementen. Voorheen zat je 4 minuten naar een laad-icoon te staren.

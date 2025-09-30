@@ -1,8 +1,8 @@
+namespace NijhofPanel.Views.Converters;
+
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
-
-namespace NijhofPanel.Views.Converters;
 
 public class EnumBooleanConverter<TEnum> : MarkupExtension, IValueConverter where TEnum : Enum
 {

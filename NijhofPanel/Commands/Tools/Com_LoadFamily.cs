@@ -3,8 +3,6 @@
 using System.IO;
 using System.Windows;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using NijhofPanel.Models;
 
 public class Com_LoadFamily
 {

@@ -1,10 +1,10 @@
-﻿using System.Windows;
+﻿namespace NijhofPanel.UI.Controls.Navigation;
+
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using NijhofPanel.Services;
-
-namespace NijhofPanel.UI.Controls.Navigation;
 
 public class NavButton : ListBoxItem
 {

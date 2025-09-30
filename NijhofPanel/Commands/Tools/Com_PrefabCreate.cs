@@ -1,11 +1,11 @@
-﻿using Autodesk.Revit.Attributes;
+﻿namespace NijhofPanel.Commands.Tools;
+
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-namespace NijhofPanel.Commands.Tools;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]
@@ -34,7 +34,7 @@ public class Com_PrefabCreate : IExternalEventHandler
                 // Zoek beschikbare 'Prefab Set' nummers en 'Prefab Color ID'
                 HashSet<int> existingSetNumbers = GetUsedPrefabSetNumbers(doc);
                 int nextAvailableNumber = FindNextAvailableNumber(existingSetNumbers);
-                string prefabColorID = GetNextAvailableColorID(doc, nextAvailableNumber);
+                string prefabColorID = GetNextAvailableColorID(nextAvailableNumber);
 
                 // Haal de elementen op en sorteer ze op hun locatie (Y- en X-coördinaten)
                 List<Element> sortedElements = selectedObjects
@@ -154,7 +154,7 @@ public class Com_PrefabCreate : IExternalEventHandler
         return number;
     }
 
-    private string GetNextAvailableColorID(Document doc, int prefabSetNumber)
+    private string GetNextAvailableColorID(int prefabSetNumber)
     {
         int colorID = (prefabSetNumber - 1) % 10 + 1;
         return colorID.ToString("D2"); // Zorg ervoor dat het een twee-cijferige string is, bv. "01"

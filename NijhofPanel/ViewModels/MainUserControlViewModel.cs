@@ -6,7 +6,6 @@ using Services;
 using UI.Themes;
 using System;
 using System.Windows;
-using System.ComponentModel;
 using System.Windows.Input;
 using System.Collections.Generic;
 using UI.Controls.Navigation;

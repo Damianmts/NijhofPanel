@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿namespace NijhofPanel.Commands.Tools;
+
+using System;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using NijhofPanel.Core;
-
-namespace NijhofPanel.Commands.Tools;
 
 public class Com_SplitPipe : IExternalEventHandler
 {
@@ -182,7 +181,7 @@ public class Com_SplitPipe : IExternalEventHandler
 
     private static Connector? GetClosestConnector(MEPCurve mep, XYZ point)
     {
-        var conns = mep?.ConnectorManager?.Connectors;
+        var conns = mep.ConnectorManager?.Connectors;
         if (conns == null) return null;
 
         Connector? best = null;

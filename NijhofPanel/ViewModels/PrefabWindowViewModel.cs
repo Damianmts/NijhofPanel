@@ -1,17 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿namespace NijhofPanel.ViewModels;
+
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using Autodesk.Revit.UI;
 using Newtonsoft.Json;
-using NijhofPanel.Core;
-using NijhofPanel.Helpers.Tools;
+using Core;
+using Helpers.Tools;
 using NijhofPanel.Helpers.Core;
-
-namespace NijhofPanel.ViewModels;
 
 public class PrefabWindowViewModel : ObservableObject
 {

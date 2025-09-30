@@ -1,6 +1,6 @@
 ﻿namespace NijhofPanel.Services;
 
-using NijhofPanel.ViewModels;
+using ViewModels;
 
 public class WarningService
 {

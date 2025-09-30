@@ -1,8 +1,7 @@
-﻿using System;
+﻿namespace NijhofPanel.Views.Converters;
+
 using System.Windows.Controls;
 using System.Windows.Data;
-
-namespace NijhofPanel.Views.Converters;
 
 public class TreeViewLineConverter : IValueConverter
 {

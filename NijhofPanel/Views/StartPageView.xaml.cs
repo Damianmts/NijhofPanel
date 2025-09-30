@@ -1,11 +1,10 @@
-﻿using System;
-using System.Windows.Controls;
+﻿namespace NijhofPanel.Views;
+
+using System;
 using System.Windows.Threading;
-using NijhofPanel.ViewModels;
+using ViewModels;
 
-namespace NijhofPanel.Views;
-
-public partial class StartPageView : Page
+public partial class StartPageView
 {
     private readonly DispatcherTimer _greetingTimer = new DispatcherTimer
     {

@@ -1,12 +1,12 @@
-﻿using Autodesk.Revit.UI;
+﻿namespace NijhofPanel.Commands.Core;
+
+using Autodesk.Revit.UI;
 using Autodesk.Revit.Attributes;
 using NijhofPanel.Helpers.Core;
 using NijhofPanel.Helpers.Electrical;
-using NijhofPanel.Views;
-using NijhofPanel.ViewModels;
-using NijhofPanel.Services;
-
-namespace NijhofPanel.Commands.Core;
+using Views;
+using ViewModels;
+using Services;
 
 [Transaction(TransactionMode.Manual)]
 public class Com_ToggleWindow : IExternalCommand

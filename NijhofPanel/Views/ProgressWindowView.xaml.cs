@@ -1,8 +1,6 @@
-﻿using System.Windows;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
-
-public partial class ProgressWindowView : Window
+public partial class ProgressWindowView
 {
     public ProgressWindowView()
     {

@@ -1,10 +1,10 @@
-﻿using System.Collections;
+﻿namespace NijhofPanel.Views.Converters;
+
+using System.Collections;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
 using Visibility = System.Windows.Visibility;
-
-namespace NijhofPanel.Views.Converters;
 
 public sealed class InverseEmptyCollectionsVisibilityConverter : MarkupExtension, IMultiValueConverter
 {

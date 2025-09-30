@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using System.Windows.Media.Imaging;
+﻿namespace NijhofPanel.UI;
 
-namespace NijhofPanel.UI;
+using System.Reflection;
+using System.Windows.Media.Imaging;
 
 public class ImageResource
 {

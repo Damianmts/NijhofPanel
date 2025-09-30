@@ -1,8 +1,8 @@
-﻿using Autodesk.Revit.DB;
+﻿namespace NijhofPanel.Commands.Tools.Shortcuts;
+
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.Attributes;
-
-namespace NijhofPanel.Commands.Tools.Shortcuts;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]

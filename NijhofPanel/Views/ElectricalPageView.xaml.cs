@@ -1,10 +1,9 @@
-﻿using System.Windows.Controls;
-using NijhofPanel.ViewModels;
-using NijhofPanel.Services;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
+using ViewModels;
+using Services;
 
-public partial class ElectricalPageView : Page
+public partial class ElectricalPageView
 {
     public ElectricalPageView(MainUserControlViewModel mainVm)
     {

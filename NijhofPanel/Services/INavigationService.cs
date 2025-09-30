@@ -2,7 +2,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using NijhofPanel.ViewModels;
+using ViewModels;
 using UI.Themes;
 
 public interface INavigationService

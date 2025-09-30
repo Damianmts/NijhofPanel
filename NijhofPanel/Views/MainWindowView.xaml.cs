@@ -1,10 +1,8 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using NijhofPanel.ViewModels;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
+using ViewModels;
 
-public partial class MainWindowView : Window
+public partial class MainWindowView
 {
     public MainWindowView()
     {

@@ -1,15 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using NijhofPanel.ViewModels;
-using NijhofPanel.Helpers;
-using NijhofPanel.Commands;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
+using System.Windows;
+using ViewModels;
 
-public partial class PrefabWindowView : Window
+public partial class PrefabWindowView
 {
     public PrefabWindowView(PrefabWindowViewModel viewModel)
     {

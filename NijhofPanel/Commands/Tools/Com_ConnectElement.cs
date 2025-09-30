@@ -1,10 +1,10 @@
-﻿using Autodesk.Revit.UI;
+﻿namespace NijhofPanel.Commands.Tools;
+
+using Autodesk.Revit.UI;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.UI.Selection;
-
-namespace NijhofPanel.Commands.Tools;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]

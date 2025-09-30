@@ -1,9 +1,8 @@
-﻿using System.Windows.Controls;
-using NijhofPanel.ViewModels;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
+using ViewModels;
 
-public partial class LogInPageView : Page
+public partial class LogInPageView
 {
     public LogInPageView(MainUserControlViewModel mainVm)
     {

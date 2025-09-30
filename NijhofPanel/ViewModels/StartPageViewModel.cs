@@ -1,8 +1,8 @@
-﻿using System.IO;
+﻿namespace NijhofPanel.ViewModels;
+
+using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
-
-namespace NijhofPanel.ViewModels;
 
 public class StartPageViewModel : ObservableObject
 {

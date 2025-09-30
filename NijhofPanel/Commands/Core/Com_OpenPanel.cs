@@ -1,7 +1,7 @@
-﻿using Autodesk.Revit.UI;
-using Autodesk.Revit.Attributes;
+﻿namespace NijhofPanel.Commands.Core;
 
-namespace NijhofPanel.Commands.Core;
+using Autodesk.Revit.UI;
+using Autodesk.Revit.Attributes;
 
 [Transaction(TransactionMode.Manual)]
 public class Com_OpenPanel : IExternalCommand

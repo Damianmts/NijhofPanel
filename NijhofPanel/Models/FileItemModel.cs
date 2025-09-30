@@ -1,9 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿namespace NijhofPanel.Models;
+
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
-
-namespace NijhofPanel.Models;
 
 public class FileItemModel : INotifyPropertyChanged
 {

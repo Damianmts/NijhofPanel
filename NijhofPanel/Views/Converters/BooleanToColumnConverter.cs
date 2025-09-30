@@ -1,7 +1,7 @@
-﻿using System.Globalization;
-using System.Windows.Data;
+﻿namespace NijhofPanel.Views.Converters;
 
-namespace NijhofPanel.Views.Converters;
+using System.Globalization;
+using System.Windows.Data;
 
 public class BooleanToColumnConverter : IValueConverter
 {

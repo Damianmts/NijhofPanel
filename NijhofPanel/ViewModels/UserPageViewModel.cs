@@ -1,9 +1,7 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿namespace NijhofPanel.ViewModels;
+
 using System.Windows.Input;
 using NijhofPanel.Helpers.Core;
-
-namespace NijhofPanel.ViewModels;
 
 public class UserPageViewModel : ObservableObject
 {

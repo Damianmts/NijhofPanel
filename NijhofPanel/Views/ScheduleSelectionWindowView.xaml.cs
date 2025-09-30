@@ -1,19 +1,11 @@
-﻿using System.Windows;
-using NijhofPanel.Models;
+﻿namespace NijhofPanel.Views;
+
+using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Controls;
-using System.Windows.Data;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Data;
 
-namespace NijhofPanel.Views;
-
-public partial class ScheduleSelectionWindowView : Window
+public partial class ScheduleSelectionWindowView
 {
     public class ScheduleItem
     {

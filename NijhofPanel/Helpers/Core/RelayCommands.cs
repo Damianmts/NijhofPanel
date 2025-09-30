@@ -1,6 +1,6 @@
-﻿using System.Windows.Input;
+﻿namespace NijhofPanel.Helpers.Core;
 
-namespace NijhofPanel.Helpers.Core;
+using System.Windows.Input;
 
 public static class RelayCommands
 {

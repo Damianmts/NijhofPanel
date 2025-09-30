@@ -1,9 +1,9 @@
+namespace NijhofPanel.Views.Converters;
+
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
 using Visibility = System.Windows.Visibility;
-
-namespace NijhofPanel.Views.Converters;
 
 public class EnumVisibilityConverter<TEnum> : MarkupExtension, IValueConverter where TEnum : Enum
 {

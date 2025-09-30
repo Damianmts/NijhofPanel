@@ -1,9 +1,8 @@
-﻿using System.Windows;
-using NijhofPanel.ViewModels;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
+using ViewModels;
 
-public partial class SawListWindowView : Window
+public partial class SawListWindowView
 {
     public SawListWindowView()
     {

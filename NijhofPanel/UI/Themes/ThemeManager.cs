@@ -1,6 +1,6 @@
-﻿using System.Windows;
+﻿namespace NijhofPanel.UI.Themes;
 
-namespace NijhofPanel.UI.Themes;
+using System.Windows;
 
 public static class ThemeManager
 {

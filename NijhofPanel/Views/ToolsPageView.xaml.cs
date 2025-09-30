@@ -1,10 +1,9 @@
-﻿using System.Windows.Controls;
-using NijhofPanel.ViewModels;
-using NijhofPanel.Services;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
+using ViewModels;
+using Services;
 
-public partial class ToolsPageView : Page
+public partial class ToolsPageView
 {
     public ToolsPageView(MainUserControlViewModel mainVm)
     {

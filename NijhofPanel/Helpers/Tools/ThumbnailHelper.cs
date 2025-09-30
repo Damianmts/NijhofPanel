@@ -1,4 +1,6 @@
-﻿using Microsoft.WindowsAPICodePack.Shell;
+﻿namespace NijhofPanel.Helpers.Tools;
+
+using Microsoft.WindowsAPICodePack.Shell;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -6,8 +8,6 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Media.Imaging;
-
-namespace NijhofPanel.Helpers.Tools;
 
 public static class ThumbnailHelper
 {

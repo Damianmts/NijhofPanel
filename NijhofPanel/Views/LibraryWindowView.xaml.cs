@@ -1,10 +1,10 @@
-﻿using System.Windows;
-using NijhofPanel.Models;
-using NijhofPanel.ViewModels;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
+using System.Windows;
+using Models;
+using ViewModels;
 
-public partial class LibraryWindowView : Window
+public partial class LibraryWindowView
 {
     public LibraryWindowView()
     {

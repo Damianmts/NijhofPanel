@@ -1,6 +1,6 @@
-﻿using System.Windows;
+﻿namespace NijhofPanel.Helpers.Electrical;
 
-namespace NijhofPanel.Helpers.Electrical;
+using System.Windows;
 
 public class ElectricalProperties
 {
