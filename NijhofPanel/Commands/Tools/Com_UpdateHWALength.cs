@@ -31,7 +31,7 @@ public class Com_UpdateHWALength : IExternalEventHandler
                 if (abbreviationParam != null &&
                     (abbreviationParam.AsString() == "M521" || abbreviationParam.AsString() == "M5210"))
                 {
-                    Line pipeLine = (pipe.Location as LocationCurve)?.Curve as Line;
+                    Line pipeLine = ((pipe.Location as LocationCurve)?.Curve as Line)!;
                     if (pipeLine != null && IsVertical(pipeLine))
                     {
                         Connector topConnector = GetTopConnector(pipe, pipeLine);
@@ -58,7 +58,7 @@ public class Com_UpdateHWALength : IExternalEventHandler
                                 ? new XYZ(topConnector.Origin.X, topConnector.Origin.Y, startPoint.Z + desiredLength)
                                 : new XYZ(startPoint.X, startPoint.Y, startPoint.Z + desiredLength);
 
-                            (pipe.Location as LocationCurve).Curve = Line.CreateBound(startPoint, newEndPoint);
+                            ((pipe.Location as LocationCurve)!).Curve = Line.CreateBound(startPoint, newEndPoint);
                             MoveAndReconnectElements(doc, topConnector, fittingConnector, newEndPoint.Z);
                         }
                         else
@@ -67,7 +67,7 @@ public class Com_UpdateHWALength : IExternalEventHandler
                             XYZ startPoint = pipeLine.GetEndPoint(0);
                             XYZ newEndPoint = new XYZ(startPoint.X, startPoint.Y, startPoint.Z + desiredLength);
 
-                            (pipe.Location as LocationCurve).Curve = Line.CreateBound(startPoint, newEndPoint);
+                            ((pipe.Location as LocationCurve)!).Curve = Line.CreateBound(startPoint, newEndPoint);
                         }
 
                         modifiedPipesCount++;
@@ -119,7 +119,7 @@ public class Com_UpdateHWALength : IExternalEventHandler
             }
         }
 
-        return null;
+        return null!;
     }
 
     private Connector GetConnectedFittingConnector(Connector pipeConnector)
@@ -132,7 +132,7 @@ public class Com_UpdateHWALength : IExternalEventHandler
                 return refConnector;
             }
         }
-        return null;
+        return null!;
     }
 
     private void MoveAndReconnectElements(Document doc, Connector pipeConnector, Connector fittingConnector,

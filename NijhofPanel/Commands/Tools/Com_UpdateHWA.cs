@@ -34,7 +34,7 @@ public class Com_UpdateHWA : IExternalEventHandler
                     string systemAbbreviationValue = systemAbbreviationParam.AsString();
                     if (systemAbbreviationValue == "M521" || systemAbbreviationValue == "M5210")
                     {
-                        ElementType pipeType = doc.GetElement(pipe.GetTypeId()) as ElementType;
+                        ElementType pipeType = (doc.GetElement(pipe.GetTypeId()) as ElementType)!;
                         if (pipeType == null || (!pipeType.Name.Contains("DYKA") && !pipeType.Name.Contains("Dyka")))
                         {
                             nonDykaPipesCount++;

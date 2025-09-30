@@ -14,7 +14,7 @@ public partial class ScheduleSelectionWindowView
         public ViewSchedule Schedule { get; set; } // Verander Schedule naar ViewSchedule
     }
 
-    public List<ViewSchedule> SelectedSchedules { get; private set; } // Verander Schedule naar ViewSchedule
+    public List<ViewSchedule> SelectedSchedules { get; private set; } = null!; // Verander Schedule naar ViewSchedule
 
     public ScheduleSelectionWindowView(IEnumerable<ViewSchedule> schedules) // Verander Schedule naar ViewSchedule
     {

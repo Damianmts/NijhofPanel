@@ -93,14 +93,14 @@ public class Com_TagVWALength : IExternalEventHandler
             if (!(viewElement is Viewport viewport))
             {
                 TaskDialog.Show("Error", "Selecteer een geldige viewport.");
-                return null;
+                return null!;
             }
             
             return viewport;
         }
         catch (OperationCanceledException)
         {
-            return null;
+            return null!;
         }
     }
 
@@ -114,7 +114,7 @@ public class Com_TagVWALength : IExternalEventHandler
             activeView.ViewType == ViewType.ThreeD)
         {
             TaskDialog.Show("Error", "Selecteer een geschikte floorplan.");
-            return null;
+            return null!;
         }
         
         return activeView;

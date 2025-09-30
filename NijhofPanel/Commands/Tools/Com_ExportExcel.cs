@@ -47,7 +47,7 @@ public class Com_ExportExcel : IExternalEventHandler
                 }
                 catch (COMException)
                 {
-                    TaskDialog.Show("Excel fout",
+                    Autodesk.Revit.UI.TaskDialog.Show("Excel fout",
                         "Excel kan niet gestart worden.\n\n" +
                         "Mogelijke oorzaak: verschil tussen 32- en 64-bit versies van Revit en Microsoft Office.\n" +
                         "Oplossing: installeer de 64-bit versie van Office of gebruik een andere exportmethode.");
@@ -147,7 +147,7 @@ public class Com_ExportExcel : IExternalEventHandler
                 GC.WaitForPendingFinalizers();
 
                 // Toon resultaat
-                TaskDialog.Show("Export Voltooid",
+                Autodesk.Revit.UI.TaskDialog.Show("Export Voltooid",
                     $"Export voltooid!\nSuccesvol: {successCount} schedules\nMislukt: {failCount} schedules");
             }
         }

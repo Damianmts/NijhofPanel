@@ -26,11 +26,11 @@ using Commands.Tools;
 public class RevitApplication : ExternalApplication
 {
     
-    public static RevitRequestHandler LibraryHandler { get; private set; }
-    public static ExternalEvent LibraryEvent { get; private set; }
-    public static Com_ConnectElement ConnectElementHandler { get; private set; } // <-- toegevoegd
-    public static ExternalEvent ConnectElementEvent { get; private set; }        // <-- toegevoegd
-    
+    public static RevitRequestHandler LibraryHandler { get; private set; } = null!;
+    public static ExternalEvent LibraryEvent { get; private set; } = null!;
+    public static Com_ConnectElement ConnectElementHandler { get; private set; } = null!;
+    public static ExternalEvent ConnectElementEvent { get; private set; } = null!;
+
     public override void OnStartup()
     {
         // WPF-resources en cultuurinstelling
@@ -51,8 +51,8 @@ public class RevitApplication : ExternalApplication
         
         LibraryHandler = new RevitRequestHandler();
         LibraryEvent   = ExternalEvent.Create(LibraryHandler);
-        ConnectElementHandler = new Com_ConnectElement();                  // <-- toegevoegd
-        ConnectElementEvent   = ExternalEvent.Create(ConnectElementHandler); // <-- toegevoegd
+        ConnectElementHandler = new Com_ConnectElement();
+        ConnectElementEvent   = ExternalEvent.Create(ConnectElementHandler);
 
         // Ribbon-buttons
         var ribbonPanel = GetOrCreateRibbonPanel();
