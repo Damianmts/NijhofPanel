@@ -28,6 +28,7 @@ public class Com_PrefabAdd : IExternalEventHandler
             {
                 trans.Start();
 
+                
                 foreach (Reference reference in selectedElements)
                 {
                     Element element = doc.GetElement(reference);
@@ -36,48 +37,56 @@ public class Com_PrefabAdd : IExternalEventHandler
                     string prefabSet = null;
                     string prefabColorID = null;
 
-                    Queue<Element> elementsToCheck = new Queue<Element>();
-                    HashSet<ElementId> visitedElements = new HashSet<ElementId>();
-                    elementsToCheck.Enqueue(element);
-                    visitedElements.Add(element.Id);
+                    // Check eerst het geselecteerde element zelf
+                    prefabSet = GetParameterValue(element, "Prefab Set");
+                    prefabColorID = GetParameterValue(element, "Prefab Color ID");
 
-                    int depth = 0;
-                    while (elementsToCheck.Count > 0 && depth < 3)
+                    // Als het geselecteerde element geen prefab data heeft, zoek dan in verbonden elementen
+                    if (string.IsNullOrEmpty(prefabSet) || string.IsNullOrEmpty(prefabColorID))
                     {
-                        int count = elementsToCheck.Count;
-                        for (int i = 0; i < count; i++)
+                        Queue<Element> elementsToCheck = new Queue<Element>();
+                        HashSet<ElementId> visitedElements = new HashSet<ElementId>();
+                        elementsToCheck.Enqueue(element);
+                        visitedElements.Add(element.Id);
+
+                        int depth = 0;
+                        while (elementsToCheck.Count > 0 && depth < 3)
                         {
-                            Element currentElement = elementsToCheck.Dequeue();
-                            foreach (Connector connector in GetConnectors(currentElement))
+                            int count = elementsToCheck.Count;
+                            for (int i = 0; i < count; i++)
                             {
-                                if (connector.IsConnected)
+                                Element currentElement = elementsToCheck.Dequeue();
+                                foreach (Connector connector in GetConnectors(currentElement))
                                 {
-                                    Connector connectedConnector = GetConnectedConnector(connector);
-                                    if (connectedConnector != null)
+                                    if (connector.IsConnected)
                                     {
-                                        Element connectedElement = doc.GetElement(connectedConnector.Owner.Id);
-                                        if (!visitedElements.Contains(connectedElement.Id))
+                                        Connector connectedConnector = GetConnectedConnector(connector);
+                                        if (connectedConnector != null)
                                         {
-                                            prefabSet = GetParameterValue(connectedElement, "Prefab Set");
-                                            prefabColorID = GetParameterValue(connectedElement, "Prefab Color ID");
-
-                                            if (!string.IsNullOrEmpty(prefabSet) && !string.IsNullOrEmpty(prefabColorID))
+                                            Element connectedElement = doc.GetElement(connectedConnector.Owner.Id);
+                                            if (!visitedElements.Contains(connectedElement.Id))
                                             {
-                                                break;
-                                            }
+                                                prefabSet = GetParameterValue(connectedElement, "Prefab Set");
+                                                prefabColorID = GetParameterValue(connectedElement, "Prefab Color ID");
 
-                                            elementsToCheck.Enqueue(connectedElement);
-                                            visitedElements.Add(connectedElement.Id);
+                                                if (!string.IsNullOrEmpty(prefabSet) && !string.IsNullOrEmpty(prefabColorID))
+                                                {
+                                                    break;
+                                                }
+
+                                                elementsToCheck.Enqueue(connectedElement);
+                                                visitedElements.Add(connectedElement.Id);
+                                            }
                                         }
                                     }
                                 }
+                                if (!string.IsNullOrEmpty(prefabSet) && !string.IsNullOrEmpty(prefabColorID))
+                                {
+                                    break;
+                                }
                             }
-                            if (!string.IsNullOrEmpty(prefabSet) && !string.IsNullOrEmpty(prefabColorID))
-                            {
-                                break;
-                            }
+                            depth++;
                         }
-                        depth++;
                     }
 
                     if (string.IsNullOrEmpty(prefabSet) || string.IsNullOrEmpty(prefabColorID))

@@ -9,8 +9,8 @@
         Title="Prefablijst"
         Loaded="Window_Loaded"
         Height="700"
-        Width="1000"
-        Background="{DynamicResource CurrentBackgroundColor}">
+        MinWidth="1000"
+        Background="{DynamicResource CurrentBackgroundColor}" > 
 
     <!-- TODO - Save logica moet nog uitgebreid worden -->
 
@@ -18,33 +18,70 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/UI/Themes/Controls/ModernScrollbar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/UI/Themes/Controls/ModernCheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/UI/Themes/Text/ModernTextBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
             
             <Style TargetType="GridViewColumnHeader">
-                <Setter Property="Padding" Value="8,2" />
+                <Setter Property="Foreground" Value="#374151" />
+                <Setter Property="Background" Value="#f9fafb" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Padding" Value="10,6" />
+                <Setter Property="BorderBrush" Value="#e5e7eb" />
+                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+            </Style>
+            
+            <Style TargetType="ListViewItem">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListViewItem">
+                            <Border Background="{TemplateBinding Background}">
+                                <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                                      Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
-            <Style x:Key="CellContentBorder" TargetType="Border">
-                <Setter Property="Padding" Value="8,1" />
+            <Style x:Key="AltRowStyle" TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                <Style.Triggers>
+                    <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                        <Setter Property="Background" Value="#fafafa" />
+                    </Trigger>
+                </Style.Triggers>
             </Style>
-
+            
+            <!-- Gecentreerde TextBox Style voor gebruik in cellen -->
+            <Style x:Key="CenteredCellTextBox" TargetType="TextBox" BasedOn="{StaticResource ModernUnderlineTextBox}">
+                <Setter Property="TextAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Padding" Value="8,2"/>
+            </Style>
+            
             <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
         <ListView ItemsSource="{Binding PrefabSets}"
+                  AlternationCount="2"
                   SelectionMode="Single"
-                  Margin="10"
+                  Margin="0,0,0,0"
+                  ItemContainerStyle="{StaticResource AltRowStyle}"
                   HorizontalContentAlignment="Stretch">
 
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="VerticalContentAlignment" Value="Center" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
+            <ListView.Resources>
+                <Style TargetType="ScrollBar" BasedOn="{StaticResource ModernScrollBar}" />
+            </ListView.Resources>
 
             <ListView.View>
                 <GridView>
@@ -52,106 +89,104 @@
                     <GridViewColumn Header="Set" Width="Auto">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBlock Text="{Binding SetNumber}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
+                                <TextBlock Text="{Binding SetNumber}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Padding="8,4" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Discipline" Width="Auto">
+                    <GridViewColumn Header="Discipline" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBlock Text="{Binding Discipline}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
+                                <TextBlock Text="{Binding Discipline}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Padding="8,4" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Bouwnummer" Width="Auto">
+                    <GridViewColumn Header="Bouwnummer" Width="120">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBox
-                                        Text="{Binding Bouwnummer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Center"
-                                        Background="Transparent"
-                                        BorderThickness="1" />
-                                </Border>
+                                <TextBox
+                                    Text="{Binding Bouwnummer, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                    Style="{StaticResource CenteredCellTextBox}"
+                                    HorizontalAlignment="Stretch"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Verdieping" Width="Auto">
+                    <GridViewColumn Header="Verdieping" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBox
-                                        Text="{Binding Verdieping, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Center"
-                                        Background="Transparent"
-                                        BorderThickness="1" />
-                                </Border>
+                                <TextBox
+                                    Text="{Binding Verdieping, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                    Style="{StaticResource CenteredCellTextBox}"
+                                    HorizontalAlignment="Stretch"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <!-- Tekenaar en Projectnummer Read-Only -->
-                    <GridViewColumn Header="Tekenaar" Width="Auto">
+                    <!-- Tekenaar Read-Only -->
+                    <GridViewColumn Header="Tekenaar" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBlock Text="{Binding HoofdTekenaar, Mode=TwoWay}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               Background="Transparent" />
-                                </Border>
+                                <TextBlock Text="{Binding HoofdTekenaar}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Padding="8,4" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Projectnummer" Width="Auto">
+                    <GridViewColumn Header="Project" Width="120">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBlock Text="{Binding ProjectNummer, Mode=TwoWay}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               Background="Transparent" />
-                                </Border>
+                                <TextBox Text="{Binding ProjectNummer, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                         Style="{StaticResource CenteredCellTextBox}"
+                                         HorizontalAlignment="Stretch"
+                                         MaxLength="14" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+                    <GridViewColumn Header="" Width="20">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="–"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="#d1d5db"
+                                           Padding="8,4" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
                     <!-- Schedules -->
-                    <GridViewColumn Header="Materiaallijst" Width="Auto">
+                    <GridViewColumn Header="Materiaallijst" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <CheckBox
-                                        IsChecked="{Binding Materiaallijst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center" />
-                                </Border>
+                                <CheckBox
+                                    IsChecked="{Binding Materiaallijst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Style="{StaticResource ModernCheckBox}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Margin="8,4" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Zaaglijst" Width="Auto">
+                    <GridViewColumn Header="Zaaglijst" Width="90">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <CheckBox IsChecked="{Binding Zaaglijst, Mode=TwoWay}"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                                </Border>
+                                <CheckBox IsChecked="{Binding Zaaglijst, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          Style="{StaticResource ModernCheckBox}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="8,4" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -159,52 +194,103 @@
                     <GridViewColumn Header="" Width="20">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBlock Text="–"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
+                                <TextBlock Text="–"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="#d1d5db"
+                                           Padding="8,4" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
                     <!-- Gecontroleerd -->
-                    <GridViewColumn Header="Gecontroleerd" Width="Auto">
+                    <GridViewColumn Header="Gecontroleerd" Width="110">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <CheckBox IsChecked="{Binding GecontroleerdCheck, Mode=TwoWay}"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center" />
-                                </Border>
+                                <CheckBox IsChecked="{Binding GecontroleerdCheck, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          Style="{StaticResource ModernCheckBox}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="8,4" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Naam" Width="80">
+                    <GridViewColumn Header="Naam" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBox Text="{Binding GecontroleerdNaam, Mode=TwoWay}"
-                                             HorizontalAlignment="Stretch"
-                                             VerticalAlignment="Center"
-                                             Background="Transparent"
-                                             BorderThickness="1" />
-                                </Border>
+                                <TextBox Text="{Binding GecontroleerdNaam, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                         Style="{StaticResource CenteredCellTextBox}"
+                                         HorizontalAlignment="Stretch" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Datum" Width="80">
+                    <GridViewColumn Header="Datum" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource CellContentBorder}">
-                                    <TextBox Text="{Binding GecontroleerdDatum, Mode=TwoWay}"
-                                             HorizontalAlignment="Stretch"
-                                             VerticalAlignment="Center"
-                                             Background="Transparent"
-                                             BorderThickness="1" />
-                                </Border>
+                                <TextBox Text="{Binding GecontroleerdDatum, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat='{}{0:dd-MM-yyyy}'}"
+                                         Style="{StaticResource CenteredCellTextBox}"
+                                         HorizontalAlignment="Stretch" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+                    <GridViewColumn Header="" Width="20">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="–"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="#d1d5db"
+                                           Padding="8,4" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+                    <GridViewColumn Header="Verwijderen" Width="90">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="✖"
+                                        Width="28"
+                                        Height="28"
+                                        Cursor="Hand"
+                                        ToolTip="Verwijderen"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="Foreground" Value="#dc2626"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}"
+                                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                                BorderThickness="1"
+                                                                CornerRadius="4">
+                                                            <ContentPresenter HorizontalAlignment="Center"
+                                                                            VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#fee2e2"/>
+                                                    <Setter Property="Foreground" Value="#991b1b"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#fecaca"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

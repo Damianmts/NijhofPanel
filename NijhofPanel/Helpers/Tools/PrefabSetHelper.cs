@@ -116,7 +116,8 @@ public class PrefabSetHelper : INotifyPropertyChanged
         {
             if (_projectNummer != value)
             {
-                _projectNummer = value;
+                // truncate op max 14 tekens
+                _projectNummer = value.Length > 14 ? value.Substring(0, 14) : value;
                 OnPropertyChanged();
             }
         }

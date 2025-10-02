@@ -169,6 +169,17 @@ public class MainUserControlViewModel : ObservableObject
 
         if (newWindow != null)
         {
+            if (windowButton.Navlink == "LibraryWindowView")
+            {
+                // In Revit is LibraryVm al gezet via RevitApplication.
+                // In DevHost is LibraryVm null -> maak een VM met DevHostActions
+                if (LibraryVm == null)
+                {
+                    LibraryVm = new LibraryWindowViewModel(new Services.DevHostLibraryActions());
+                }
+                newWindow.DataContext = LibraryVm;
+            }
+
             newWindow.Owner = Application.Current?.MainWindow;
             windowButton.IsWindowOpen = true;
             _openWindows[windowButton.Navlink] = newWindow;

@@ -1,28 +1,28 @@
 ﻿namespace NijhofPanel.Views;
 
 using System.Windows;
-using Models;
-using ViewModels;
 
 public partial class LibraryWindowView
 {
+    // Alleen een parameterloze constructor; geen overload met LibraryWindowViewModel
     public LibraryWindowView()
     {
         InitializeComponent();
-
-        // Resolve the static handler/event you registered in RevitApplication
-        DataContext = new LibraryWindowViewModel(
-            RevitApplication.LibraryHandler,
-            RevitApplication.LibraryEvent);
+        // DataContext wordt extern gezet (bij het openen van het venster).
     }
 
     private void MainTreeView_SelectedItemChanged(object sender, 
         RoutedPropertyChangedEventArgs<object> e)
     {
-        if (DataContext is LibraryWindowViewModel vm
-            && e.NewValue is FileItemModel item)
+        // Geen directe afhankelijkheid naar LibraryWindowViewModel of FileItemModel
+        // Zorgt dat DevHost geen Revit-assemblies hoeft te laden.
+        var dc = DataContext;
+        if (dc == null) return;
+
+        var prop = dc.GetType().GetProperty("SelectedFolder");
+        if (prop != null && prop.CanWrite)
         {
-            vm.SelectedFolder = item;
+            prop.SetValue(dc, e.NewValue);
         }
     }
 }

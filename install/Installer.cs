@@ -19,7 +19,7 @@ var project = new Project
     MajorUpgrade = MajorUpgrade.Default,
     GUID = new Guid("3C3FE822-A426-4278-BB64-2BFC3B5EEBF0"),
     BannerImage = @"install\Resources\Icons\BannerImageNijhof.png",
-    BackgroundImage = @"install\Resources\Icons\BackgroundImage.png",
+    BackgroundImage = @"install\Resources\Icons\BackgroundImageNijhof.png",
     Version = Assembly.GetExecutingAssembly().GetName().Version.ClearRevision(),
     ControlPanelInfo =
     {

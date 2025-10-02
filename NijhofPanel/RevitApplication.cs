@@ -62,7 +62,7 @@ public class RevitApplication : ExternalApplication
         var electricalVm = new ElectricalPageViewModel(familyHandler, familyEvent);
         var toolsVm = new ToolsPageViewModel();
         var prefabVm = new PrefabWindowViewModel(prefabHandler, prefabEvent);
-        var libraryVm = new LibraryWindowViewModel(LibraryHandler, LibraryEvent);
+        var libraryVm = new LibraryWindowViewModel(new Services.RevitLibraryActions(LibraryHandler, LibraryEvent));
 
         // Maak de hoofd-VM met de NavigationService
         var viewModelFactory = new ViewModelFactory();
@@ -131,7 +131,9 @@ public class RevitApplication : ExternalApplication
         };
         ribbonPanel.AddItem(toggleButtonData);
         
+        // Slide out voor de tools waar een shortcut van gemaakt kan worden
         ribbonPanel.AddSlideOut();
+        
         var connectShortcutButton = new PushButtonData(
             "Aansluiten \nElementen",
             "Aansluiten \nElementen",

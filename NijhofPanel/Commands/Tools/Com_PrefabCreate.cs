@@ -6,6 +6,8 @@ using Autodesk.Revit.UI.Selection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ViewModels;
+using Autodesk.Revit.DB.Plumbing;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]
@@ -59,6 +61,9 @@ public class Com_PrefabCreate : IExternalEventHandler
                     {
                         // Nummer het element zelf als het geen geneste elementen bevat
                         AssignPrefabParameters(element, nextAvailableNumber, prefabColorID, ref prefabElementNumber);
+                        
+                        // Wijs artikelnummer toe als het een pipe is
+                        AssignArticleNumberToPipe(element);
                     }
                 }
 
@@ -106,6 +111,122 @@ public class Com_PrefabCreate : IExternalEventHandler
             prefabNumberParam.Set(prefabElementNumber.ToString());
             prefabElementNumber++; // Verhoog voor elk nieuw element
         }
+        
+        // Wijs artikelnummer toe als het een pipe is
+        AssignArticleNumberToPipe(element);
+    }
+
+    
+    // Methode om artikelnummer toe te wijzen aan een pipe
+    private void AssignArticleNumberToPipe(Element element)
+    {
+        // Controleer of het element een Pipe is
+        if (!(element is Pipe pipe))
+            return;
+
+        try
+        {
+            // Haal Pipe Type Name op (bijvoorbeeld "Dyka PVC - 110mm")
+            ElementId typeId = pipe.GetTypeId();
+            Element pipeType = pipe.Document.GetElement(typeId);
+            string pipeTypeName = pipeType?.Name ?? "";
+            
+            // Haal Family Name op als backup
+            string familyName = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM)?.AsValueString() ?? "";
+            
+            // Haal System Abbreviation op
+            Parameter systemAbbrevParam = element.get_Parameter(BuiltInParameter.RBS_SYSTEM_ABBREVIATION_PARAM);
+            string systemAbbreviation = systemAbbrevParam?.AsString() ?? "";
+            
+            // Haal Diameter op (in millimeters)
+            Parameter diameterParam = element.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM);
+            if (diameterParam == null)
+                return;
+            
+            double diameterInFeet = diameterParam.AsDouble();
+            double diameterInMM = UnitUtils.ConvertFromInternalUnits(diameterInFeet, UnitTypeId.Millimeters);
+            string diameter = Math.Round(diameterInMM).ToString();
+            
+            // Bepaal het producttype op basis van Pipe Type Name en System Abbreviation
+            string productType = DetermineProductType(pipeTypeName, familyName, systemAbbreviation, diameter);
+            
+            if (string.IsNullOrEmpty(productType))
+                return;
+            
+            // Haal het artikelnummer op
+            string artikelnummer = SettingsPageViewModel.GetArtikelnummer(productType, diameter);
+            
+            if (string.IsNullOrEmpty(artikelnummer))
+                return;
+            
+            // Probeer eerst NLRS_C_code_product in te vullen
+            Parameter nlrsParam = element.LookupParameter("NLRS_C_code_product");
+            if (nlrsParam != null && !nlrsParam.IsReadOnly)
+            {
+                nlrsParam.Set(artikelnummer);
+            }
+            else
+            {
+                // Als backup, probeer Manufacturer Art. No
+                Parameter manufacturerParam = element.LookupParameter("Manufacturer Art. No.");
+                if (manufacturerParam != null && !manufacturerParam.IsReadOnly)
+                {
+                    manufacturerParam.Set(artikelnummer);
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // Negeer fouten bij individuele pipes
+        }
+    }
+
+    // Methode om het producttype te bepalen op basis van Pipe Type Name en System Abbreviation
+    private string DetermineProductType(string pipeTypeName, string familyName, string systemAbbreviation, string diameter)
+    {
+        // Normaliseer de strings (lowercase en trim)
+        pipeTypeName = pipeTypeName?.ToLower().Trim() ?? "";
+        familyName = familyName?.ToLower().Trim() ?? "";
+        systemAbbreviation = systemAbbreviation?.ToLower().Trim() ?? "";
+        
+        // Check of het HWA is (via pipe type naam of system abbreviation)
+        bool isHWA = (pipeTypeName.Contains("hwa") || pipeTypeName.Contains("dyka") && systemAbbreviation.Contains("m521"));
+        
+        if (isHWA)
+        {
+            // Voor HWA: alleen 80mm uit HWA lijst, rest uit PVC lijst
+            if (diameter == "80")
+            {
+                return "DykaHWA";
+            }
+            else
+            {
+                return "DykaPVC";
+            }
+        }
+        
+        // Dyka Sono - voor geluidsisolatie
+        if (pipeTypeName.Contains("sono") || familyName.Contains("sono") && systemAbbreviation.Contains("m524"))
+        {
+            return "DykaSono";
+        }
+        
+        // Dyka PVC - voor sanitair/vuilwater
+        if (pipeTypeName.Contains("pvc") || pipeTypeName.Contains("dyka") || 
+            familyName.Contains("dyka") && systemAbbreviation.Contains("m524"))
+        {
+            return "DykaPVC";
+        }
+        
+        // Dyka Air - voor ventilatie
+        if (pipeTypeName.Contains("air") || pipeTypeName.Contains("lucht") ||
+            systemAbbreviation.Contains("air") || systemAbbreviation.Contains("vent") || 
+            systemAbbreviation.Contains("lucht"))
+        {
+            return "DykaAir";
+        }
+        
+        return null;
     }
 
     // Methode om geneste elementen te nummeren, inclusief diep geneste elementen

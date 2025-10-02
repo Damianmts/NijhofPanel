@@ -16,6 +16,12 @@ public class PrefabWindowViewModel : ObservableObject
 {
     private ObservableCollection<PrefabSetHelper> _prefabSets = new();
 
+    // Debug modus: wijzig naar true om lokaal op te slaan
+    private const bool DEBUG_MODE = true;
+    private readonly string DEBUG_PATH = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+        "NijhofPanel_Debug");
+
     public ICommand ExecuteMaterialListScheduleCommand { get; }
 
     public ObservableCollection<PrefabSetHelper> PrefabSets
@@ -75,12 +81,17 @@ public class PrefabWindowViewModel : ObservableObject
                 set.PropertyChanged -= OnPrefabSetPropertyChanged;
     }
 
-    private void OnPrefabSetPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void OnPrefabSetPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(PrefabSetHelper.Materiaallijst)
             && sender is PrefabSetHelper set
             && set.Materiaallijst)
+        {
             ExecuteMaterialListScheduleCommand.Execute(set);
+        }
+
+        // Auto-save bij elke wijziging - alleen opslaan, niet opnieuw laden
+        SaveDataOnly();
     }
 
     private void OnExecuteMaterialListSchedule(PrefabSetHelper set)
@@ -98,23 +109,108 @@ public class PrefabWindowViewModel : ObservableObject
         _externalEvent.Raise();
     }
 
-    public void AddNewPrefabSet(IEnumerable<RevitElementData> elements)
+    // Nieuwe methode: alleen opslaan zonder de collectie te herladen
+    public void SaveDataOnly()
     {
-        var newSetNumber = PrefabSets.Any() ? PrefabSets.Max(s => s.SetNumber) + 1 : 1;
-        var firstElement = elements.FirstOrDefault();
-        var systemAbbreviation = (firstElement?.Parameters!)
-            .FirstOrDefault(p => p.Key == "System Abbreviation").Value;
-
-        var prefabSet = new PrefabSetHelper(_externalEvent, _requestHandler)
+        if (RevitContext.UiApp == null || RevitContext.Uidoc?.Document == null)
         {
-            SetNumber = newSetNumber,
-            Discipline = systemAbbreviation != null ? DetermineDiscipline(systemAbbreviation) : "Onbekend"
+            return;
+        }
+
+        var doc = RevitContext.Uidoc.Document;
+
+        // Lees project-metadata
+        var projectInfo = new FilteredElementCollector(doc)
+            .OfCategory(BuiltInCategory.OST_ProjectInformation)
+            .FirstElement();
+
+        var projectNummer = "";
+        var hoofdTekenaar = "";
+        if (projectInfo != null)
+        {
+            var pNumParam = projectInfo.LookupParameter("Project Nummer");
+            if (pNumParam?.HasValue == true) projectNummer = pNumParam.AsString() ?? "";
+            var tekParam = projectInfo.LookupParameter("Hoofd tekenaar");
+            if (tekParam?.HasValue == true) hoofdTekenaar = tekParam.AsString() ?? "";
+        }
+
+        if (string.IsNullOrEmpty(projectNummer))
+        {
+            return;
+        }
+
+        // Bepaal het pad naar het JSON-bestand (met debug-modus)
+        string nijhofPanelPath;
+        string prefabTekenPath;
+        
+        if (DEBUG_MODE)
+        {
+            // Debug: opslaan in Documenten map
+            prefabTekenPath = DEBUG_PATH;
+            nijhofPanelPath = Path.Combine(DEBUG_PATH, "Nijhof Panel");
+        }
+        else
+        {
+            // Productie: opslaan op T:\Data
+            var basePath = @"T:\Data";
+            var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
+            var invul2 = projectNummer;
+            prefabTekenPath = Path.Combine(basePath, invul1, invul2,
+                "2.8 Tekeningen", "02 Nijhof", "03 PDF Prefab tekeningen");
+
+            if (!Directory.Exists(prefabTekenPath))
+            {
+                return;
+            }
+            
+            nijhofPanelPath = Path.Combine(prefabTekenPath, "Nijhof Panel");
+        }
+
+        var jsonBestand = Path.Combine(nijhofPanelPath, "PrefabManager.json");
+
+        // Seriële JSON-output van de huidige PrefabSets
+        var saveData = new
+        {
+            ProjectNummer = projectNummer,
+            HoofdTekenaar = hoofdTekenaar,
+            PrefabSets = PrefabSets.OrderBy(s => s.SetNumber)
+                .Select(s => new
+                {
+                    s.SetNumber,
+                    s.Discipline,
+                    s.Verdieping,
+                    s.Bouwnummer,
+                    s.HoofdTekenaar,
+                    s.ProjectNummer,
+                    s.GecontroleerdNaam,
+                    GecontroleerdDatum = s.GecontroleerdDatum?.ToString("yyyy-MM-dd") ?? "",
+                    s.Materiaallijst,
+                    s.Zaaglijst
+                }).ToList()
         };
 
-        PrefabSets.Add(prefabSet);
+        var jsonInhoud = JsonConvert.SerializeObject(saveData, Formatting.Indented);
+
+        // Maak verborgen map "Nijhof Panel" aan als die nog niet bestaat
+        if (!Directory.Exists(nijhofPanelPath))
+        {
+            Directory.CreateDirectory(nijhofPanelPath);
+            // Maak de map verborgen
+            var dirInfo = new DirectoryInfo(nijhofPanelPath);
+            dirInfo.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+        }
+
+        try
+        {
+            File.WriteAllText(jsonBestand, jsonInhoud);
+        }
+        catch
+        {
+            // Stil afhandelen bij auto-save
+        }
     }
 
-    public void CollectAndSaveData()
+        public void CollectAndSaveData()
     {
         if (RevitContext.UiApp == null || RevitContext.Uidoc?.Document == null)
         {
@@ -143,6 +239,67 @@ public class PrefabWindowViewModel : ObservableObject
         {
             MessageBox.Show("Geen projectnummer gevonden.");
             return;
+        }
+
+        // Bepaal het pad naar het JSON-bestand (met debug-modus)
+        string nijhofPanelPath;
+        string prefabTekenPath;
+        
+        if (DEBUG_MODE)
+        {
+            // Debug: opslaan in Documenten map
+            prefabTekenPath = DEBUG_PATH;
+            nijhofPanelPath = Path.Combine(DEBUG_PATH, "Nijhof Panel");
+            
+            // Maak debug map aan indien nodig
+            if (!Directory.Exists(prefabTekenPath))
+            {
+                Directory.CreateDirectory(prefabTekenPath);
+            }
+        }
+        else
+        {
+            // Productie: opslaan op T:\Data
+            var basePath = @"T:\Data";
+            var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
+            var invul2 = projectNummer;
+            prefabTekenPath = Path.Combine(basePath, invul1, invul2,
+                "2.8 Tekeningen", "02 Nijhof", "03 PDF Prefab tekeningen");
+
+            if (!Directory.Exists(prefabTekenPath))
+            {
+                MessageBox.Show($"Map bestaat niet:\n{prefabTekenPath}");
+                return;
+            }
+            
+            nijhofPanelPath = Path.Combine(prefabTekenPath, "Nijhof Panel");
+        }
+
+        var jsonBestand = Path.Combine(nijhofPanelPath, "PrefabManager.json");
+
+        // Sla eerst de huidige data op (indien er al sets zijn)
+        if (PrefabSets.Any())
+        {
+            SaveDataOnly();
+        }
+
+        // Laad bestaande data indien aanwezig
+        Dictionary<int, SavedPrefabSet>? bestaandeData = null;
+        if (File.Exists(jsonBestand))
+        {
+            try
+            {
+                var jsonContent = File.ReadAllText(jsonBestand);
+                var geladen = JsonConvert.DeserializeObject<SavedData>(jsonContent);
+                if (geladen?.PrefabSets != null)
+                {
+                    bestaandeData = geladen.PrefabSets.ToDictionary(s => s.SetNumber, s => s);
+                }
+            }
+            catch
+            {
+                // Als laden mislukt, gewoon doorgaan zonder bestaande data
+            }
         }
 
         // Verzamel prefab-elementen
@@ -174,14 +331,38 @@ public class PrefabWindowViewModel : ObservableObject
             var sysAbb = group.First().LookupParameter("System Abbreviation")?.AsString() ?? "";
             var discipline = DetermineDiscipline(sysAbb);
 
-            PrefabSets.Add(new PrefabSetHelper(_externalEvent, _requestHandler)
+            var prefabSet = new PrefabSetHelper(_externalEvent, _requestHandler)
             {
                 SetNumber = setNum,
                 Discipline = discipline,
                 ProjectNummer = projectNummer,
                 HoofdTekenaar = hoofdTekenaar
-            });
+            };
+
+            // Vul gegevens in vanuit bestaande data indien beschikbaar
+            if (bestaandeData != null && bestaandeData.ContainsKey(setNum))
+            {
+                var bestaand = bestaandeData[setNum];
+                prefabSet.Bouwnummer = bestaand.Bouwnummer ?? "";
+                prefabSet.Verdieping = bestaand.Verdieping ?? "";
+                prefabSet.GecontroleerdNaam = bestaand.GecontroleerdNaam ?? "";
+                
+                // Parse datum string naar DateTime?
+                if (!string.IsNullOrWhiteSpace(bestaand.GecontroleerdDatum) 
+                    && DateTime.TryParse(bestaand.GecontroleerdDatum, out var datum))
+                {
+                    prefabSet.GecontroleerdDatum = datum;
+                }
+                
+                prefabSet.Materiaallijst = bestaand.Materiaallijst;
+                prefabSet.Zaaglijst = bestaand.Zaaglijst;
+            }
+
+            PrefabSets.Add(prefabSet);
         }
+
+        // Nu opslaan met de nieuwe data
+        SaveDataOnly();
 
         // Seriële JSON-output
         var saveData = new
@@ -198,7 +379,7 @@ public class PrefabWindowViewModel : ObservableObject
                     s.HoofdTekenaar,
                     s.ProjectNummer,
                     s.GecontroleerdNaam,
-                    s.GecontroleerdDatum,
+                    GecontroleerdDatum = s.GecontroleerdDatum?.ToString("yyyy-MM-dd") ?? "",
                     s.Materiaallijst,
                     s.Zaaglijst
                 }).ToList()
@@ -206,19 +387,15 @@ public class PrefabWindowViewModel : ObservableObject
 
         var jsonInhoud = JsonConvert.SerializeObject(saveData, Formatting.Indented);
 
-        var basePath = @"T:\Data";
-        var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
-        var invul2 = projectNummer;
-        var fullPath = Path.Combine(basePath, invul1, invul2,
-            "2.8 Tekeningen", "02 Nijhof", "03 PDF Prefab tekeningen");
-
-        if (!Directory.Exists(fullPath))
+        // Maak verborgen map "Nijhof Panel" aan als die nog niet bestaat
+        if (!Directory.Exists(nijhofPanelPath))
         {
-            MessageBox.Show($"Map bestaat niet:\n{fullPath}");
-            return;
+            Directory.CreateDirectory(nijhofPanelPath);
+            // Maak de map verborgen
+            var dirInfo = new DirectoryInfo(nijhofPanelPath);
+            dirInfo.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
         }
 
-        var jsonBestand = Path.Combine(fullPath, "PrefabManager.json");
         try
         {
             File.WriteAllText(jsonBestand, jsonInhoud);
@@ -242,5 +419,26 @@ public class PrefabWindowViewModel : ObservableObject
         public string? ElementId { get; set; }
         public string? Category { get; set; }
         public Dictionary<string, string>? Parameters { get; set; }
+    }
+
+    private class SavedData
+    {
+        public string? ProjectNummer { get; set; }
+        public string? HoofdTekenaar { get; set; }
+        public List<SavedPrefabSet>? PrefabSets { get; set; }
+    }
+
+    private class SavedPrefabSet
+    {
+        public int SetNumber { get; set; }
+        public string? Discipline { get; set; }
+        public string? Verdieping { get; set; }
+        public string? Bouwnummer { get; set; }
+        public string? HoofdTekenaar { get; set; }
+        public string? ProjectNummer { get; set; }
+        public string? GecontroleerdNaam { get; set; }
+        public string? GecontroleerdDatum { get; set; }  // String ipv DateTime?
+        public bool Materiaallijst { get; set; }
+        public bool Zaaglijst { get; set; }
     }
 }

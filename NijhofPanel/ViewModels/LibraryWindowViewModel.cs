@@ -7,7 +7,7 @@ using System.Windows.Input;
 using Models;
 using Helpers.Tools;
 using Helpers.Core;
-using Autodesk.Revit.UI;
+using NijhofPanel.Services;
 
 public class LibraryWindowViewModel : ObservableObject
 {
@@ -22,21 +22,18 @@ public class LibraryWindowViewModel : ObservableObject
     public ICommand LoadCommand => _loadCommand ??= new RelayCommand(ExecuteLoad);
     public ICommand PlaceCommand => _placeCommand ??= new RelayCommand(ExecutePlace);
     public ICommand CloseCommand => _closeCommand ??= new RelayCommand(ExecuteClose);
-    
-    private readonly RevitRequestHandler _handler;
-    private readonly ExternalEvent         _event;
 
-    public LibraryWindowViewModel(RevitRequestHandler handler,
-        ExternalEvent         ev)
+    private readonly ILibraryActions _actions;
+
+    public LibraryWindowViewModel(ILibraryActions actions)
     {
-        _handler = handler;
-        _event   = ev;
+        _actions = actions;
 
-        RootFiles               = new ObservableCollection<FileItemModel>();
-        SelectedFolderContent   = new ObservableCollection<FileItemModel>();
+        RootFiles             = new ObservableCollection<FileItemModel>();
+        SelectedFolderContent = new ObservableCollection<FileItemModel>();
         LoadFolderStructure();
     }
-    
+
     private void ExecuteLoad()
     {
         if (SelectedFile == null ||
@@ -47,31 +44,20 @@ public class LibraryWindowViewModel : ObservableObject
             return;
         }
 
-        // wrap the actual load inside a RevitRequest
-        var path = SelectedFile.FullPath;
-        _handler.Request = new RevitRequest(doc =>
-        {
-            var loader = new Commands.Tools.Com_LoadFamily();
-            loader.Execute(doc, path);
-        });
-
-        // this queues it to run in the Revit API thread
-        _event.Raise();
+        _actions.LoadFamily(SelectedFile.FullPath);
     }
 
     private void ExecutePlace()
     {
-        var placeFamilyCommand = new Commands.Tools.Com_PlaceFamily();
-        placeFamilyCommand.Execute();
+        _actions.PlaceFamily();
     }
-    
+
     private void ExecuteClose()
     {
         Application.Current.Windows.OfType<Window>()
             .FirstOrDefault(w => w.DataContext == this)?.Close();
     }
 
-    
     public ObservableCollection<FileItemModel>? RootFiles
     {
         get => _rootFiles;
@@ -92,7 +78,7 @@ public class LibraryWindowViewModel : ObservableObject
         get => _selectedFolderContent;
         set => SetProperty(ref _selectedFolderContent, value);
     }
-    
+
     private FileItemModel _selectedFile = null!;
 
     public FileItemModel SelectedFile
