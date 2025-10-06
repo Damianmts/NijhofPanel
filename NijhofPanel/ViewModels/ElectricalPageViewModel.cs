@@ -10,15 +10,20 @@ public class ElectricalPageViewModel : ObservableObject
 {
     private readonly FamilyPlacementHandler _handler;
     private readonly ExternalEvent _externalEvent;
+    private readonly ExternalEvent _tagGroepnummerEvent;
+    private readonly ExternalEvent _tagSwitchcodeEvent;
     
     public ICommand PlaceElectricalComponentCommand { get; }
     public ICommand TagGroepnummerCommand { get; }
     public ICommand TagSwitchcodeCommand { get; }
 
-    public ElectricalPageViewModel(FamilyPlacementHandler handler, ExternalEvent externalEvent)
+    public ElectricalPageViewModel(FamilyPlacementHandler handler, ExternalEvent externalEvent,
+        ExternalEvent tagGroepnummerEvent, ExternalEvent tagSwitchcodeEvent)
     {
         _handler = handler;
         _externalEvent = externalEvent;
+        _tagGroepnummerEvent = tagGroepnummerEvent;
+        _tagSwitchcodeEvent = tagSwitchcodeEvent;
 
         PlaceElectricalComponentCommand = new RelayCommand<object>(OnPlaceElectricalComponent!);
         TagGroepnummerCommand = new RelayCommands.RelayCommand(ExecuteTagGroepnummer);
@@ -35,14 +40,11 @@ public class ElectricalPageViewModel : ObservableObject
 
     private void ExecuteTagGroepnummer(object parameter)
     {
-        var command = new Com_TagGroepnummer();
-        // Ik moet hier nog de juiste parameters doorgeven voor de Execute methode
-        // command.Execute(...);
+        _tagGroepnummerEvent.Raise();
     }
 
     private void ExecuteTagSwitchcode(object parameter)
     {
-        var command = new Com_TagSwitchcode();
-        // Nog logica toevoegen
+        _tagSwitchcodeEvent.Raise();
     }
 }

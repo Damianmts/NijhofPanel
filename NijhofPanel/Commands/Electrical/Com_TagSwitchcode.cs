@@ -15,7 +15,7 @@ using Views;
 
 // TODO - (Misschien) Nog weer de code toevoegen die de tag in het project laad wanneer dat nog niet zo is.
 
-public class Com_TagSwitchcode
+public class Com_TagSwitchcode : IExternalEventHandler
 {
     private readonly Dictionary<BuiltInCategory, string> _categories;
     private ProgressWindowView? _progressWindow;
@@ -31,17 +31,17 @@ public class Com_TagSwitchcode
         };
     }
 
-    public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+    public void Execute(UIApplication app)
     {
         try
         {
-            var doc = commandData.Application.ActiveUIDocument.Document;
+            var doc = app.ActiveUIDocument.Document;
 
             var tagSymbol = GetTagFamily(doc, "Switchcode Tag");
             if (tagSymbol == null)
             {
                 TaskDialog.Show("Fout", "De tag-familie 'Switchcode Tag' is niet geladen in het project.");
-                return Result.Failed;
+                return;
             }
 
             EnsureTagFamilyIsActive(doc, tagSymbol);
@@ -49,8 +49,8 @@ public class Com_TagSwitchcode
             var totalElements = _categories.Sum(category => GetFilteredElements(doc, category.Key, tagSymbol).Count);
             if (totalElements == 0)
             {
-                TaskDialog.Show("Info", "Er zijn geen elementen gevonden om te taggen.");
-                return Result.Succeeded;
+                TaskDialog.Show("Info", "Er zijn geen elementen gevonden om te taggen. (Alle elementen zijn al getagd.)");
+                return;
             }
 
             InitializeComponents();
@@ -59,15 +59,16 @@ public class Com_TagSwitchcode
             var frame = new DispatcherFrame();
             task.ContinueWith(_ => frame.Continue = false, TaskScheduler.FromCurrentSynchronizationContext());
             Dispatcher.PushFrame(frame);
-
-            return Result.Succeeded;
         }
         catch (Exception ex)
         {
-            message = $"Er is een fout opgetreden: {ex.Message}";
-            TaskDialog.Show("Error", message);
-            return Result.Failed;
+            TaskDialog.Show("Error", $"Er is een fout opgetreden: {ex.Message}");
         }
+    }
+
+    public string GetName()
+    {
+        return "Com_TagSwitchcode";
     }
 
     private void InitializeComponents()

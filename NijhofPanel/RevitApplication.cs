@@ -6,6 +6,7 @@ using System.Threading;
 using Autodesk.Revit.UI;
 using JetBrains.Annotations;
 using Nice3point.Revit.Toolkit.External;
+using Commands.Electrical;
 using Services;
 using ViewModels;
 using Views;
@@ -48,6 +49,11 @@ public class RevitApplication : ExternalApplication
         var familyEvent = ExternalEvent.Create(familyHandler);
         var prefabHandler = new RevitRequestHandler();
         var prefabEvent = ExternalEvent.Create(prefabHandler);
+        var tagGroepnummerHandler = new Com_TagGroepnummer();
+        var tagGroepnummerEvent = ExternalEvent.Create(tagGroepnummerHandler);
+        var tagSwitchcodeHandler = new Com_TagSwitchcode();
+        var tagSwitchcodeEvent = ExternalEvent.Create(tagSwitchcodeHandler);
+
         
         LibraryHandler = new RevitRequestHandler();
         LibraryEvent   = ExternalEvent.Create(LibraryHandler);
@@ -59,7 +65,8 @@ public class RevitApplication : ExternalApplication
         AddButtonToPanel(ribbonPanel);
 
         // Bouw sub-VM's
-        var electricalVm = new ElectricalPageViewModel(familyHandler, familyEvent);
+        var electricalVm = new ElectricalPageViewModel(familyHandler, familyEvent, 
+            tagGroepnummerEvent, tagSwitchcodeEvent);
         var toolsVm = new ToolsPageViewModel();
         var prefabVm = new PrefabWindowViewModel(prefabHandler, prefabEvent);
         var libraryVm = new LibraryWindowViewModel(new Services.RevitLibraryActions(LibraryHandler, LibraryEvent));

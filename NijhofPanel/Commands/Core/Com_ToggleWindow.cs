@@ -2,6 +2,7 @@
 
 using Autodesk.Revit.UI;
 using Autodesk.Revit.Attributes;
+using Electrical;
 using NijhofPanel.Helpers.Core;
 using NijhofPanel.Helpers.Electrical;
 using Views;
@@ -22,15 +23,20 @@ public class Com_ToggleWindow : IExternalCommand
             var familyEvent     = ExternalEvent.Create(familyHandler);
             var prefabHandler   = new RevitRequestHandler();
             var prefabEvent     = ExternalEvent.Create(prefabHandler);
+            var tagGroepnummerHandler = new Com_TagGroepnummer();
+            var tagGroepnummerEvent = ExternalEvent.Create(tagGroepnummerHandler);
+            var tagSwitchcodeHandler = new Com_TagSwitchcode();
+            var tagSwitchcodeEvent = ExternalEvent.Create(tagSwitchcodeHandler);
 
             // Maak & configureer de services
             var navigationService = new NavigationService();
             var windowService = new WindowService();
 
-            // Instantieer de Main ViewModel met alle sub-VM’s
+            // Instantieer de Main ViewModel met alle sub-VM's
             var mainVm = new MainUserControlViewModel(navigationService, windowService)
             {
-                ElectricalVm = new ElectricalPageViewModel(familyHandler, familyEvent),
+                ElectricalVm = new ElectricalPageViewModel(familyHandler, familyEvent, 
+                    tagGroepnummerEvent, tagSwitchcodeEvent),
                 ToolsVm      = new ToolsPageViewModel(),
                 PrefabVm     = new PrefabWindowViewModel(prefabHandler, prefabEvent)
             };
