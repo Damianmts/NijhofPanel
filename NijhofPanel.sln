@@ -6,6 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Changelog.md = Changelog.md
 		Readme.md = Readme.md
 		Build\Build.Configuration.cs = Build\Build.Configuration.cs
+		Insctructions.md = Insctructions.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Automation", "Automation", "{8A75734C-593E-4E73-9505-AA08DDEFB013}"
