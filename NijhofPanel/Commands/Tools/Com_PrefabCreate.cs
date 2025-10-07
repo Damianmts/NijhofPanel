@@ -54,13 +54,13 @@ public class Com_PrefabCreate : IExternalEventHandler
                 {
                     if (element is FamilyInstance familyInstance && familyInstance.GetSubComponentIds().Count > 0)
                     {
-                        // Nummer alleen de diep geneste elementen
-                        NummerGenesteElementen(doc, familyInstance, nextAvailableNumber, prefabColorID, ref prefabElementNumber);
+                        // Wijs parameters toe aan geneste elementen
+                        AssignParametersToNestedFamilies(doc, familyInstance, nextAvailableNumber.ToString(), prefabColorID);
                     }
                     else
                     {
-                        // Nummer het element zelf als het geen geneste elementen bevat
-                        AssignPrefabParameters(element, nextAvailableNumber, prefabColorID, ref prefabElementNumber);
+                        // Wijs parameters toe aan het element zelf als het geen geneste elementen bevat
+                        AssignPrefabParameters(element, nextAvailableNumber, prefabColorID);
                         
                         // Wijs artikelnummer toe als het een pipe is
                         AssignArticleNumberToPipe(element);
@@ -88,7 +88,7 @@ public class Com_PrefabCreate : IExternalEventHandler
     public string GetName() => "Prefab Set Assign";
 
     // Methode om prefab parameters toe te wijzen aan een element
-    private void AssignPrefabParameters(Element element, int prefabSetNumber, string prefabColorID, ref int prefabElementNumber)
+    private void AssignPrefabParameters(Element element, int prefabSetNumber, string prefabColorID)
     {
         // Wijs 'Prefab Set' toe
         Parameter prefabSetParam = element.LookupParameter("Prefab Set");
@@ -103,19 +103,10 @@ public class Com_PrefabCreate : IExternalEventHandler
         {
             prefabColorIDParam.Set(prefabColorID);
         }
-
-        // Wijs een uniek 'Prefab Number' toe binnen de set
-        Parameter prefabNumberParam = element.LookupParameter("Prefab Number");
-        if (prefabNumberParam?.StorageType == StorageType.String)
-        {
-            prefabNumberParam.Set(prefabElementNumber.ToString());
-            prefabElementNumber++; // Verhoog voor elk nieuw element
-        }
         
         // Wijs artikelnummer toe als het een pipe is
         AssignArticleNumberToPipe(element);
     }
-
     
     // Methode om artikelnummer toe te wijzen aan een pipe
     private void AssignArticleNumberToPipe(Element element)
@@ -229,20 +220,35 @@ public class Com_PrefabCreate : IExternalEventHandler
         return null;
     }
 
-    // Methode om geneste elementen te nummeren, inclusief diep geneste elementen
-    private void NummerGenesteElementen(Document doc, FamilyInstance familyInstance, int prefabSetNumber, string prefabColorID, ref int prefabElementNumber)
+    // Functie om parameters toe te wijzen aan alle nested families (recursief)
+    private void AssignParametersToNestedFamilies(Document doc, FamilyInstance parentInstance, string prefabSet, string prefabColorID)
     {
-        foreach (ElementId nestedElementId in familyInstance.GetSubComponentIds())
-        {
-            Element nestedElement = doc.GetElement(nestedElementId);
-            if (nestedElement != null)
-            {
-                AssignPrefabParameters(nestedElement, prefabSetNumber, prefabColorID, ref prefabElementNumber);
+        // Haal alle sub-componenten (nested families) op
+        ICollection<ElementId> subComponentIds = parentInstance.GetSubComponentIds();
 
-                // Controleer of het geneste element zelf ook geneste elementen bevat
-                if (nestedElement is FamilyInstance nestedFamilyInstance)
+        foreach (ElementId subId in subComponentIds)
+        {
+            Element subElement = doc.GetElement(subId);
+            
+            if (subElement != null)
+            {
+                // Wijs parameters toe aan de nested family
+                Parameter prefabSetParam = subElement.LookupParameter("Prefab Set");
+                Parameter prefabColorIDParam = subElement.LookupParameter("Prefab Color ID");
+
+                if (prefabSetParam != null && prefabColorIDParam != null)
                 {
-                    NummerGenesteElementen(doc, nestedFamilyInstance, prefabSetNumber, prefabColorID, ref prefabElementNumber);
+                    prefabSetParam.Set(prefabSet);
+                    prefabColorIDParam.Set(prefabColorID);
+                }
+
+                // Wijs artikelnummer toe als het een pipe is
+                AssignArticleNumberToPipe(subElement);
+
+                // Als dit sub-element ook een FamilyInstance is, ga dan recursief door
+                if (subElement is FamilyInstance nestedFamilyInstance)
+                {
+                    AssignParametersToNestedFamilies(doc, nestedFamilyInstance, prefabSet, prefabColorID);
                 }
             }
         }

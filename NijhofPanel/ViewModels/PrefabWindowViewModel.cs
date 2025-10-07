@@ -17,7 +17,7 @@ public class PrefabWindowViewModel : ObservableObject
     private ObservableCollection<PrefabSetHelper> _prefabSets = new();
 
     // Debug modus: wijzig naar true om lokaal op te slaan
-    private const bool DEBUG_MODE = true;
+    private const bool DEBUG_MODE = false;
     private readonly string DEBUG_PATH = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
         "NijhofPanel_Debug");

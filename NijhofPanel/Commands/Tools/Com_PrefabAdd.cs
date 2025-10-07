@@ -103,11 +103,13 @@ public class Com_PrefabAdd : IExternalEventHandler
                         prefabSetParam.Set(prefabSet);
                         prefabColorIDParam.Set(prefabColorID);
                     }
+
+                    // Toewijzen aan alle nested families
+                    if (element is FamilyInstance familyInstance)
+                    {
+                        AssignParametersToNestedFamilies(doc, familyInstance, prefabSet, prefabColorID);
+                    }
                 }
-
-                // Hernummer alle elementen in de prefab set
-                RenumberPrefabSets(doc, selectedElements);
-
                 trans.Commit();
             }
         }
@@ -170,18 +172,33 @@ public class Com_PrefabAdd : IExternalEventHandler
         return null;
     }
 
-    // Functie om alle elementen in de prefab set opnieuw te nummeren
-    private void RenumberPrefabSets(Document doc, IList<Reference> elements)
+    // Functie om parameters toe te wijzen aan alle nested families (recursief)
+    private void AssignParametersToNestedFamilies(Document doc, FamilyInstance parentInstance, string prefabSet, string prefabColorID)
     {
-        int number = 1;
-        foreach (Reference reference in elements)
+        // Haal alle sub-componenten (nested families) op
+        ICollection<ElementId> subComponentIds = parentInstance.GetSubComponentIds();
+
+        foreach (ElementId subId in subComponentIds)
         {
-            Element element = doc.GetElement(reference);
-            Parameter prefabNumberParam = element.LookupParameter("Prefab Number");
-            if (prefabNumberParam != null)
+            Element subElement = doc.GetElement(subId);
+            
+            if (subElement != null)
             {
-                prefabNumberParam.Set(number.ToString());
-                number++;
+                // Wijs parameters toe aan de nested family
+                Parameter prefabSetParam = subElement.LookupParameter("Prefab Set");
+                Parameter prefabColorIDParam = subElement.LookupParameter("Prefab Color ID");
+
+                if (prefabSetParam != null && prefabColorIDParam != null)
+                {
+                    prefabSetParam.Set(prefabSet);
+                    prefabColorIDParam.Set(prefabColorID);
+                }
+
+                // Als dit sub-element ook een FamilyInstance is, ga dan recursief door
+                if (subElement is FamilyInstance nestedFamilyInstance)
+                {
+                    AssignParametersToNestedFamilies(doc, nestedFamilyInstance, prefabSet, prefabColorID);
+                }
             }
         }
     }
