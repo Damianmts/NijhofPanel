@@ -3,15 +3,190 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:NijhofPanel.Views"
+      xmlns:viewModel="clr-namespace:NijhofPanel.ViewModels"
       mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance viewModel:ToolsPageViewModel}"
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
       MinHeight="500"
-      MinWidth="250"
-      Background="White">
-    
-    <Grid>
-        <TextBlock Text="ToolsPageView" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-    </Grid>
+      MinWidth="270"
+      Background="{DynamicResource CurrentBackgroundColor}"
+      Foreground="{DynamicResource CurrentTextColor}">
+
+    <!-- Resources -->
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/BigButtonSVG.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/LongButtonSVG.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorWTools.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        <SolidColorBrush x:Key="CurrentBackgroundColor"
+                         Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+        <SolidColorBrush x:Key="CurrentTextColor"
+                         Color="{Binding Color, Source={StaticResource TextColor}}" />
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <ScrollViewer.Style>
+            <Style TargetType="ScrollViewer">
+                <Style.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource ModernScrollBar}" />
+                </Style.Resources>
+            </Style>
+        </ScrollViewer.Style>
+
+        <StackPanel Margin="10">
+            <TextBlock Text="Tools"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,0,0,5" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ConnectElementIcon}"
+                            Content="Element Aansluiten" Command="{Binding ConnectElementCommand}"/>
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource SplitIcon}"
+                            Content="Opdelen" Command="{Binding SplitPipeCommand}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource ExcelIcon}"
+                            Content="Exporteren" Command="{Binding ExportExcelCommand}" />
+                    <Button Style="{StaticResource LongButtonSVG}" />
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource HWANumberIcon}"
+                            Content="HWA Artikelnr." Command="{Binding UpdateHWACommand}" />
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource HWALengthIcon}"
+                            Content="HWA Lengte" Command="{Binding UpdateHWALengthCommand}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <Button Style="{StaticResource LongButtonSVG}" />
+                    <Button Style="{StaticResource LongButtonSVG}" />
+                </StackPanel>
+            </Grid>
+
+            
+            <TextBlock Text="Sparingen"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessWallIcon}" 
+                        Content="Muur" Command="{Binding RecessPlaceWallCommand}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessFloorIcon}"
+                        Content="Vloer" Command="{Binding RecessPlaceFloorCommand}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessBeamIcon}"
+                        Content="Fundering" Command="{Binding RecessPlaceBeamCommand}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource RecessUSOIcon}" 
+                        Content="Sparing Tool" />
+            </WrapPanel>
+
+
+            <TextBlock Text="GPS"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsLoadIcon}" 
+                        Content="Inladen" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsAddIcon}"
+                        Content="Toevoegen" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsDeleteIcon}"
+                        Content="Verwijderen" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource GpsUpdateIcon}"
+                        Content="Updaten" />
+            </WrapPanel>
+
+
+            <TextBlock Text="Prefab"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabNewIcon}" 
+                        Content="Nieuwe Set" Command="{Binding PrefabNewCommand}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabAddIcon}"
+                        Content="Toevoegen" Command="{Binding PrefabAddCommand}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabDeleteIcon}"
+                        Content="Verwijderen" Command="{Binding PrefabDeleteCommand}" />
+                <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PrefabManagerIcon}"
+                        Content="Manager" />
+            </WrapPanel>
+
+
+            <TextBlock Text="Sheets"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
+                            Content="VWA Lengte" Command="{Binding TagVWALengthCommand}"/>
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
+                            Content="HWA Lengte" Command="{Binding TagHWALengthCommand}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource View3DIcon}"
+                            Content="3D View" />
+                    <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ViewUpdateIcon}"
+                            Content="View Refreshen" />
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagIcon}"
+                            Content="MV Lengte" Command="{Binding TagMVLengthCommand}"/>
+                    <Button Style="{StaticResource LongButtonSVG}" Tag="{StaticResource TagDimensionIcon}"
+                            Content="Maatvoering" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Style="{StaticResource BigButtonSVG}" />
+                    <Button Style="{StaticResource BigButtonSVG}" />
+                </StackPanel>
+            </Grid>
+            
+            <!-- <TextBlock Text="Experimenteel" -->
+            <!--            FontFamily="Arial" -->
+            <!--            FontWeight="Bold" -->
+            <!--            FontSize="20" -->
+            <!--            Margin="0,15,0,5" /> -->
+            <!-- <WrapPanel Orientation="Horizontal"> -->
+            <!--     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource PlaceHolderIcon}" /> -->
+            <!-- </WrapPanel> -->
+            
+        </StackPanel>
+    </ScrollViewer>
+
 </Page>

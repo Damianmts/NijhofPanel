@@ -5,22 +5,24 @@ Autodesk Revit plugin project organized into multiple solution files that target
 ## Table of content
 
 <!-- TOC -->
+
 * [Prerequisites](#prerequisites)
 * [Solution Structure](#solution-structure)
 * [Project Structure](#project-structure)
 * [Building](#building)
-  * [Building the MSI installer and the Autodesk bundle on local machine](#building-the-msi-installer-and-the-autodesk-bundle-on-local-machine)
+    * [Building the MSI installer and the Autodesk bundle on local machine](#building-the-msi-installer-and-the-autodesk-bundle-on-local-machine)
 * [Publishing Releases](#publishing-releases)
-  * [Creating a new Release from the JetBrains Rider](#creating-a-new-release-from-the-jetbrains-rider)
-  * [Creating a new Release from the Terminal](#creating-a-new-release-from-the-terminal)
-  * [Creating a new Release on GitHub](#creating-a-new-release-on-github)
+    * [Creating a new Release from the JetBrains Rider](#creating-a-new-release-from-the-jetbrains-rider)
+    * [Creating a new Release from the Terminal](#creating-a-new-release-from-the-terminal)
+    * [Creating a new Release on GitHub](#creating-a-new-release-on-github)
 * [Compiling a solution on GitHub](#compiling-a-solution-on-github)
 * [Conditional compilation for a specific Revit version](#conditional-compilation-for-a-specific-revit-version)
 * [Managing Supported Revit Versions](#managing-supported-revit-versions)
-  * [Solution configurations](#solution-configurations)
-  * [Project configurations](#project-configurations)
+    * [Solution configurations](#solution-configurations)
+    * [Project configurations](#project-configurations)
 * [API references](#api-references)
 * [Learn More](#learn-more)
+
 <!-- TOC -->
 
 ## Prerequisites
@@ -56,29 +58,35 @@ After installation, clone this repository to your local machine and navigate to 
 
 ## Building
 
-We recommend JetBrains Rider as preferred IDE, since it has outstanding .NET support. If you don't have Rider installed, you can download it
+We recommend JetBrains Rider as preferred IDE, since it has outstanding .NET support. If you don't have Rider installed,
+you can download it
 from [here](https://www.jetbrains.com/rider/).
 
 1. Open JetBrains Rider
-2. In the `Solutions Configuration` drop-down menu, select `Release R25` or `Debug R25`. Suffix `R25` means compiling for the Revit 2025.
+2. In the `Solutions Configuration` drop-down menu, select `Release R25` or `Debug R25`. Suffix `R25` means compiling
+   for the Revit 2025.
 3. After the solution loads, you can build it by clicking on `Build -> Build Solution`.
 4. `Debug` button will start Revit add-in in the debug mode.
 
    ![image](https://github.com/user-attachments/assets/d209d863-a6d5-43a9-83e1-5eeb2b9fddac)
 
-Also, you can use Visual Studio. If you don't have Visual Studio installed, download it from [here](https://visualstudio.microsoft.com/downloads/).
+Also, you can use Visual Studio. If you don't have Visual Studio installed, download it
+from [here](https://visualstudio.microsoft.com/downloads/).
 
 1. Open Visual Studio
-2. In the `Solutions Configuration` drop-down menu, select `Release R25` or `Debug R25`. Suffix `R25` means compiling for the Revit 2025.
+2. In the `Solutions Configuration` drop-down menu, select `Release R25` or `Debug R25`. Suffix `R25` means compiling
+   for the Revit 2025.
 3. After the solution loads, you can build it by clicking on `Build -> Build Solution`.
 
 ### Building the MSI installer and the Autodesk bundle on local machine
 
-To build the project for all versions, create the installer and bundle, this project uses [NUKE](https://github.com/nuke-build/nuke)
+To build the project for all versions, create the installer and bundle, this project
+uses [NUKE](https://github.com/nuke-build/nuke)
 
 To execute your NUKE build locally, you can follow these steps:
 
-1. **Install NUKE as a global tool**. First, make sure you have NUKE installed as a global tool. You can install it using dotnet CLI:
+1. **Install NUKE as a global tool**. First, make sure you have NUKE installed as a global tool. You can install it
+   using dotnet CLI:
 
     ```shell
     dotnet tool install Nuke.GlobalTool --global
@@ -86,7 +94,8 @@ To execute your NUKE build locally, you can follow these steps:
 
    You only need to do this once on your machine.
 
-2. **Navigate to your project directory**. Open a terminal / command prompt and navigate to your project's root directory.
+2. **Navigate to your project directory**. Open a terminal / command prompt and navigate to your project's root
+   directory.
 3. **Run the build**. Once you have navigated to your project's root directory, you can run the NUKE build by calling:
 
    Compile:
@@ -109,7 +118,8 @@ To execute your NUKE build locally, you can follow these steps:
 ## Publishing Releases
 
 Releases are managed by creating new [Git tags](https://git-scm.com/book/en/v2/Git-Basics-Tagging).
-A tag in Git used to capture a snapshot of the project at a particular point in time, with the ability to roll back to a previous version.
+A tag in Git used to capture a snapshot of the project at a particular point in time, with the ability to roll back to a
+previous version.
 
 Tags must follow the format `version` or `version-stage.n.date` for pre-releases, where:
 
@@ -144,7 +154,8 @@ To update the changelog:
 1. Navigate to the solution root.
 2. Open the file **Changelog.md**.
 3. Add a section for your version. The version separator is the `#` symbol.
-4. Specify the release number e.g. `# 1.0.0` or `# 25.01.01 v1.0.0`, the format does not matter, the main thing is that it contains the version.
+4. Specify the release number e.g. `# 1.0.0` or `# 25.01.01 v1.0.0`, the format does not matter, the main thing is that
+   it contains the version.
 5. In the lines below, write a changelog for your version, style to your taste.
 6. Commit your changes.
 
@@ -183,7 +194,8 @@ Alternatively, you can create and push tags using the terminal:
    ```
 
 > [!NOTE]  
-> The tag will reference your current commit, so verify you're on the correct branch and have fetched latest changes from remote first.
+> The tag will reference your current commit, so verify you're on the correct branch and have fetched latest changes
+> from remote first.
 
 ### Creating a new Release on GitHub
 
@@ -194,13 +206,13 @@ To create releases directly on GitHub:
 3. Click **Run workflow** button.
 4. Specify the release version and click **Run**.
 
-    ![image](https://github.com/user-attachments/assets/088388c1-6055-4d21-8d22-70f047d8f104)
-
+   ![image](https://github.com/user-attachments/assets/088388c1-6055-4d21-8d22-70f047d8f104)
 
 ## Compiling a solution on GitHub
 
-Pushing commits to the remote repository will start a pipeline compiling the solution for all specified Revit versions. 
-That way, you can check if the plugin is compatible with different API versions without having to spend time building it locally.
+Pushing commits to the remote repository will start a pipeline compiling the solution for all specified Revit versions.
+That way, you can check if the plugin is compatible with different API versions without having to spend time building it
+locally.
 
 ## Conditional compilation for a specific Revit version
 
@@ -220,7 +232,8 @@ Create conditions, experiment to achieve the desired result.
 
 > [!NOTE]  
 > For generating directives, a third-party package is used.
-> You can find more detailed documentation about it here: [Revit.Build.Tasks](https://github.com/Nice3point/Revit.Build.Tasks)
+> You can find more detailed documentation about it
+> here: [Revit.Build.Tasks](https://github.com/Nice3point/Revit.Build.Tasks)
 
 To support the latest APIs in legacy Revit versions:
 
@@ -246,13 +259,15 @@ To support removed APIs in newer versions of Revit, you can invert the constant:
 
 ## Managing Supported Revit Versions
 
-To extend or reduce the range of supported Revit API versions, you need to update the solution and project configurations.
+To extend or reduce the range of supported Revit API versions, you need to update the solution and project
+configurations.
 
 ### Solution configurations
 
 Solution configurations determine which projects are built and how they are configured.
 
 To support multiple Revit versions:
+
 - Open the `.sln` file.
 - Add or remove configurations for each Revit version.
 
@@ -272,13 +287,15 @@ EndGlobalSection
 For example `Debug R26` is the Debug configuration for Revit 2026 version.
 
 > [!TIP]  
-> If you are just ending maintenance for some version, removing the Solution configurations without modifying the Project configurations is enough.
+> If you are just ending maintenance for some version, removing the Solution configurations without modifying the
+> Project configurations is enough.
 
 ### Project configurations
 
 Project configurations define build conditions for specific versions.
 
 To add or remove support:
+
 - Open `.csproj` file
 - Add or remove configurations for Debug and Release builds.
 
@@ -316,7 +333,8 @@ To support CI/CD pipelines and build a project for Revit versions not installed 
 > [!NOTE]  
 > Revit API dependencies are available in the [Revit.API](https://github.com/Nice3point/RevitApi) repository.
 
-The Nuget package version must include wildcards `Version="$(RevitVersion).*"` to automatically include adding a specific package version, depending on the selected solution
+The Nuget package version must include wildcards `Version="$(RevitVersion).*"` to automatically include adding a
+specific package version, depending on the selected solution
 configuration.
 
 ```xml

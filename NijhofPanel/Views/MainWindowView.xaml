@@ -3,10 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:NijhofPanel.Views"
         mc:Ignorable="d"
         Title="Nijhof Tools"
         Height="750"
-        Width="350">
-    <ContentControl x:Name="MainContent"/>
+        Width="350"
+        Background="{DynamicResource CurrentBackgroundColor}">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <ContentControl x:Name="MainContent"
+                        x:FieldModifier="public"
+                        Content="{Binding CurrentView}" />
+    </Grid>
+
 </Window>

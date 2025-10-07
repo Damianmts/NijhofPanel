@@ -3,15 +3,224 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:NijhofPanel.Views"
       mc:Ignorable="d"
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
-      MinHeight="500"
-      MinWidth="250"
-      Background="White">
-    
-    <Grid>
-        <TextBlock Text="SettingsPageView" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+      MinHeight="700"
+      MinWidth="270"
+      MaxWidth="290"
+      Background="{DynamicResource CurrentBackgroundColor}">
+
+    <!-- Resources -->
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/BasicButton.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="CurrentBackgroundColor"
+                             Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+            
+            <!-- ComboBox Style -->
+            <Style x:Key="CleanComboBox" TargetType="ComboBox">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="8,3"/>
+            </Style>
+            
+            <!-- ComboBoxItem Style voor separators -->
+            <Style TargetType="ComboBoxItem">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                        <Setter Property="IsEnabled" Value="False"/>
+                        <Setter Property="Foreground" Value="Gray"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid Margin="20,10,20,20">
+        <StackPanel>
+            <TextBlock Text="Prefab" 
+                      FontSize="20" 
+                      FontWeight="Bold" 
+                      Margin="0,0,0,10"/>
+            
+            <!-- Dropdown voor producttype -->
+            <TextBlock Text="Selecteer producttype:" 
+                      FontSize="14" 
+                      Margin="0,0,0,5"/>
+            <Border CornerRadius="2"
+                    Background="White"
+                    Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0.5"
+                                      Direction="0"
+                                      Opacity="0.3"
+                                      Color="Black" />
+                </Border.Effect>
+                <ComboBox Style="{StaticResource CleanComboBox}"
+                          ItemsSource="{Binding ProductTypes}"
+                          DisplayMemberPath="DisplayName"
+                          SelectedValuePath="Tag"
+                          SelectedValue="{Binding SelectedProductType, Mode=TwoWay}"/>
+            </Border>
+            
+                        <!-- Schema met diameters en artikelnummers -->
+            <Border CornerRadius="2"
+                    Background="White"
+                    Padding="10"
+                    Margin="0,0,0,5">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0.5"
+                                      Direction="0"
+                                      Opacity="0.3"
+                                      Color="Black" />
+                </Border.Effect>
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="75"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Header -->
+                        <TextBlock Text="Diameter" 
+                                  Grid.Row="0" Grid.Column="0" 
+                                  FontWeight="Bold" 
+                                  Margin="0,0,0,10"/>
+                        <TextBlock Text="Artikelnummer" 
+                                  Grid.Row="0" Grid.Column="1" 
+                                  FontWeight="Bold" 
+                                  Margin="0,0,0,10"/>
+                        
+                        <!-- ø40 -->
+                        <TextBlock Text="ø40" 
+                                  Grid.Row="1" Grid.Column="0" 
+                                  Margin="10,2"
+                                  Visibility="{Binding Diameter40Visibility}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" 
+                                Margin="0,2"
+                                Text="{Binding Diameter40, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding Diameter40Visibility}"/>
+                        
+                        <!-- ø50 -->
+                        <TextBlock Text="ø50" 
+                                  Grid.Row="2" Grid.Column="0" 
+                                  Margin="10,2"
+                                  Visibility="{Binding Diameter50Visibility}"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" 
+                                Margin="0,2"
+                                Text="{Binding Diameter50, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding Diameter50Visibility}"/>
+                        
+                        <!-- ø75 -->
+                        <TextBlock Text="ø75" 
+                                  Grid.Row="3" Grid.Column="0" 
+                                  Margin="10,2"
+                                  Visibility="{Binding Diameter75Visibility}"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" 
+                                Margin="0,2"
+                                Text="{Binding Diameter75, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding Diameter75Visibility}"/>
+                        
+                        <!-- ø80 -->
+                        <TextBlock Text="ø80" 
+                                  Grid.Row="4" Grid.Column="0" 
+                                  Margin="10,2"
+                                  Visibility="{Binding Diameter80Visibility}"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" 
+                                Margin="0,2"
+                                Text="{Binding Diameter80, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding Diameter80Visibility}"/>
+                        
+                        <!-- ø90 -->
+                        <TextBlock Text="ø90" 
+                                  Grid.Row="5" Grid.Column="0" 
+                                  Margin="10,2"
+                                  Visibility="{Binding Diameter90Visibility}"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" 
+                                Margin="0,2"
+                                Text="{Binding Diameter90, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding Diameter90Visibility}"/>
+                        
+                        <!-- ø110 -->
+                        <TextBlock Text="ø110" 
+                                  Grid.Row="6" Grid.Column="0" 
+                                  Margin="10,2"
+                                  Visibility="{Binding Diameter110Visibility}"/>
+                        <TextBox Grid.Row="6" Grid.Column="1" 
+                                Margin="0,2"
+                                Text="{Binding Diameter110, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding Diameter110Visibility}"/>
+                        
+                        <!-- ø125 -->
+                        <TextBlock Text="ø125" 
+                                  Grid.Row="7" Grid.Column="0" 
+                                  Margin="10,2"
+                                  Visibility="{Binding Diameter125Visibility}"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" 
+                                Margin="0,2"
+                                Text="{Binding Diameter125, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding Diameter125Visibility}"/>
+                        
+                        <!-- ø160 -->
+                        <TextBlock Text="ø160" 
+                                   Grid.Row="8" Grid.Column="0" 
+                                   Margin="10,2"
+                                   Visibility="{Binding Diameter160Visibility}"/>
+                        <TextBox Grid.Row="8" Grid.Column="1" 
+                                 Margin="0,2"
+                                 Text="{Binding Diameter160, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding Diameter160Visibility}"/>
+                        
+                        <!-- 195/80 -->
+                        <TextBlock Text="195/80" 
+                                   Grid.Row="9" Grid.Column="0" 
+                                   Margin="10,2"
+                                   Visibility="{Binding Diameter19580Visibility}"/>
+                        <TextBox Grid.Row="9" Grid.Column="1" 
+                                 Margin="0,2"
+                                 Text="{Binding Diameter19580, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding Diameter19580Visibility}"/>
+                        
+                        <!-- 235/80 -->
+                        <TextBlock Text="235/80" 
+                                   Grid.Row="10" Grid.Column="0" 
+                                   Margin="10,2"
+                                   Visibility="{Binding Diameter23580Visibility}"/>
+                        <TextBox Grid.Row="10" Grid.Column="1" 
+                                 Margin="0,2"
+                                 Text="{Binding Diameter23580, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding Diameter23580Visibility}"/>
+                    </Grid>
+                    
+                    <!-- Opslaan knop -->
+                    <Button Style="{StaticResource BasicButton}" 
+                            Content="Opslaan" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,10,0,0"
+                            Command="{Binding SaveCommand}"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
     </Grid>
 </Page>

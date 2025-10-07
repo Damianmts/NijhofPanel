@@ -1,110 +1,55 @@
-﻿using System.Windows.Controls;
-using NijhofPanel.ViewModels;
-using NijhofPanel.Services;
+﻿namespace NijhofPanel.Views;
+
 using System;
 using System.Windows;
-using System.Windows.Input;
-using NijhofPanel.Views;
+using System.ComponentModel;
+using Services;
+using UI.Themes;
+using ViewModels;
 
-namespace NijhofPanel.Views;
-
-public partial class MainUserControlView : UserControl
+public partial class MainUserControlView
 {
-    // Lijst om geopende vensters bij te houden
-    private readonly Dictionary<string, Window> _openWindows = new Dictionary<string, Window>();
+    private MainUserControlViewModel _mainVm = null!;
 
-    public MainUserControlView(MainUserControlViewModel viewModel)
+    public MainUserControlView(MainUserControlViewModel vm)
     {
         InitializeComponent();
-        DataContext = viewModel;
-        
-        // Select StartPageView at startup
-        sidebar.SelectedIndex = 0;
+        DataContext = vm;
+        WarningService.Instance.Initialize(vm);
+        Loaded += MainUserControlView_Loaded;
+    }
+
+    private void MainUserControlView_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainUserControlViewModel vm)
+        {
+            _mainVm = vm;
+            _mainVm.PropertyChanged += MainVm_PropertyChanged;
+            ThemeManager.UpdateTheme(_mainVm.IsDarkMode, this);
+            if (_mainVm.NavigationService is NavigationService navService)
+            {
+                navService.SetHost(NavigationFrame);
+                _mainVm.NavigateToLogin();
+            }
+        }
+        else
+        {
+            throw new InvalidOperationException("DataContext moet een MainUserControlViewModel zijn.");
+        }
     }
     
-    private void sidebar_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void CloseWarningButton_Click(object sender, RoutedEventArgs e)
     {
-        if (sidebar.SelectedItem is Srv_NavButton navButton)
-        {
-            navframe.Navigate(navButton.Navlink);
-        }
-        else if (sidebar.SelectedItem is Srv_WindowButton windowButton && !string.IsNullOrEmpty(windowButton.Navlink))
-        {
-            try
-            {
-                // Controleer eerst of het venster al open is
-                if (_openWindows.ContainsKey(windowButton.Navlink))
-                {
-                    // Activeer het bestaande venster
-                    var existingWindow = _openWindows[windowButton.Navlink];
-                    if (existingWindow.IsVisible)
-                    {
-                        existingWindow.Activate();
-                        return;
-                    }
-                    else
-                    {
-                        // Verwijder het venster uit de dictionary als het gesloten is
-                        _openWindows.Remove(windowButton.Navlink);
-                    }
-                }
-
-                Window? window = null;
-
-                switch (windowButton.Navlink)
-                {
-                    case "LibraryWindowView":
-                        window = new LibraryWindowView();
-                        break;
-                    case "PrefabWindowView":
-                        window = new PrefabWindowView();
-                        break;
-                    case "FittingListWindowView":
-                        window = new FittingListWindowView();
-                        break;
-                    case "SawListWindowView":
-                        window = new SawListWindowView();
-                        break;
-                }
-
-                if (window != null)
-                {
-                    // Maak het venster modeless
-                    window.Owner = Window.GetWindow(this);
-                    
-                    // Voeg het venster toe aan de dictionary
-                    _openWindows[windowButton.Navlink] = window;
-                    
-                    // Registreer een handler voor als het venster sluit
-                    window.Closed += (s, args) =>
-                    {
-                        _openWindows.Remove(windowButton.Navlink);
-                        // Reset de selectie om de "geselecteerde" status te verwijderen
-                        sidebar.SelectedIndex = -1;
-                    };
-                    
-                    window.Show();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Fout bij openen venster: {ex.Message}");
-            }
-        }
+        if (DataContext is MainUserControlViewModel viewModel) viewModel.HideWarning();
     }
-    private void OnNavButtonClick(object sender, MouseButtonEventArgs e)
+
+    private void MainVm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender is Srv_NavButton navButton && navButton.Navlink != null)
+        if (e.PropertyName == nameof(MainUserControlViewModel.IsDarkMode))
         {
-            try
-            {
-                navframe.Navigate(navButton.Navlink);
-                sidebar.SelectedItem = navButton;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Fout bij navigatie (klik): {ex.Message}");
-            }
+            ThemeManager.UpdateTheme(_mainVm.IsDarkMode, this);
+            if (NavigationFrame.Content is FrameworkElement activePage)
+                ThemeManager.UpdateTheme(_mainVm.IsDarkMode, activePage);
         }
     }
 }

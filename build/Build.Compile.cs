@@ -6,17 +6,15 @@ sealed partial class Build
     /// <summary>
     ///     Compile all solution configurations.
     /// </summary>
-    Target Compile => _ => _
+    Target CompileSolution => _ => _
         .DependsOn(Clean)
         .Executes(() =>
         {
             foreach (var configuration in GlobBuildConfigurations())
-            {
                 DotNetBuild(settings => settings
                     .SetProjectFile(Solution)
                     .SetConfiguration(configuration)
                     .SetVersion(ReleaseVersionNumber)
                     .SetVerbosity(DotNetVerbosity.minimal));
-            }
         });
 }

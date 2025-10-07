@@ -9,7 +9,7 @@ sealed partial class Build
     ///     Create the Autodesk .bundle package.
     /// </summary>
     Target CreateBundle => _ => _
-        .DependsOn(Compile)
+        .DependsOn(CompileSolution)
         .Executes(() =>
         {
             foreach (var project in Bundles)
@@ -41,8 +41,7 @@ sealed partial class Build
     /// <summary>
     ///     Generate the Autodesk manifest for the bundle.
     /// </summary>
-    void GenerateManifest(Project project, string[] directories, AbsolutePath manifestDirectory)
-    {
+    void GenerateManifest(Project project, string[] directories, AbsolutePath manifestDirectory) =>
         BuilderUtils.Build<PackageContentsBuilder>(builder =>
         {
             var company = GetConfigurationValue(project, config => config.Name == "VendorId");
@@ -61,14 +60,11 @@ sealed partial class Build
                 .Email(email);
 
             foreach (var version in versions)
-            {
                 builder.Components.CreateEntry($"Revit {version}")
                     .RevitPlatform(version)
                     .AppName(project.Name)
                     .ModuleName($"./Contents/{version}/{project.Name}.addin");
-            }
         }, manifestDirectory);
-    }
 
     /// <summary>
     ///     Read the configuration from the .addin file.
@@ -110,9 +106,7 @@ sealed partial class Build
     static void CopyAssemblies(string sourcePath, string targetPath)
     {
         foreach (var dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
-        {
             Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
-        }
 
         foreach (var filePath in Directory.GetFiles(sourcePath, "*", SearchOption.AllDirectories))
         {

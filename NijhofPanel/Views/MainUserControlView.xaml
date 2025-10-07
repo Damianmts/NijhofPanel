@@ -3,81 +3,163 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:NijhofPanel.Views"
+             xmlns:views="clr-namespace:NijhofPanel.Views"
              xmlns:viewModel="clr-namespace:NijhofPanel.ViewModels"
-             xmlns:services="clr-namespace:NijhofPanel.Services"
+             xmlns:services="clr-namespace:NijhofPanel.UI.Controls.Navigation"
+             xmlns:local="clr-namespace:NijhofPanel.Views.Converters"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModel:MainUserControlViewModel}"
-             Background="White"
+             d:DataContext="{d:DesignInstance viewModel:MainUserControlViewModel, IsDesignTimeCreatable=True}"
+             Background="{DynamicResource CurrentBackgroundColor}"
              Height="700"
-             Width="350"
+             Width="330"
              MinHeight="700"
-             MinWidth="350">
-    
-    <!-- TODO - Change Sidebar to DockPanel as seen in 'Documentation.DockPanel' to make selection color work again for 'Settings' -->
-    
+             MinWidth="330">
+
+    <!-- To Do -->
+    <!-- TODO - Fix/ Make Dark Mode -->
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_NavSidebarButton.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/Resources/Themes/Thm_WindowSidebarButton.xaml"/>
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorSidebar.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorETools.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Layout/Sidebar.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <SolidColorBrush x:Key="CurrentBackgroundColor"
+                             Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+            
+            <SolidColorBrush x:Key="CurrentSidebarIconColor"
+                             Color="{Binding Color, Source={StaticResource SidebarIconColor}}" />
+
+            <local:BooleanToColumnConverter x:Key="BoolToColumnConverter" />
+            <local:BooleanToColumnSpanConverter x:Key="BoolToColumnSpanConverter" />
+            <local:BooleanHiddenVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-        
-        <ListBox Grid.Row="0" SelectionMode="Single" SelectionChanged="sidebar_SelectionChanged" x:Name="sidebar" Margin="0,0,0,0" BorderThickness="0">
-            <services:Srv_NavButton Navlink="pack://application:,,,/NijhofPanel;component/Views/StartPageView.xaml" Margin="3" Padding="6"
-                                       Icon="F1 M32,32z M0,0z M30.854,16.548C30.523,17.43,29.703,18,28.764,18L28,18 28,29C28,29.552,27.552,30,27,30L21,30 21,23C21,20.243 18.757,18 16,18 13.243,18 11,20.243 11,23L11,30 5,30C4.448,30,4,29.552,4,29L4,18 3.235,18C2.296,18 1.476,17.431 1.145,16.549 0.814,15.667 1.057,14.697 1.765,14.079L13.444,3.019C14.878,1.662,17.123,1.662,18.556,3.019L30.263,14.105C30.941,14.696,31.185,15.666,30.854,16.548z" />
-            <Separator />
-            <services:Srv_NavButton Navlink="pack://application:,,,/NijhofPanel;component/Views/ToolsPageView.xaml" Margin="3" Padding="6">
-                <services:Srv_NavButton.Icon>
-                    <PathGeometry Figures="M13.32,44.31A4.5,4.5,0,0,0,19.68,50.67L34.44,35.91 28.08,29.55z M50.2,16.96L50.2,16.96 56.63,13.63 60,7.13 56.86,3.99 50.36,7.36 47.03,13.78 39.21,21.61 42.38,24.79 50.2,16.96z M51.61,34L51,34A8.9,8.9,0,0,0,47.89,34.58L29.45,16.09A8.9,8.9,0,0,0,30,13L29.94,12.4A8.9,8.9,0,0,0,17.19,4.89L23.19,10.89A3,3,0,0,1,23.87,11.97A3,3,0,0,1,21,16A2.92,2.92,0,0,1,20,15.79A3.15,3.15,0,0,1,18.92,15.12L12.92,9.12A8.9,8.9,0,0,0,20.41,21.9L21,22A8.9,8.9,0,0,0,24.11,21.42L42.6,39.84A8.9,8.9,0,0,0,42,43L42.06,43.6A9,9,0,0,0,51,51.94A8.72,8.72,0,0,0,54.85,51.04L48.85,45.04A3.08,3.08,0,0,1,48.21,44A3,3,0,0,1,51,40A2.92,2.92,0,0,1,52,40.21A2.72,2.72,0,0,1,53.08,40.88L59.08,46.88A8.9,8.9,0,0,0,51.61,34z" />
-                </services:Srv_NavButton.Icon>
-            </services:Srv_NavButton>
-            <Separator />
-            <services:Srv_NavButton Navlink="pack://application:,,,/NijhofPanel;component/Views/ElectricalPageView.xaml" Margin="3" Padding="6"
-                                       Icon="F1 M512,512z M0,0z M0,0C6.47976948,4.56240453 9.31427076,9.95648178 11.19140625,17.54296875 11.55605038,20.55817297 11.57387785,23.51677544 11.53198242,26.55102539 11.53263954,27.82583771 11.53263954,27.82583771 11.53330994,29.12640381 11.5312398,31.90222109 11.50799372,34.6774148 11.484375,37.453125 11.47877271,39.39082001 11.47450561,41.3285193 11.47151184,43.26622009 11.46011288,48.34121643 11.43068871,53.41595106 11.3973999,58.49084473 11.3611656,64.59327538 11.34751429,70.69579403 11.33003998,76.7983017 11.30104812,86.0467055 11.24352641,95.29453621 11.19140625,104.54296875 32.31140625,104.54296875 53.43140625,104.54296875 75.19140625,104.54296875 75.15660156,98.36707031 75.12179688,92.19117187 75.0859375,85.828125 75.07060017,81.90428736 75.05615767,77.98048693 75.04492188,74.05664062 75.02702207,67.83512652 75.00589729,61.61374549 74.96508789,55.39233398 74.93237642,50.37377404 74.9145284,45.3553569 74.90677452,40.33669853 74.90125213,38.42663769 74.89046841,36.51658423 74.87421608,34.60658455 74.85228495,31.92122933 74.84944584,29.23645644 74.85083008,26.55102539 74.84004425,25.76986862 74.82925842,24.98871185 74.81814575,24.18388367 74.86554116,15.62875294 77.23819158,8.48710531 83.19140625,2.2734375 89.47030679,-3.15928308 95.94158404,-4.11987529 104.1015625,-3.84375 112.44441903,-2.79957453 117.33997722,1.87684571 122.37890625,8.35546875 126.00521554,14.7327713 126.48571623,21.08839951 126.41845703,28.25390625 126.41874908,29.08412796 126.41904114,29.91434967 126.41934204,30.76972961 126.4179601,33.48591948 126.40245296,36.20182741 126.38671875,38.91796875 126.38298457,40.81225434 126.38013951,42.70654186 126.37814331,44.60083008 126.37053871,49.56562717 126.35091771,54.53030564 126.32873535,59.49505615 126.30820831,64.56960445 126.29912697,69.64417207 126.2890625,74.71875 126.26766863,84.66020812 126.2335713,94.60157854 126.19140625,104.54296875 127.21500244,104.5272583 128.23859863,104.51154785 129.29321289,104.49536133 133.11556024,104.44078191 136.93787359,104.40651756 140.76049805,104.37817383 142.41029669,104.36315069 144.06005583,104.34272615 145.7097168,104.31665039 148.09043161,104.27997976 150.47061533,104.26317772 152.8515625,104.25 153.58101578,104.23451614 154.31046906,104.21903229 155.06202698,104.20307922 161.3695075,104.20103804 165.86975205,105.74896323 170.94140625,109.66796875 177.2253202,117.69741435 176.62183586,127.26408679 176.5546875,136.99609375 176.55416709,138.50233968 176.55469177,140.00858628 176.55619812,141.51483154 176.55610874,144.66851996 176.54576298,147.82195104 176.52758789,150.97558594 176.50513352,154.95252598 176.50450475,158.92908703 176.51083946,162.90607262 176.54502665,191.24439753 175.94956771,218.30668559 164.19140625,244.54296875 163.66675781,245.71601563 163.14210937,246.8890625 162.6015625,248.09765625 148.46050615,277.97687649 121.62672657,302.26518652 90.61328125,313.6640625 76.38520269,318.62491274 76.38520269,318.62491274 70.19140625,318.54296875 70.22977261,327.00264482 70.28957296,335.46180408 70.37530899,343.92111969 70.41449487,347.85091096 70.44682241,351.78048784 70.46240234,355.71044922 70.47776267,359.51683125 70.5125393,363.32262262 70.55971527,367.1287384 70.57433273,368.56682645 70.5824357,370.00499893 70.5832901,371.44316101 70.60629645,390.78573593 75.21519058,408.0637909 88.95703125,422.3359375 89.694375,423.06425781 90.43171875,423.79257812 91.19140625,424.54296875 92.11179688,425.49623047 92.11179688,425.49623047 93.05078125,426.46875 105.00453774,437.98828884 121.98399441,442.52544722 138.19140625,442.54296875 154.66197353,441.55509394 170.7130183,434.57676257 182.19140625,422.54296875 194.68535304,407.58809305 199.62832655,391.81358242 200.73510742,372.64794922 202.4438259,344.85953584 210.87291719,319.92601707 229.19140625,298.54296875 229.8565625,297.73214844 230.52171875,296.92132813 231.20703125,296.0859375 240.92706536,284.65589739 252.96303109,276.40852688 266.19140625,269.54296875 267.54105469,268.83720703 267.54105469,268.83720703 268.91796875,268.1171875 274.3238528,265.47957338 279.88236608,263.58650798 285.62890625,261.85546875 286.63014526,261.55153198 286.63014526,261.55153198 287.65161133,261.24145508 301.12975026,257.36723766 314.35494133,257.21692388 328.265625,257.20703125 330.40167833,257.20059314 332.5377308,257.19386405 334.67378235,257.18685913 339.13093105,257.17494099 343.58800252,257.17117307 348.04516602,257.17236328 353.74107541,257.17256711 359.43648951,257.14517379 365.1322813,257.11081886 369.53591673,257.08853835 373.93943266,257.08452596 378.34311867,257.08558273 380.44296806,257.08323204 382.54282101,257.07443869 384.64261436,257.058918 387.58069776,257.03921792 390.51770813,257.04511011 393.45581055,257.05712891 394.31162216,257.04588989 395.16743378,257.03465088 396.04917908,257.02307129 404.05646856,257.1058779 411.45414522,259.80570772 417.19140625,265.54296875 423.19347283,273.94927223 424.08448926,281.35976934 423.19140625,291.54296875 421.17213055,298.49724559 417.25180815,303.62382234 411.19140625,307.54296875 404.05590321,311.1733124 397.48905279,311.69004916 389.59423828,311.66894531 388.3293734,311.67174751 388.3293734,311.67174751 387.03895569,311.67460632 385.21385121,311.67859749 383.38874177,311.68068398 381.56363297,311.68106842 377.66045087,311.68450955 373.75743154,311.70591199 369.85430717,311.72629929 362.60076664,311.76413798 355.34740073,311.79559679 348.09375,311.79345703 343.0355845,311.79266312 337.97801819,311.81632266 332.92000961,311.85533905 331.0074115,311.86569992 329.09474336,311.86739746 327.18213272,311.85968781 307.18094654,311.78715739 289.42857501,316.01737271 274.3515625,330.19140625 261.41636312,344.27276254 256.31486647,360.07858807 255.31640625,378.85546875 253.46195155,408.00257664 244.90692002,432.90522684 226.19140625,455.54296875 225.59585937,456.29191406 225.0003125,457.04085938 224.38671875,457.8125 206.85064099,479.08233594 177.94310843,493.25284189 150.71337891,496.32763672 116.79795699,499.22341621 85.71378323,491.14136712 59.375,469.29296875 35.18093995,448.63579819 19.73269058,418.95321904 16.38745117,387.32008362 15.96244096,381.29951366 16.07101143,375.25888996 16.09375,369.2265625 16.09561864,367.75968982 16.09704044,366.29281652 16.09803772,364.82594299 16.10182777,360.993909 16.11162743,357.16191383 16.1227417,353.32989502 16.13303195,349.4080864 16.13755154,345.4862714 16.14257812,341.56445312 16.15325339,333.89060744 16.17028682,326.21679357 16.19140625,318.54296875 15.2940979,318.45752808 15.2940979,318.45752808 14.37866211,318.37036133 6.45565089,317.56369268 6.45565089,317.56369268 2.75390625,316.23046875 2.01285645,315.96451904 1.27180664,315.69856934 0.50830078,315.42456055 -0.25627441,315.13363525 -1.02084961,314.84270996 -1.80859375,314.54296875 -2.62602051,314.23464111 -3.44344727,313.92631348 -4.28564453,313.60864258 -18.15218505,308.2190717 -30.49847123,301.20573945 -41.80859375,291.54296875 -42.31729004,291.11258301 -42.82598633,290.68219727 -43.35009766,290.23876953 -65.53744268,271.27228156 -80.54463904,246.07691772 -86.80859375,217.54296875 -86.98154968,216.76792999 -87.15450562,215.99289124 -87.33270264,215.19436646 -89.27560266,205.2198589 -89.13668208,195.26753896 -89.14453125,185.1484375 -89.15097018,183.18695481 -89.15769933,181.22547306 -89.16470337,179.26399231 -89.17661193,175.17507701 -89.18039028,171.08624585 -89.17919922,166.99731445 -89.17899508,161.76752767 -89.20642346,156.53827848 -89.24074364,151.3086195 -89.26299937,147.26706979 -89.26703735,143.2256505 -89.26597977,139.18404579 -89.26833284,137.25558919 -89.27713978,135.32712884 -89.2926445,133.39873314 -89.31230079,130.70448352 -89.30647071,128.01140829 -89.29443359,125.31713867 -89.30567261,124.52894241 -89.31691162,123.74074615 -89.32849121,122.92866516 -89.26550186,117.36374875 -87.99861697,114.12740015 -84.80859375,109.54296875 -78.79441238,104.78174183 -74.23146824,104.39355846 -66.76171875,104.4453125 -65.60491608,104.44743492 -65.60491608,104.44743492 -64.42474365,104.44960022 -61.96932037,104.45518341 -59.51398933,104.4677328 -57.05859375,104.48046875 -55.39062632,104.48548592 -53.72265746,104.49004845 -52.0546875,104.49414062 -47.97262088,104.50514734 -43.89062294,104.52240039 -39.80859375,104.54296875 -39.81303497,103.51059586 -39.8174762,102.47822296 -39.822052,101.41456604 -39.86268742,91.66057957 -39.89262095,81.9066104 -39.91221809,72.15255833 -39.92263203,67.13853475 -39.93674743,62.1245798 -39.95947266,57.1105957 -39.98128645,52.26710782 -39.99318034,47.42368574 -39.99834824,42.58015251 -40.00202871,40.73709007 -40.00921558,38.89403102 -40.02005386,37.05099678 -40.03468239,34.45913176 -40.03656698,31.86753477 -40.03564453,29.27563477 -40.04283508,28.52253021 -40.05002563,27.76942566 -40.05743408,26.99349976 -40.02157644,17.61396819 -38.12427464,9.68966028 -31.80859375,2.54296875 -22.48642972,-4.98647143 -10.47904987,-6.0048488 0,0z" />
-            <Separator />
-            <Separator />
-            <services:Srv_WindowButton Navlink="LibraryWindowView" Margin="3" Padding="6"
-                              Icon="F1 M24,24z M0,0z M6.1,10L4,18 4,8 21,8A2,2,0,0,0,19,6L12,6 10,4 4,4A2,2,0,0,0,2,6L2,18A2,2,0,0,0,4,20L19,20C19.9,20,20.7,19.4,20.9,18.5L23.2,10 6.1,10 M19,18L6,18 7.6,12 20.6,12 19,18z" />
-            <Separator />
-            <services:Srv_WindowButton Navlink="PrefabWindowView" Margin="3" Padding="6"
-                                          Icon="F1 M24,24z M0,0z M22,14L20,14 20,16 14,16 14,13 16,13 16,11 14,11 14,6A2,2,0,0,0,12,4L4,4 4,2 2,2 2,10 4,10 4,8 10,8 10,11 8,11 8,13 10,13 10,18A2,2,0,0,0,12,20L20,20 20,22 22,22" />
-            <Separator />
-            <services:Srv_WindowButton Navlink="FittingListWindowView" Margin="3" Padding="6"
-                                          Icon="F1 M24,24z M0,0z M22,9L17.21,9 12.83,2.44C12.64,2.16 12.32,2 12,2 11.68,2 11.36,2.16 11.17,2.45L6.79,9 2,9C1.45,9 1,9.45 1,10 1,10.09 1,10.18 1.04,10.27L3.58,19.54C3.81,20.38,4.58,21,5.5,21L18.5,21C19.42,21,20.19,20.38,20.43,19.54L22.97,10.27 23,10C23,9.45,22.55,9,22,9 M12,4.8L14.8,9 9.2,9 12,4.8 M18.5,19L5.5,19 3.31,11 20.7,11 18.5,19 M12,13C10.9,13 10,13.9 10,15 10,16.1 10.9,17 12,17 13.1,17 14,16.1 14,15 14,13.9 13.1,13 12,13z" />
-            <Separator />
-            <services:Srv_WindowButton Navlink="SawListWindowView" Margin="3" Padding="6"
-                                       Icon="F1 M24,24z M0,0z M20,15C20,15,18.6,16.3,21.1,17L18.3,19.8 15.5,19.8C15.5,19.8,13.6,19.7,15,22L11,22 9,20C9,20,7.7,18.6,7,21.1L4.2,18.3 4.2,15.5C4.2,15.5,4.3,13.6,2,15L2,11 4,9C4,9,5.4,7.7,2.8,7.1L5.6,4.2 8.5,4.2C8.5,4.2,10.4,4.3,9,2L13,2 15,4C15,4,16.3,5.4,17,2.8L19.8,5.6 19.8,8.5C19.8,8.5,19.7,10.4,22,9L22,13 20,15 M14,12A2,2,0,0,0,12,10A2,2,0,0,0,10,12A2,2,0,0,0,12,14A2,2,0,0,0,14,12z" />
-        </ListBox>
 
-            <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,0,0">
-                <Separator/>
-                <services:Srv_NavButton Navlink="pack://application:,,,/NijhofPanel;component/Views/SettingsPageView.xaml" Margin="3" Padding="6" MouseLeftButtonUp="OnNavButtonClick">
-                    <services:Srv_NavButton.Icon>
-                        <PathGeometry Figures="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-                    </services:Srv_NavButton.Icon>
-                </services:Srv_NavButton>
-            </StackPanel>
-        </Grid>
-        
-        <Border Grid.Column="0" 
-                BorderThickness="0,0,1,0" 
-                BorderBrush="#DDDDDD"/>
-            
-        <Frame Grid.Column="1" x:Name="navframe" NavigationUIVisibility="Hidden" Background="#e9ecef" />
+        <!-- Sidebar met Visibility binding -->
+        <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                BorderThickness="0,0,1,0"
+                BorderBrush="LightGray"
+                Visibility="{Binding SidebarVisibility, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <DockPanel LastChildFill="False">
+                <ListBox x:Name="Sidebar"
+                         DockPanel.Dock="Top"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         HorizontalContentAlignment="Center">
+                    <services:NavButton ViewType="{x:Type views:StartPageView}"
+                                        Icon="{StaticResource HomeIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        ToolTip="Home" />
+                    <Separator /><Separator />
+                    <services:NavButton ViewType="{x:Type views:ToolsPageView}"
+                                        Icon="{StaticResource WToolsIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        ToolTip="W-Tools" />
+                    <Separator />
+                    <services:NavButton ViewType="{x:Type views:ElectricalPageView}"
+                                        Icon="{StaticResource EToolsIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        ToolTip="E-Tools" />
+                    <Separator /><Separator />
+                    <services:WindowButton Navlink="LibraryWindowView" Icon="{StaticResource LibraryIcon}"
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           ToolTip="Library" />
+                    <Separator />
+                    <services:WindowButton Navlink="PrefabWindowView" Icon="{StaticResource PrefabIcon}"
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           ToolTip="Prefab Manager" />
+                    <Separator />
+                    <services:WindowButton Navlink="FittingListWindowView" Icon="{StaticResource FittingsIcon}"
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           ToolTip="Materiaallijst" />
+                    <Separator />
+                    <services:WindowButton Navlink="SawListWindowView" Icon="{StaticResource SawIcon}"
+                                           Command="{Binding DataContext.OpenWindowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           ToolTip="Zaaglijst" />
+                </ListBox>
+
+                <ListBox x:Name="SidebarBottom"
+                         DockPanel.Dock="Bottom"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         HorizontalContentAlignment="Center">
+                    <Separator /><Separator />
+                    <services:NavButton
+                        Icon="{StaticResource DarkModeIcon}"
+                        Command="{Binding Com_ToggleTheme}"
+                        ToolTip="Thema" />
+                    <Separator />
+                    <services:NavButton ViewType="{x:Type views:LogInPageView}"
+                                        Icon="{StaticResource UserIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        ToolTip="Log-In"/>
+                    <Separator />
+                    <services:NavButton ViewType="{x:Type views:SettingsPageView}"
+                                        Icon="{StaticResource SettingsIcon}"
+                                        Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        ToolTip="Instellingen" />
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+
+        <!-- Frame met ColumnSpan binding -->
+        <Frame Grid.Row="0" x:Name="NavigationFrame"
+               x:FieldModifier="public"
+               Grid.Column="{Binding DataContext.IsLoggedIn,
+                             RelativeSource={RelativeSource AncestorType=UserControl},
+                             Converter={StaticResource BoolToColumnConverter}}"
+               Grid.ColumnSpan="{Binding DataContext.IsLoggedIn,
+                                  RelativeSource={RelativeSource AncestorType=UserControl},
+                                  Converter={StaticResource BoolToColumnSpanConverter}}"
+               NavigationUIVisibility="Hidden"
+               Background="#e9ecef" />
+
+        <Border x:Name="WarningBar"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Grid.Column="1"
+                Background="#CC0000"
+                BorderBrush="#CC0000"
+                BorderThickness="0,1,0,0"
+                Visibility="{Binding IsWarningVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                Padding="8,4"
+                VerticalAlignment="Bottom"
+                Panel.ZIndex="100">
+            <DockPanel LastChildFill="True">
+                <Button DockPanel.Dock="Right"
+                        Content="X"
+                        Click="CloseWarningButton_Click"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        FontWeight="Bold"
+                        Foreground="Black"
+                        Margin="8,0,0,0"
+                        Padding="4,0" />
+                <TextBlock Text="{Binding WarningMessage}"
+                           Foreground="Black"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
     </Grid>
 </UserControl>

@@ -3,10 +3,134 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:NijhofPanel.Views"
         mc:Ignorable="d"
-        Title="LibraryWindowView" Height="450" Width="800">
-    <Grid>
-        
+        Title="Nijhof Library"
+        Height="700"
+        Width="1150"
+        Background="{DynamicResource CurrentBackgroundColor}">
+
+    <!-- To Do -->
+    <!-- TODO - -->
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/BasicButton.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/Treeview.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Background="{DynamicResource CurrentBackgroundColor}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0"
+                CornerRadius="2"
+                Background="White"
+                Margin="10,10,10,45">
+
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="0.5"
+                                  Direction="0"
+                                  Opacity="0.3"
+                                  Color="Black" />
+            </Border.Effect>
+
+            <TreeView x:Name="MainTreeView"
+                      ItemsSource="{Binding RootFiles}"
+                      SelectedItemChanged="MainTreeView_SelectedItemChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <TreeView.Resources>
+                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}">
+                    </Style>
+                </TreeView.Resources>
+
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="{x:Type TreeViewItem}"
+                           BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    </Style>
+                </TreeView.ItemContainerStyle>
+
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding SubFiles}">
+                        <TextBlock Text="{Binding ItemName}"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"
+                                   MaxWidth="250"
+                                   TextWrapping="Wrap"
+                                   TextTrimming="None" />
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </Border>
+
+        <Border Grid.Column="1"
+                CornerRadius="2"
+                Background="White"
+                Margin="10,10,10,45">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="0.5"
+                                  Direction="0"
+                                  Opacity="0.3"
+                                  Color="Black" />
+            </Border.Effect>
+            <ListView ItemsSource="{Binding SelectedFolderContent}"
+                      SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                      BorderThickness="0"
+                      Background="Transparent"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      Margin="0">
+
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}" />
+                </ListView.Resources>
+
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"
+                                   IsItemsHost="True"
+                                   Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="5" Width="130" HorizontalAlignment="Center">
+                            <Image Source="{Binding Thumbnail}"
+                                   Width="120"
+                                   Height="120"
+                                   Stretch="UniformToFill" />
+                            <TextBlock Text="{Binding DisplayName}"
+                                       TextAlignment="Center"
+                                       Margin="0,5,0,0"
+                                       TextWrapping="Wrap"
+                                       FontSize="14" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+
+        <StackPanel Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Orientation="Horizontal"
+                    Margin="10,0,5,5">
+
+            <Button Style="{StaticResource BasicButton}" Content="Laden" Command="{Binding LoadCommand}" />
+            <Button Style="{StaticResource BasicButton}" Content="Plaatsen" Command="{Binding PlaceCommand}" />
+            <Button Style="{StaticResource BasicButton}" Content="Sluiten" Command="{Binding CloseCommand}"/>
+        </StackPanel>
     </Grid>
 </Window>

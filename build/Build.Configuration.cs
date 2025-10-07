@@ -95,13 +95,10 @@ sealed partial class Build
     ///     Solution structure metadata.
     /// </summary>
     [Solution(GenerateProjects = true)]
-    Solution Solution;
+    readonly Solution Solution;
 
     /// <summary>
     ///     Set not-defined properties.
     /// </summary>
-    protected override void OnBuildInitialized()
-    {
-        ReleaseVersion ??= GitRepository.Tags.SingleOrDefault();
-    }
+    protected override void OnBuildInitialized() => ReleaseVersion ??= GitRepository.Tags.SingleOrDefault();
 }

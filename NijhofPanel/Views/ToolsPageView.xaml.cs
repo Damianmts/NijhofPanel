@@ -1,13 +1,24 @@
-﻿using System.Windows.Controls;
-using NijhofPanel.ViewModels;
+﻿namespace NijhofPanel.Views;
 
-namespace NijhofPanel.Views;
+using ViewModels;
+using Services;
 
-public partial class ToolsPageView : Page
+public partial class ToolsPageView
 {
-    public ToolsPageView()
+    public ToolsPageView(MainUserControlViewModel mainVm)
     {
         InitializeComponent();
-        DataContext = new ToolsPageViewModel();
+
+        // Bepaal de viewmodel‐instance: geef prioriteit aan de geleverde mainVm, anders de singleton
+        var vm = mainVm.ToolsVm;
+
+        if (vm != null)
+        {
+            DataContext = vm;
+        }
+        else
+        {
+            WarningService.Instance.ShowWarning("ToolsPageViewModel niet geïnitialiseerd.");
+        }
     }
 }

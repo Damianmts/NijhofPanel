@@ -3,15 +3,203 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:NijhofPanel.Views"
+      xmlns:viewModel="clr-namespace:NijhofPanel.ViewModels"
+      xmlns:helpers="clr-namespace:NijhofPanel.Helpers.Electrical"
       mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance viewModel:ElectricalPageViewModel}"
       HorizontalAlignment="Stretch"
       VerticalAlignment="Stretch"
       MinHeight="500"
-      MinWidth="250"
-      Background="White">
-    
-    <Grid>
-        <TextBlock Text="ElectricalPageView" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-    </Grid>
+      MinWidth="270"
+      Background="{DynamicResource CurrentBackgroundColor}"
+      Foreground="{DynamicResource CurrentTextColor}">
+
+    <!-- To Do -->
+    <!-- TODO - Add tooltips -->
+    <!-- TODO - Make and add missing icons -->
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/BigButtonSVG.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorETools.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        <SolidColorBrush x:Key="CurrentBackgroundColor"
+                         Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+        <SolidColorBrush x:Key="CurrentTextColor"
+                         Color="{Binding Color, Source={StaticResource TextColor}}" />
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <ScrollViewer.Resources>
+            <Style TargetType="ScrollBar" BasedOn="{StaticResource ModernScrollBar}" />
+        </ScrollViewer.Resources>
+
+        <StackPanel Margin="10">
+
+            <TextBlock Text="Stopcontact"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,0,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource WCD_Enkel}"
+                        helpers:ElectricalProperties.ComponentType="WCD_Enkel" Content="Enkel" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource WCD_2vOpbouw}"
+                        helpers:ElectricalProperties.ComponentType="WCD_2vOpbouw" Content="Dubbel Opbouw" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource WCD_1vWaterdicht}"
+                        helpers:ElectricalProperties.ComponentType="WCD_1vWaterdicht" Content="Waterdicht" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource WCD_Perilex}"
+                        helpers:ElectricalProperties.ComponentType="WCD_Perilex" Content="Perilex" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource WCD_Dubbel}"
+                        helpers:ElectricalProperties.ComponentType="WCD_Dubbel" Content="Dubbel" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource WCD_Vloer}"
+                        helpers:ElectricalProperties.ComponentType="WCD_Vloer" Content="Vloer" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource WCD_2vWaterdicht}"
+                        helpers:ElectricalProperties.ComponentType="WCD_2vWaterdicht" Content="Waterdicht" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource WCD_Kracht}"
+                        helpers:ElectricalProperties.ComponentType="WCD_Kracht" Content="Kracht" />
+            </WrapPanel>
+
+            <TextBlock Text="Aansluitpunt"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource ASP_Bedraad}"
+                        helpers:ElectricalProperties.ComponentType="ASP_Bedraad" Content="Bedraad" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource ASP_230v}"
+                        helpers:ElectricalProperties.ComponentType="ASP_230v" Content="230v" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource ASP_2x230v}"
+                        helpers:ElectricalProperties.ComponentType="ASP_2x230v" Content="2x 230v" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource ASP_400v}"
+                        helpers:ElectricalProperties.ComponentType="ASP_400v" Content="400v" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource ASP_Onbedraad}"
+                        helpers:ElectricalProperties.ComponentType="ASP_Onbedraad" Content="Onbedraad" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource ASP_CAP}"
+                        helpers:ElectricalProperties.ComponentType="ASP_CAP" Content="CAP" />
+            </WrapPanel>
+
+            <TextBlock Text="Data"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource DATA_Enkel}"
+                        helpers:ElectricalProperties.ComponentType="DATA_Enkel" Content="Enkel" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource DATA_Dubbel}"
+                        helpers:ElectricalProperties.ComponentType="DATA_Dubbel" Content="Dubbel" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource DATA_Bekabeld}"
+                        helpers:ElectricalProperties.ComponentType="DATA_Bekabeld" Content="Bedraad" />
+            </WrapPanel>
+
+            <TextBlock Text="Schakelaar"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Enkelpolig}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Enkelpolig" Content="Enkelpolig" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Dubbelpolig}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Dubbelpolig" Content="Dubbelpolig" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Vierpolig}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Vierpolig" Content="Vierpolig" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Wissel}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Wissel" Content="Wissel" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_WisselDubbelP}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_WisselDubbelpolig" Content="Wissel Dubbelpolig" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_2xWissel}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_2xWissel" Content="2x Wissel" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Serie}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Serie" Content="Serie" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Kruis}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Kruis" Content="Kruis" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Dimmer}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Dimmer" Content="Dimmer" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_DimmerWissel}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_DimmerWissel" Content="Dimmer Wissel" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Jaloezie}"
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Jaloezie" Content="Jaloezie" />
+                <Button Style="{StaticResource BigButtonE}" 
+                        helpers:ElectricalProperties.ComponentType="SCHAK_BewegingWand" Content="Beweging Wand" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" 
+                        helpers:ElectricalProperties.ComponentType="SCHAK_BewegingPlafond" Content="Beweging Plafond" />
+                <Button Style="{StaticResource BigButtonE}" 
+                        helpers:ElectricalProperties.ComponentType="SCHAK_Schemer" Content="Schemer- schakelaar" />
+            </WrapPanel>
+
+            <TextBlock Text="Verlichting"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource VERL_Centraaldoos}"
+                        helpers:ElectricalProperties.ComponentType="VERL_Centraaldoos" Content="Centraaldoos" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource VERL_Plafond}"
+                        helpers:ElectricalProperties.ComponentType="VERL_Plafond" Content="Plafond" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource VERL_Spot}"
+                        helpers:ElectricalProperties.ComponentType="VERL_Spot" Content="Inbouwspot" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource VERL_Wand}"
+                        helpers:ElectricalProperties.ComponentType="VERL_Wand" Content="Wandlamp" />
+            </WrapPanel>
+
+            <TextBlock Text="Overig"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Rookmelder}"
+                        helpers:ElectricalProperties.ComponentType="OVG_Rookmelder" Content="Rookmelder" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Bediening}"
+                        helpers:ElectricalProperties.ComponentType="OVG_Bediening" Content="Bediening" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Bel}"
+                        helpers:ElectricalProperties.ComponentType="OVG_Bel" Content="Beldrukker" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Schel}"
+                        helpers:ElectricalProperties.ComponentType="OVG_Schel" Content="Schel" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Intercom}"
+                        helpers:ElectricalProperties.ComponentType="OVG_Intercom" Content="Intercom" />
+                <Button Style="{StaticResource BigButtonE}" 
+                        helpers:ElectricalProperties.ComponentType="OVG_Grondkabel" Content="Grond- kabel" />
+            </WrapPanel>
+
+            <TextBlock Text="Tools"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       FontSize="20"
+                       Margin="0,15,0,5" />
+            <WrapPanel Orientation="Horizontal">
+                <Button Style="{StaticResource BigButtonE}" Content="Groep nummer"
+                        Command="{Binding TagGroepnummerCommand}" />
+                <Button Style="{StaticResource BigButtonE}" Content="Switch code"
+                        Command="{Binding TagSwitchcodeCommand}" />
+                <Button Style="{StaticResource BigButtonE}" Content="Code lijst" />
+            </WrapPanel>
+
+        </StackPanel>
+    </ScrollViewer>
 </Page>

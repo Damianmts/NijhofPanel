@@ -8,7 +8,8 @@
         <ImplicitUsings>true</ImplicitUsings>
         <EnableDynamicLoading>true</EnableDynamicLoading>
         <Configurations>Debug R21;Debug R22;Debug R23;Debug R24;Debug R25;Debug R26</Configurations>
-        <Configurations>$(Configurations);Release R21;Release R22;Release R23;Release R24;Release R25;Release R26</Configurations>
+        <Configurations>Debug R24;Debug R25;Debug R26;Release R24;Release R25;Release R26</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <!-- Revit configuration -->
@@ -53,6 +54,10 @@
 
     <ItemGroup>
         <!-- Revit References -->
+        <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5"/>
+        <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1001"/>
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="Nice3point.Revit.Build.Tasks" Version="3.0.1"/>
         <PackageReference Include="Nice3point.Revit.Toolkit" Version="$(RevitVersion).*"/>
         <PackageReference Include="Nice3point.Revit.Extensions" Version="$(RevitVersion).*"/>
@@ -64,18 +69,39 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Resource Include="Resources\Icons\RibbonIcon16.png"/>
-        <Resource Include="Resources\Icons\RibbonIcon32.png"/>
-        <None Remove="Resources\Icons\NijhofLogo_32x32.png" />
         <EmbeddedResource Include="Resources\Icons\NijhofLogo_32x32.png" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Commands\Electrical\" />
-        <Folder Include="Commands\Tools\" />
-        <Folder Include="Extensions\" />
-        <Folder Include="Helpers\" />
-        <Folder Include="Models"/>
+        <Folder Include="Extensions\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Services\WindowButtonService.cs"/>
+        <Compile Remove="Services\NavButtonService.cs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Page Update="UI\Themes\Controls\Treeview.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="UI\Themes\Controls\ModernScrollbar.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="UI\Themes\Base\CoreTheme.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="UI\Themes\Layout\Sidebar.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
     </ItemGroup>
 
 </Project>

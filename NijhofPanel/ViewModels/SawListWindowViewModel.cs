@@ -1,6 +1,5 @@
 ﻿namespace NijhofPanel.ViewModels;
 
-public class SawListWindowViewModel
+public class SawListWindowViewModel : ObservableObject
 {
-    
 }

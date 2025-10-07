@@ -1,9 +1,9 @@
-﻿using System.Globalization;
+﻿namespace NijhofPanel.Views.Converters;
+
+using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
 using Visibility = System.Windows.Visibility;
-
-namespace NijhofPanel.Views.Converters;
 
 public sealed class BooleanCollapsedVisibilityConverter : MarkupExtension, IValueConverter
 {

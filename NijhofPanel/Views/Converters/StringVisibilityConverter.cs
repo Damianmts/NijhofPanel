@@ -18,12 +18,12 @@
 // Software - Restricted Rights) and DFAR 252.227-7013(c)(1)(ii)
 // (Rights in Technical Data and Computer Software), as applicable.
 
+namespace NijhofPanel.Views.Converters;
+
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
 using Visibility = System.Windows.Visibility;
-
-namespace NijhofPanel.Views.Converters;
 
 public sealed class StringVisibilityConverter : MarkupExtension, IValueConverter
 {
