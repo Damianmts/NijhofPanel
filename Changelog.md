@@ -1,11 +1,5 @@
 # Changelog
 
-## 1.0.0-alpha.07102025.3
-
-Test release 2.
-
----
-
 ## 1.0.0-alpha.07102025.2
 
 Test release.
