@@ -14,37 +14,53 @@ using Autodesk.Revit.DB.Plumbing;
 public class Com_PrefabCreate : IExternalEventHandler
 {
     public void Execute(UIApplication app)
+{
+    UIDocument uidoc = app.ActiveUIDocument;
+    Document doc = uidoc.Document;
+
+    using (Transaction transaction = new Transaction(doc, "Prefab Set Assign"))
     {
-        UIDocument uidoc = app.ActiveUIDocument;
-        Document doc = uidoc.Document;
+        transaction.Start();
 
-        using (Transaction transaction = new Transaction(doc, "Prefab Set Assign"))
+        try
         {
-            transaction.Start();
-
-            try
+            IList<Reference> selectedReferences;
+            
+            // Controleer of er al elementen geselecteerd zijn
+            var preSelectedIds = uidoc.Selection.GetElementIds();
+            
+            if (preSelectedIds != null && preSelectedIds.Count > 0)
             {
-                // Selecteer meerdere objecten
-                IList<Reference> selectedObjects = uidoc.Selection.PickObjects(ObjectType.Element, "Selecteer objecten");
-                if (selectedObjects == null || selectedObjects.Count == 0)
-                {
-                    TaskDialog.Show("Prefab Set", "Geen elementen geselecteerd.");
-                    transaction.RollBack();
-                    return;
-                }
-
-                // Zoek beschikbare 'Prefab Set' nummers en 'Prefab Color ID'
-                HashSet<int> existingSetNumbers = GetUsedPrefabSetNumbers(doc);
-                int nextAvailableNumber = FindNextAvailableNumber(existingSetNumbers);
-                string prefabColorID = GetNextAvailableColorID(nextAvailableNumber);
-
-                // Haal de elementen op en sorteer ze op hun locatie (Y- en X-coördinaten)
-                List<Element> sortedElements = selectedObjects
-                    .Select(reference => doc.GetElement(reference))
-                    .Where(element => element != null)
-                    .OrderBy(element => GetElementLocation(element).Y) // Sorteren op Y (van onder naar boven)
-                    .ThenBy(element => GetElementLocation(element).X)  // Daarna sorteren op X (links naar rechts)
+                // Gebruik bestaande selectie
+                selectedReferences = preSelectedIds
+                    .Select(id => new Reference(doc.GetElement(id)))
                     .ToList();
+            }
+            else
+            {
+                // Vraag gebruiker om elementen te selecteren
+                selectedReferences = uidoc.Selection.PickObjects(ObjectType.Element, "Selecteer objecten");
+            }
+            
+            if (selectedReferences == null || selectedReferences.Count == 0)
+            {
+                TaskDialog.Show("Prefab Set", "Geen elementen geselecteerd.");
+                transaction.RollBack();
+                return;
+            }
+
+            // Zoek beschikbare 'Prefab Set' nummers en 'Prefab Color ID'
+            HashSet<int> existingSetNumbers = GetUsedPrefabSetNumbers(doc);
+            int nextAvailableNumber = FindNextAvailableNumber(existingSetNumbers);
+            string prefabColorID = GetNextAvailableColorID(nextAvailableNumber);
+
+            // Haal de elementen op en sorteer ze op hun locatie (Y- en X-coördinaten)
+            List<Element> sortedElements = selectedReferences
+                .Select(reference => doc.GetElement(reference))
+                .Where(element => element != null)
+                .OrderBy(element => GetElementLocation(element).Y) // Sorteren op Y (van onder naar boven)
+                .ThenBy(element => GetElementLocation(element).X)  // Daarna sorteren op X (links naar rechts)
+                .ToList();
 
                 // Begin nummering voor elk element binnen de prefab set
                 int prefabElementNumber = 1;
