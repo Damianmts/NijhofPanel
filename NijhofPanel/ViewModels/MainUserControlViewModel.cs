@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Collections.Generic;
 using UI.Controls.Navigation;
+using NijhofPanel.Core;
+using NijhofPanel.Helpers.Core;
 using Visibility = System.Windows.Visibility;
 
 public class MainUserControlViewModel : ObservableObject
@@ -32,7 +34,7 @@ public class MainUserControlViewModel : ObservableObject
     public ToolsPageViewModel? ToolsVm { get; set; }
     public PrefabWindowViewModel? PrefabVm { get; set; }
     public LibraryWindowViewModel? LibraryVm { get; set; }
-    
+
     private bool _isDarkMode;
     private readonly Dictionary<string, Window> _openWindows = new();
     private NavButton? _activeNavButton;
@@ -121,7 +123,7 @@ public class MainUserControlViewModel : ObservableObject
     {
         _navigationService.NavigateTo<StartPageView>();
     }
-    
+
     private void ExecuteNavigate(NavButton navButton)
     {
         if (_activeNavButton != null && _activeNavButton != navButton)
@@ -163,7 +165,10 @@ public class MainUserControlViewModel : ObservableObject
             "LibraryWindowView" => new LibraryWindowView(),
             "PrefabWindowView" => PrefabVm != null ? new PrefabWindowView(PrefabVm) : null,
             "FittingListWindowView" => new FittingListWindowView(),
-            "SawListWindowView" => new SawListWindowView(),
+
+            // ✅ Nieuw - met Document ondersteuning
+            "SawListWindowView" => TryCreateSawListWindow(),
+
             _ => null
         };
 
@@ -171,12 +176,8 @@ public class MainUserControlViewModel : ObservableObject
         {
             if (windowButton.Navlink == "LibraryWindowView")
             {
-                // In Revit is LibraryVm al gezet via RevitApplication.
-                // In DevHost is LibraryVm null -> maak een VM met DevHostActions
                 if (LibraryVm == null)
-                {
                     LibraryVm = new LibraryWindowViewModel(new Services.DevHostLibraryActions());
-                }
                 newWindow.DataContext = LibraryVm;
             }
 
@@ -195,6 +196,31 @@ public class MainUserControlViewModel : ObservableObject
         }
     }
     
+    private Window? TryCreateSawListWindow()
+    {
+        try
+        {
+            var uiApp = RevitContext.UiApp;
+            if (uiApp?.ActiveUIDocument?.Document is Document doc)
+            {
+                // ✅ Gebruik de global handler/event van RevitApplication
+                var handler = RevitApplication.LibraryHandler;
+                var externalEvent = RevitApplication.LibraryEvent;
+
+                return new SawListWindowView(doc, handler, externalEvent);
+            }
+
+            // DevHost fallback
+            return new SawListWindowView(null!, new RevitRequestHandler(),
+                Autodesk.Revit.UI.ExternalEvent.Create(new RevitRequestHandler()));
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Fout bij openen SawListWindow:\n{ex.Message}");
+            return null;
+        }
+    }
+
     private DockablePane GetDockablePane(UIApplication uiApp)
     {
         var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
@@ -205,7 +231,7 @@ public class MainUserControlViewModel : ObservableObject
     {
         IsDarkMode = !IsDarkMode;
     }
-    
+
     private bool _isWarningVisible;
 
     public bool IsWarningVisible

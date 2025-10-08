@@ -13,7 +13,12 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/UI/Themes/Controls/ModernScrollbar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/UI/Themes/Controls/ModernCheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/UI/Themes/Text/ModernTextBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/UI/Themes/Controls/Listview.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
             <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
         </ResourceDictionary>
     </Window.Resources>

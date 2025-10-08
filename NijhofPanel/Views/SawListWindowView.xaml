@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         Title="Zaaglijsten"
-        Height="700"
+        Height="600"
         Width="1000"
         Background="{DynamicResource CurrentBackgroundColor}">
 
@@ -13,10 +13,120 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Text/ModernTextBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/BasicButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernCheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernRadioButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/Listview.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
             <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Background="{DynamicResource CurrentBackgroundColor}" />
+    <Grid Background="{DynamicResource CurrentBackgroundColor}" Margin="0,0,0,10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <!-- ListView -->
+        <ListView Grid.Row="0"
+                  Margin="0,0,0,0"
+                  ItemsSource="{Binding SawListItems}"
+                  AlternationCount="2"
+                  SelectionMode="Single"
+                  ItemContainerStyle="{StaticResource AltRowStyle}"
+                  HorizontalContentAlignment="Stretch">
+
+            <ListView.Resources>
+                <Style TargetType="ScrollBar" BasedOn="{StaticResource ModernScrollBar}" />
+                <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource ListViewColumnHeaderStyle}" />
+            </ListView.Resources>
+
+            <ListView.View>
+                <GridView>
+
+                    <GridViewColumn Header="" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                          Style="{StaticResource ModernCheckBox}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="8,4" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Discipline" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Discipline}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Padding="8,4" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Prefabset" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Prefabset}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Padding="8,4" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Bouwnummer" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Bouwnummer, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                         Style="{StaticResource CenteredCellTextBox}"
+                                         HorizontalAlignment="Stretch"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+        
+        <!-- Exporttype-selectie -->
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    Margin="10,10,0,0">
+            <TextBlock Text="Exporttype:"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"
+                       FontWeight="Bold"/>
+            <RadioButton Content="CSV"
+                         GroupName="ExportType"
+                         IsChecked="{Binding IsCsvSelected, Mode=TwoWay}"
+                         Style="{StaticResource ModernRadioButton}"
+                         Margin="0,0,10,0"/>
+            <RadioButton Content="Excel"
+                         GroupName="ExportType"
+                         IsChecked="{Binding IsExcelSelected, Mode=TwoWay}"
+                         Style="{StaticResource ModernRadioButton}"/>
+        </StackPanel>
+
+        <!-- Knoppen rechtsonder -->
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,10,0">
+            <Button Content="Exporteren"
+                    Style="{StaticResource BasicButton}"
+                    Command="{Binding ExportCommand}" />
+            <Button Content="Sluiten"
+                    Style="{StaticResource BasicButton}"
+                    Command="{Binding CloseCommand}" />
+        </StackPanel>
+    </Grid>
 </Window>
