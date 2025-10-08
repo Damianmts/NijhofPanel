@@ -16,8 +16,7 @@ public partial class SawListWindowViewModel : ObservableObject
 {
     private readonly Document _doc;
     private readonly Window _window;
-
-    // ✅ Toegevoegd: handler & event via dependency injection
+    
     private readonly RevitRequestHandler _requestHandler;
     private readonly ExternalEvent _externalEvent;
 
@@ -64,9 +63,7 @@ public partial class SawListWindowViewModel : ObservableObject
                     Bouwnummer = bouwnummer,
                     ViewId = vs.Id
                 };
-            })
-            // Alleen lijsten met een bouwnummer (BNR) tonen
-            .Where(item => !string.IsNullOrWhiteSpace(item.Bouwnummer));
+            });
 
         SawListItems = new ObservableCollection<SawListItem>(result);
     }
@@ -93,8 +90,7 @@ public partial class SawListWindowViewModel : ObservableObject
                 .Select(item => _doc.GetElement(item.ViewId))
                 .OfType<ViewSchedule>()
                 .ToList();
-
-            // ✅ Gebruik de bestaande RevitRequestHandler
+            
             _requestHandler.Request = new RevitRequest(doc =>
             {
                 var exporter = new Com_ExportExcelSawList(schedules);
@@ -105,7 +101,18 @@ public partial class SawListWindowViewModel : ObservableObject
         }
         else if (IsCsvSelected)
         {
-            MessageBox.Show("CSV-export nog niet geïmplementeerd.");
+            var schedules = selected
+                .Select(item => _doc.GetElement(item.ViewId))
+                .OfType<ViewSchedule>()
+                .ToList();
+
+            _requestHandler.Request = new RevitRequest(doc =>
+            {
+                var exporter = new Com_ExportCSV(schedules);
+                exporter.Execute(RevitContext.UiApp!);
+            });
+
+            _externalEvent.Raise();
         }
     }
 

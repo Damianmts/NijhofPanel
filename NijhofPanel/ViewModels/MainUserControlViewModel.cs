@@ -164,9 +164,8 @@ public class MainUserControlViewModel : ObservableObject
         {
             "LibraryWindowView" => new LibraryWindowView(),
             "PrefabWindowView" => PrefabVm != null ? new PrefabWindowView(PrefabVm) : null,
-            "FittingListWindowView" => new FittingListWindowView(),
-
-            // ✅ Nieuw - met Document ondersteuning
+            
+            "FittingListWindowView" => TryCreateFittingListWindow(),
             "SawListWindowView" => TryCreateSawListWindow(),
 
             _ => null
@@ -196,6 +195,30 @@ public class MainUserControlViewModel : ObservableObject
         }
     }
     
+    private Window? TryCreateFittingListWindow()
+    {
+        try
+        {
+            var uiApp = RevitContext.UiApp;
+            if (uiApp?.ActiveUIDocument?.Document is Document doc)
+            {
+                var handler = RevitApplication.LibraryHandler;
+                var externalEvent = RevitApplication.LibraryEvent;
+
+                return new FittingListWindowView(doc, handler, externalEvent);
+            }
+
+            // DevHost fallback
+            return new FittingListWindowView(null!, new RevitRequestHandler(),
+                Autodesk.Revit.UI.ExternalEvent.Create(new RevitRequestHandler()));
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Fout bij openen FittingListWindow:\n{ex.Message}");
+            return null;
+        }
+    }
+    
     private Window? TryCreateSawListWindow()
     {
         try
@@ -203,7 +226,6 @@ public class MainUserControlViewModel : ObservableObject
             var uiApp = RevitContext.UiApp;
             if (uiApp?.ActiveUIDocument?.Document is Document doc)
             {
-                // ✅ Gebruik de global handler/event van RevitApplication
                 var handler = RevitApplication.LibraryHandler;
                 var externalEvent = RevitApplication.LibraryEvent;
 

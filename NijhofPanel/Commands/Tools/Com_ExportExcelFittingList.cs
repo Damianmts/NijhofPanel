@@ -11,11 +11,11 @@ using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
 using TaskDialog = Autodesk.Revit.UI.TaskDialog;
 
-public class Com_ExportExcelSawList : IExternalEventHandler
+public class Com_ExportExcelFittingList : IExternalEventHandler
 {
     private readonly IList<ViewSchedule> _selectedSchedules;
 
-    public Com_ExportExcelSawList(IList<ViewSchedule> selectedSchedules)
+    public Com_ExportExcelFittingList(IList<ViewSchedule> selectedSchedules)
     {
         _selectedSchedules = selectedSchedules;
     }
@@ -129,21 +129,9 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                 var header = tableData.GetSectionData(SectionType.Header);
                 var body = tableData.GetSectionData(SectionType.Body);
 
-                // Titel
-                var titleCell = (Excel.Range)worksheet.Cells[1, 1];
-                titleCell.Value2 = schedule.Name;
-                titleCell.Font.Bold = true;
-                titleCell.Font.Size = 14;
-                var titleMergeRange = worksheet.Range[
-                    worksheet.Cells[1, 1],
-                    worksheet.Cells[1, body.NumberOfColumns]
-                ];
-                titleMergeRange.Merge();
-                titleCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-
-                // Headers
+                // Headers (starten direct op de eerste rij)
                 var headerRowCount = header.NumberOfRows;
-                for (int row = 1; row < headerRowCount; row++)
+                for (int row = 0; row < headerRowCount; row++)
                 {
                     object[,] headerValues = new object[1, header.NumberOfColumns];
                     for (int col = 0; col < header.NumberOfColumns; col++)
@@ -167,8 +155,8 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                         data[r, c] = schedule.GetCellText(SectionType.Body, r, c);
                 }
 
-                var startCell = (Excel.Range)worksheet.Cells[headerRowCount + 2, 1];
-                var endCell = (Excel.Range)worksheet.Cells[headerRowCount + 1 + dataRows, dataCols];
+                var startCell = (Excel.Range)worksheet.Cells[headerRowCount + 1, 1];
+                var endCell = (Excel.Range)worksheet.Cells[headerRowCount + dataRows, dataCols];
                 var writeRange = worksheet.Range[startCell, endCell];
                 writeRange.Value2 = data;
                 writeRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
@@ -220,5 +208,5 @@ public class Com_ExportExcelSawList : IExternalEventHandler
         return cleanName;
     }
 
-    public string GetName() => "Nijhof Panel Export Excel SawList";
+    public string GetName() => "Nijhof Panel Export Excel FittingList";
 }
