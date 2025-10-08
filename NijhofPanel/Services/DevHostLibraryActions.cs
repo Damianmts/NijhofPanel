@@ -9,8 +9,8 @@ public class DevHostLibraryActions : ILibraryActions
         MessageBox.Show("DevHost: LoadFamily vereist Revit.", "Info");
     }
 
-    public void PlaceFamily()
+    public void PlaceFamily(string path)
     {
-        MessageBox.Show("DevHost: PlaceFamily vereist Revit.", "Info");
+        MessageBox.Show($"DevHost: Plaatsen van '{System.IO.Path.GetFileName(path)}' vereist Revit.", "Info");
     }
 }

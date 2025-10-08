@@ -18,6 +18,8 @@ public class LibraryWindowViewModel : ObservableObject
     private ICommand? _loadCommand;
     private ICommand? _placeCommand;
     private ICommand? _closeCommand;
+    
+    public Action? CloseAction { get; set; }
 
     public ICommand LoadCommand => _loadCommand ??= new RelayCommand(ExecuteLoad);
     public ICommand PlaceCommand => _placeCommand ??= new RelayCommand(ExecutePlace);
@@ -39,7 +41,7 @@ public class LibraryWindowViewModel : ObservableObject
         if (SelectedFile == null ||
             !SelectedFile.FullPath.EndsWith(".rfa", StringComparison.OrdinalIgnoreCase))
         {
-            MessageBox.Show("Selecteer eerst een geldig .rfa-bestand.", "Waarschuwing",
+            MessageBox.Show("Selecteer eerst een geldig family-bestand.", "Waarschuwing",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -49,13 +51,19 @@ public class LibraryWindowViewModel : ObservableObject
 
     private void ExecutePlace()
     {
-        _actions.PlaceFamily();
+        if (SelectedFile == null || !File.Exists(SelectedFile.FullPath))
+        {
+            MessageBox.Show("Selecteer eerst een geldig family-bestand.", "Waarschuwing",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        _actions.PlaceFamily(SelectedFile.FullPath);
     }
 
     private void ExecuteClose()
     {
-        Application.Current.Windows.OfType<Window>()
-            .FirstOrDefault(w => w.DataContext == this)?.Close();
+        CloseAction?.Invoke();
     }
 
     public ObservableCollection<FileItemModel>? RootFiles
@@ -103,12 +111,17 @@ public class LibraryWindowViewModel : ObservableObject
             var files = Directory.GetFiles(SelectedFolder.FullPath)
                 .Where(f => Path.GetExtension(f).ToLower() == ".rfa");
 
-            foreach (var file in files)
+            var fileTasks = files.Select(async f =>
             {
-                var item = new FileItemModel(file);
-                item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(file);
+                var item = new FileItemModel(f);
+                item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(f);
+                return item;
+            });
+
+            var items = await Task.WhenAll(fileTasks);
+
+            foreach (var item in items)
                 SelectedFolderContent?.Add(item);
-            }
 
             await LoadFilesFromSubfoldersAsync(SelectedFolder.FullPath);
         }

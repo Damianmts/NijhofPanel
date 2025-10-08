@@ -1,6 +1,7 @@
 ﻿namespace NijhofPanel.Views;
 
 using System.Windows;
+using ViewModels;
 
 public partial class LibraryWindowView
 {
@@ -8,7 +9,12 @@ public partial class LibraryWindowView
     public LibraryWindowView()
     {
         InitializeComponent();
-        // DataContext wordt extern gezet (bij het openen van het venster).
+        
+        Loaded += (s, e) =>
+        {
+            if (DataContext is LibraryWindowViewModel vm)
+                vm.CloseAction = Close;
+        };
     }
 
     private void MainTreeView_SelectedItemChanged(object sender, 

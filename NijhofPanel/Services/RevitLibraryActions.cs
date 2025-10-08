@@ -1,5 +1,7 @@
 ﻿namespace NijhofPanel.Services;
 
+using System.IO;
+using System.Linq;
 using NijhofPanel.Helpers.Core;
 using Autodesk.Revit.UI;
 
@@ -24,9 +26,30 @@ public class RevitLibraryActions : ILibraryActions
         _event.Raise();
     }
 
-    public void PlaceFamily()
+    public void PlaceFamily(string path)
     {
-        var cmd = new Commands.Tools.Com_PlaceFamily();
-        cmd.Execute();
+        _handler.Request = new RevitRequest(doc =>
+        {
+            try
+            {
+                var placer = new Commands.Tools.Com_PlaceFamily();
+                placer.Execute(doc, path); // 🔹 hier wordt jouw debug-code aangeroepen
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Nijhof Library", $"❌ Fout tijdens plaatsen:\n{ex.Message}");
+            }
+        });
+
+        _event.Raise();
+    }
+
+    private FamilySymbol? GetFamilySymbol(Document doc, string path)
+    {
+        var familyName = Path.GetFileNameWithoutExtension(path);
+        return new FilteredElementCollector(doc)
+            .OfClass(typeof(FamilySymbol))
+            .Cast<FamilySymbol>()
+            .FirstOrDefault(f => f.FamilyName.Equals(familyName, StringComparison.OrdinalIgnoreCase));
     }
 }

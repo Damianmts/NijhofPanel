@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:conv="clr-namespace:NijhofPanel.Views.Converters"
         mc:Ignorable="d"
         Title="Nijhof Library"
         Height="700"
@@ -24,6 +25,7 @@
                 <ResourceDictionary Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Base/CoreTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
+            <conv:ZeroVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -84,42 +86,51 @@
                                   Opacity="0.3"
                                   Color="Black" />
             </Border.Effect>
-            <ListView ItemsSource="{Binding SelectedFolderContent}"
-                      SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
-                      BorderThickness="0"
-                      Background="Transparent"
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      VirtualizingPanel.ScrollUnit="Pixel"
-                      Margin="0">
+            <Grid>
+                <ListView ItemsSource="{Binding SelectedFolderContent}"
+                          SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                          BorderThickness="0"
+                          Background="Transparent"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          VirtualizingPanel.ScrollUnit="Pixel"
+                          Margin="0">
+                    <ListView.Resources>
+                        <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}" />
+                    </ListView.Resources>
 
-                <ListView.Resources>
-                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ModernScrollBar}" />
-                </ListView.Resources>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"
+                                       IsItemsHost="True"
+                                       Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
 
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal"
-                                   IsItemsHost="True"
-                                   Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Margin="5" Width="130" HorizontalAlignment="Center">
-                            <Image Source="{Binding Thumbnail}"
-                                   Width="120"
-                                   Height="120"
-                                   Stretch="UniformToFill" />
-                            <TextBlock Text="{Binding DisplayName}"
-                                       TextAlignment="Center"
-                                       Margin="0,5,0,0"
-                                       TextWrapping="Wrap"
-                                       FontSize="14" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="5" Width="130" HorizontalAlignment="Center">
+                                <Image Source="{Binding Thumbnail}"
+                                       Width="120"
+                                       Height="120"
+                                       Stretch="UniformToFill" />
+                                <TextBlock Text="{Binding DisplayName}"
+                                           TextAlignment="Center"
+                                           Margin="0,5,0,0"
+                                           TextWrapping="Wrap"
+                                           FontSize="14" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                
+                <TextBlock Text="Geen families gevonden."
+                           FontStyle="Italic"
+                           Foreground="Gray"
+                           FontSize="16"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding SelectedFolderContent.Count, Converter={StaticResource ZeroToVisibilityConverter}}" />
+            </Grid>
         </Border>
 
         <StackPanel Grid.Column="1"
