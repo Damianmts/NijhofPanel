@@ -24,6 +24,7 @@ public class ToolsPageViewModel : ObservableObject
     private readonly ExternalEvent _tagMVLengthEvent;
     private readonly ExternalEvent _tagHWALengthEvent;
     private readonly ExternalEvent _tagVWALengthEvent;
+    private readonly ExternalEvent _create3DViewEvent;
 
     // Toolstrip commands
     public ICommand ConnectElementCommand { get; }
@@ -46,6 +47,7 @@ public class ToolsPageViewModel : ObservableObject
     public ICommand TagMVLengthCommand { get; }
     public ICommand TagHWALengthCommand { get; }
     public ICommand TagVWALengthCommand { get; }
+    public ICommand Create3DViewCommand { get; }
 
     public ToolsPageViewModel()
     {
@@ -96,7 +98,10 @@ public class ToolsPageViewModel : ObservableObject
         
         var tagVWALengthHandler = new Com_TagVWALength();
         _tagVWALengthEvent = ExternalEvent.Create(tagVWALengthHandler);
-
+        
+        var create3DViewHandler = new Com_Create3DView();
+        _create3DViewEvent = ExternalEvent.Create(create3DViewHandler);
+        
         ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement);
         ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel);
         UpdateHWACommand = new RelayCommands.RelayCommand(ExecuteUpdateHWA);
@@ -114,6 +119,7 @@ public class ToolsPageViewModel : ObservableObject
         TagMVLengthCommand = new RelayCommands.RelayCommand(ExecuteTagMVLength);
         TagHWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagHWALength);
         TagVWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagVWALength);
+        Create3DViewCommand = new RelayCommands.RelayCommand(ExecuteCreate3DView);
     }
 
     private void ExecuteConnectElement(object parameter)
@@ -190,5 +196,10 @@ public class ToolsPageViewModel : ObservableObject
     private void ExecuteTagVWALength(object parameter)
     {
         _tagVWALengthEvent.Raise();
+    }
+    
+    private void ExecuteCreate3DView(object parameter)
+    {
+        _create3DViewEvent.Raise();
     }
 }

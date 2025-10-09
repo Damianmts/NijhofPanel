@@ -16,12 +16,6 @@ public class PrefabWindowViewModel : ObservableObject
 {
     private ObservableCollection<PrefabSetHelper> _prefabSets = new();
 
-    // Debug modus: wijzig naar true om lokaal op te slaan
-    private const bool DEBUG_MODE = false;
-    private readonly string DEBUG_PATH = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
-        "NijhofPanel_Debug");
-
     public ICommand ExecuteMaterialListScheduleCommand { get; }
 
     public ObservableCollection<PrefabSetHelper> PrefabSets
@@ -81,7 +75,7 @@ public class PrefabWindowViewModel : ObservableObject
                 set.PropertyChanged -= OnPrefabSetPropertyChanged;
     }
 
-        private void OnPrefabSetPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnPrefabSetPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(PrefabSetHelper.Materiaallijst)
             && sender is PrefabSetHelper set
@@ -142,29 +136,22 @@ public class PrefabWindowViewModel : ObservableObject
         // Bepaal het pad naar het JSON-bestand (met debug-modus)
         string nijhofPanelPath;
         string prefabTekenPath;
-        
-        if (DEBUG_MODE)
-        {
-            // Debug: opslaan in Documenten map
-            prefabTekenPath = DEBUG_PATH;
-            nijhofPanelPath = Path.Combine(DEBUG_PATH, "Nijhof Panel");
-        }
-        else
-        {
-            // Productie: opslaan op T:\Data
-            var basePath = @"T:\Data";
-            var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
-            var invul2 = projectNummer;
-            prefabTekenPath = Path.Combine(basePath, invul1, invul2,
-                "2.8 Tekeningen", "02 Nijhof", "03 PDF Prefab tekeningen");
 
-            if (!Directory.Exists(prefabTekenPath))
-            {
-                return;
-            }
-            
-            nijhofPanelPath = Path.Combine(prefabTekenPath, "Nijhof Panel");
+
+        // Productie: opslaan op T:\Data
+        var basePath = @"T:\Data";
+        var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
+        var invul2 = projectNummer;
+        prefabTekenPath = Path.Combine(basePath, invul1, invul2,
+            "2.8 Tekeningen", "02 Nijhof", "03 PDF Prefab tekeningen");
+
+        if (!Directory.Exists(prefabTekenPath))
+        {
+            return;
         }
+
+        nijhofPanelPath = Path.Combine(prefabTekenPath, "Nijhof Panel");
+
 
         var jsonBestand = Path.Combine(nijhofPanelPath, "PrefabManager.json");
 
@@ -210,7 +197,7 @@ public class PrefabWindowViewModel : ObservableObject
         }
     }
 
-        public void CollectAndSaveData()
+    public void CollectAndSaveData()
     {
         if (RevitContext.UiApp == null || RevitContext.Uidoc?.Document == null)
         {
@@ -244,36 +231,23 @@ public class PrefabWindowViewModel : ObservableObject
         // Bepaal het pad naar het JSON-bestand (met debug-modus)
         string nijhofPanelPath;
         string prefabTekenPath;
-        
-        if (DEBUG_MODE)
-        {
-            // Debug: opslaan in Documenten map
-            prefabTekenPath = DEBUG_PATH;
-            nijhofPanelPath = Path.Combine(DEBUG_PATH, "Nijhof Panel");
-            
-            // Maak debug map aan indien nodig
-            if (!Directory.Exists(prefabTekenPath))
-            {
-                Directory.CreateDirectory(prefabTekenPath);
-            }
-        }
-        else
-        {
-            // Productie: opslaan op T:\Data
-            var basePath = @"T:\Data";
-            var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
-            var invul2 = projectNummer;
-            prefabTekenPath = Path.Combine(basePath, invul1, invul2,
-                "2.8 Tekeningen", "02 Nijhof", "03 PDF Prefab tekeningen");
 
-            if (!Directory.Exists(prefabTekenPath))
-            {
-                MessageBox.Show($"Map bestaat niet:\n{prefabTekenPath}");
-                return;
-            }
-            
-            nijhofPanelPath = Path.Combine(prefabTekenPath, "Nijhof Panel");
+
+        // Productie: opslaan op T:\Data
+        var basePath = @"T:\Data";
+        var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
+        var invul2 = projectNummer;
+        prefabTekenPath = Path.Combine(basePath, invul1, invul2,
+            "2.8 Tekeningen", "02 Nijhof", "03 PDF Prefab tekeningen");
+
+        if (!Directory.Exists(prefabTekenPath))
+        {
+            MessageBox.Show($"Map bestaat niet:\n{prefabTekenPath}");
+            return;
         }
+
+        nijhofPanelPath = Path.Combine(prefabTekenPath, "Nijhof Panel");
+
 
         var jsonBestand = Path.Combine(nijhofPanelPath, "PrefabManager.json");
 
@@ -346,14 +320,14 @@ public class PrefabWindowViewModel : ObservableObject
                 prefabSet.Bouwnummer = bestaand.Bouwnummer ?? "";
                 prefabSet.Verdieping = bestaand.Verdieping ?? "";
                 prefabSet.GecontroleerdNaam = bestaand.GecontroleerdNaam ?? "";
-                
+
                 // Parse datum string naar DateTime?
-                if (!string.IsNullOrWhiteSpace(bestaand.GecontroleerdDatum) 
+                if (!string.IsNullOrWhiteSpace(bestaand.GecontroleerdDatum)
                     && DateTime.TryParse(bestaand.GecontroleerdDatum, out var datum))
                 {
                     prefabSet.GecontroleerdDatum = datum;
                 }
-                
+
                 prefabSet.Materiaallijst = bestaand.Materiaallijst;
                 prefabSet.Zaaglijst = bestaand.Zaaglijst;
             }
@@ -437,7 +411,7 @@ public class PrefabWindowViewModel : ObservableObject
         public string? HoofdTekenaar { get; set; }
         public string? ProjectNummer { get; set; }
         public string? GecontroleerdNaam { get; set; }
-        public string? GecontroleerdDatum { get; set; }  // String ipv DateTime?
+        public string? GecontroleerdDatum { get; set; } // String ipv DateTime?
         public bool Materiaallijst { get; set; }
         public bool Zaaglijst { get; set; }
     }

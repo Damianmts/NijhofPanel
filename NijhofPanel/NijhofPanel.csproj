@@ -108,4 +108,8 @@
         </Page>
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Microsoft.VisualBasic" />
+    </ItemGroup>
+
 </Project>
