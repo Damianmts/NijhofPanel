@@ -1,14 +1,15 @@
 ﻿namespace NijhofPanel.Commands.Tools;
 
 using System.IO;
+using System.Linq;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
-using System.Windows;
+using System.Collections.Generic;
+using System.Windows.Forms;
 using Views;
-using System.Linq;
-using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
 using TaskDialog = Autodesk.Revit.UI.TaskDialog;
 
 public class Com_ExportExcelFittingList : IExternalEventHandler
@@ -65,130 +66,89 @@ public class Com_ExportExcelFittingList : IExternalEventHandler
         int successCount = 0;
         int failCount = 0;
 
-        // Test of Excel beschikbaar is
-        try
-        {
-            var testExcel = new Excel.Application();
-            testExcel.Quit();
-            Marshal.ReleaseComObject(testExcel);
-        }
-        catch (COMException)
-        {
-            TaskDialog.Show("Excel fout",
-                "Excel kan niet gestart worden.\n\n" +
-                "Mogelijke oorzaak: verschil tussen 32- en 64-bit versies van Revit en Microsoft Office.\n" +
-                "Oplossing: installeer de 64-bit versie van Office of gebruik een andere exportmethode.");
-            return;
-        }
-        
         var progressWindow = new ProgressWindowView();
         progressWindow.Show();
 
         int totalCount = _selectedSchedules.Count;
         int currentIndex = 0;
-        
-        var excelApp = new Excel.Application
-        {
-            Visible = false,
-            DisplayAlerts = false
-        };
-        
-        try
-        {
-            excelApp.ScreenUpdating = false;
-            // Calculation-property soms niet beschikbaar → overslaan
-        }
-        catch { /* negeren */ }
-        
+
         foreach (var schedule in _selectedSchedules)
         {
             currentIndex++;
             int percentage = (int)((currentIndex / (double)totalCount) * 100);
             progressWindow.UpdateStatusText($"Exporteren: {schedule.Name} ({currentIndex}/{totalCount})");
             progressWindow.UpdateProgress(percentage);
-            System.Windows.Forms.Application.DoEvents();
-
-            Excel.Workbook? workbook = null;
+            Application.DoEvents();
 
             try
             {
                 var fileName = CleanSheetName(schedule.Name) + ".xlsx";
                 var fullPath = Path.Combine(basePath, fileName);
 
-                workbook = excelApp.Workbooks.Add();
-                
-                try
-                {
-                    excelApp.ScreenUpdating = false;
-                    // Calculation soms niet toegestaan in Revit-context → overslaan
-                }
-                catch { /* negeren */ }
+                using var package = new ExcelPackage();
+                var worksheet = package.Workbook.Worksheets.Add(schedule.Name);
 
-                var worksheet = (Excel.Worksheet)workbook.Worksheets[1];
                 var tableData = schedule.GetTableData();
                 var header = tableData.GetSectionData(SectionType.Header);
                 var body = tableData.GetSectionData(SectionType.Body);
 
-                // Headers (starten direct op de eerste rij)
+                // Headers
                 var headerRowCount = header.NumberOfRows;
                 for (int row = 0; row < headerRowCount; row++)
                 {
-                    object[,] headerValues = new object[1, header.NumberOfColumns];
                     for (int col = 0; col < header.NumberOfColumns; col++)
-                        headerValues[0, col] = schedule.GetCellText(SectionType.Header, row, col);
-
-                    var start = (Excel.Range)worksheet.Cells[row + 1, 1];
-                    var end = (Excel.Range)worksheet.Cells[row + 1, header.NumberOfColumns];
-                    var headerRange = worksheet.Range[start, end];
-                    headerRange.Value2 = headerValues;
-                    headerRange.Font.Bold = true;
-                    headerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+                    {
+                        worksheet.Cells[row + 1, col + 1].Value = schedule.GetCellText(SectionType.Header, row, col);
+                    }
                 }
-                
+
+                using (var headerRange = worksheet.Cells[1, 1, headerRowCount, header.NumberOfColumns])
+                {
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    headerRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                }
+
+                // Body data → IEnumerable<object[]>
                 int dataRows = body.NumberOfRows;
                 int dataCols = body.NumberOfColumns;
-                object[,] data = new object[dataRows, dataCols];
+                var rows = new List<object[]>(dataRows);
 
                 for (int r = 0; r < dataRows; r++)
                 {
+                    var rowValues = new object[dataCols];
                     for (int c = 0; c < dataCols; c++)
-                        data[r, c] = schedule.GetCellText(SectionType.Body, r, c);
+                    {
+                        rowValues[c] = schedule.GetCellText(SectionType.Body, r, c);
+                    }
+                    rows.Add(rowValues);
                 }
 
-                var startCell = (Excel.Range)worksheet.Cells[headerRowCount + 1, 1];
-                var endCell = (Excel.Range)worksheet.Cells[headerRowCount + dataRows, dataCols];
-                var writeRange = worksheet.Range[startCell, endCell];
-                writeRange.Value2 = data;
-                writeRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
+                worksheet.Cells[headerRowCount + 1, 1].LoadFromArrays(rows);
 
-                // AutoFit alleen bij kleinere tabellen
                 if (body.NumberOfRows < 500)
-                    worksheet.Columns.AutoFit();
+                    worksheet.Cells.AutoFitColumns();
 
-                workbook.SaveAs(fullPath);
+                // Eventuele rand
+                using (var range = worksheet.Cells[1, 1, headerRowCount + dataRows, dataCols])
+                {
+                    range.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    range.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+
+                package.SaveAs(new FileInfo(fullPath));
                 successCount++;
-
-                Marshal.ReleaseComObject(worksheet);
             }
             catch (Exception ex)
             {
                 failCount++;
-                TaskDialog.Show("Fout",
-                    $"Fout bij exporteren van '{schedule.Name}': {ex.Message}");
-            }
-            finally
-            {
-                if (workbook != null)
-                {
-                    workbook.Close(false);
-                    Marshal.ReleaseComObject(workbook);
-                }
+                TaskDialog.Show("Fout", $"Fout bij exporteren van '{schedule.Name}': {ex.Message}");
             }
         }
-        
-        excelApp.ScreenUpdating = true;
-        excelApp.Quit();
-        Marshal.ReleaseComObject(excelApp);
 
         progressWindow.Close();
 

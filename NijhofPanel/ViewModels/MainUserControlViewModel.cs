@@ -1,15 +1,17 @@
 ﻿namespace NijhofPanel.ViewModels;
 
 using Autodesk.Revit.UI;
+using Autodesk.Windows;
 using Views;
 using Services;
 using UI.Themes;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Collections.Generic;
 using UI.Controls.Navigation;
-using NijhofPanel.Core;
+using Core;
 using NijhofPanel.Helpers.Core;
 using Visibility = System.Windows.Visibility;
 
@@ -142,8 +144,10 @@ public class MainUserControlViewModel : ObservableObject
 
     private void ExecuteOpenWindow(WindowButton windowButton)
     {
-        if (string.IsNullOrEmpty(windowButton.Navlink)) return;
+        if (string.IsNullOrEmpty(windowButton.Navlink))
+            return;
 
+        // Controleer of venster al open is
         if (_openWindows.TryGetValue(windowButton.Navlink, out var existing))
         {
             if (existing.IsVisible)
@@ -160,41 +164,60 @@ public class MainUserControlViewModel : ObservableObject
             _openWindows.Remove(windowButton.Navlink);
         }
 
+        // Maak nieuw venster
         Window? newWindow = windowButton.Navlink switch
         {
             "LibraryWindowView" => new LibraryWindowView(),
             "PrefabWindowView" => PrefabVm != null ? new PrefabWindowView(PrefabVm) : null,
-            
             "FittingListWindowView" => TryCreateFittingListWindow(),
             "SawListWindowView" => TryCreateSawListWindow(),
-
             _ => null
         };
 
-        if (newWindow != null)
+        if (newWindow == null)
+            return;
+
+        // Stel DataContext in waar nodig
+        if (windowButton.Navlink == "LibraryWindowView")
         {
-            if (windowButton.Navlink == "LibraryWindowView")
-            {
-                if (LibraryVm == null)
-                    LibraryVm = new LibraryWindowViewModel(new Services.DevHostLibraryActions());
-                newWindow.DataContext = LibraryVm;
-            }
-
-            newWindow.Owner = Application.Current?.MainWindow;
-            windowButton.IsWindowOpen = true;
-            _openWindows[windowButton.Navlink] = newWindow;
-
-            newWindow.Closed += (_, _) =>
-            {
-                _openWindows.Remove(windowButton.Navlink);
-                windowButton.IsWindowOpen = false;
-            };
-
-            newWindow.Show();
-            ThemeManager.UpdateTheme(IsDarkMode, newWindow);
+            if (LibraryVm == null)
+                LibraryVm = new LibraryWindowViewModel(new Services.DevHostLibraryActions());
+            newWindow.DataContext = LibraryVm;
         }
+
+        // ✅ Cross-version veilige koppeling met Revit-hoofdvenster
+        try
+        {
+            var revitHandle = Autodesk.Windows.ComponentManager.ApplicationWindow;
+            if (revitHandle != IntPtr.Zero)
+            {
+                var interop = new WindowInteropHelper(newWindow);
+                interop.Owner = revitHandle;
+            }
+        }
+        catch
+        {
+            // negeren – veilig bij opstart of foutieve Revit handle
+        }
+
+        // Markeer venster als open
+        windowButton.IsWindowOpen = true;
+        _openWindows[windowButton.Navlink] = newWindow;
+
+        // Wanneer venster sluit, markeren als gesloten
+        newWindow.Closed += (_, _) =>
+        {
+            _openWindows.Remove(windowButton.Navlink);
+            windowButton.IsWindowOpen = false;
+        };
+
+        // Toon venster
+        newWindow.Show();
+
+        // Pas thema toe
+        ThemeManager.UpdateTheme(IsDarkMode, newWindow);
     }
-    
+
     private Window? TryCreateFittingListWindow()
     {
         try
@@ -218,7 +241,7 @@ public class MainUserControlViewModel : ObservableObject
             return null;
         }
     }
-    
+
     private Window? TryCreateSawListWindow()
     {
         try

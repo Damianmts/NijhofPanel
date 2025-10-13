@@ -3,11 +3,11 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Views;
 using System;
-using Excel = Microsoft.Office.Interop.Excel;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using TaskDialog = Autodesk.Revit.UI.TaskDialog;
 
 public class Com_ExportExcel : IExternalEventHandler
@@ -38,23 +38,6 @@ public class Com_ExportExcel : IExternalEventHandler
             {
                 var successCount = 0;
                 var failCount = 0;
-
-                // Test of Excel beschikbaar is
-                Excel.Application? testExcelApp;
-                try
-                {
-                    testExcelApp = new Excel.Application();
-                    testExcelApp.Quit();
-                    Marshal.ReleaseComObject(testExcelApp);
-                }
-                catch (COMException)
-                {
-                    TaskDialog.Show("Excel fout",
-                        "Excel kan niet gestart worden.\n\n" +
-                        "Mogelijke oorzaak: verschil tussen 32- en 64-bit versies van Revit en Microsoft Office.\n" +
-                        "Oplossing: installeer de 64-bit versie van Office of gebruik een andere exportmethode.");
-                    return;
-                }
                 
                 var progressWindow = new ProgressWindowView();
                 progressWindow.Show();
@@ -62,19 +45,7 @@ public class Com_ExportExcel : IExternalEventHandler
                 int totalCount = selectionWindow.SelectedSchedules.Count;
                 int currentIndex = 0;
                 
-                var excelApp = new Excel.Application
-                {
-                    Visible = false,
-                    DisplayAlerts = false
-                };
-        
-                try
-                {
-                    excelApp.ScreenUpdating = false;
-                    // Calculation-property soms niet beschikbaar → overslaan
-                }
-                catch { /* negeren */ }
-
+                
                 foreach (var schedule in selectionWindow.SelectedSchedules)
                 {
                     currentIndex++;
@@ -82,108 +53,74 @@ public class Com_ExportExcel : IExternalEventHandler
                     progressWindow.UpdateStatusText($"Exporteren: {schedule.Name} ({currentIndex}/{totalCount})");
                     progressWindow.UpdateProgress(percentage);
                     Application.DoEvents();
-
-                    Excel.Workbook? workbook = null;
-
+                    
                     try
                     {
                         // Maak bestandsnaam
                         var fileName = CleanSheetName(schedule.Name) + ".xlsx";
                         var fullPath = System.IO.Path.Combine(folderDialog.SelectedPath, fileName);
 
-                        workbook = excelApp.Workbooks.Add();
-                
-                        try
-                        {
-                            excelApp.ScreenUpdating = false;
-                            // Calculation-property soms niet beschikbaar → overslaan
-                        }
-                        catch { /* negeren */ }
+                        using var package = new ExcelPackage();
+                        var worksheet = package.Workbook.Worksheets.Add(schedule.Name);
 
+                        // Titel
+                        worksheet.Cells[1, 1].Value = schedule.Name;
+                        using (var range = worksheet.Cells[1, 1, 1, schedule.GetTableData().GetSectionData(SectionType.Body).NumberOfColumns])
+                        {
+                            range.Merge = true;
+                            range.Style.Font.Bold = true;
+                            range.Style.Font.Size = 14;
+                            range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        }
+
+                        // Header
                         var tableData = schedule.GetTableData();
                         var header = tableData.GetSectionData(SectionType.Header);
                         var body = tableData.GetSectionData(SectionType.Body);
-                        var worksheet = (Excel.Worksheet)workbook.Worksheets[1];
 
-                        // Titel (rij 1)
-                        var titleCell = (Excel.Range)worksheet.Cells[1, 1];
-                        titleCell.Value2 = schedule.Name;
-                        titleCell.Font.Bold = true;
-                        titleCell.Font.Size = 14;
-                        var titleMergeRange = worksheet.Range[
-                            worksheet.Cells[1, 1],
-                            worksheet.Cells[1, body.NumberOfColumns]
-                        ];
-                        titleMergeRange.Merge();
-                        titleCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-
-                        // Headers
-                        var headerRowCount = header.NumberOfRows;
-                        for (var row = 1; row < headerRowCount; row++)
+                        for (var row = 0; row < header.NumberOfRows; row++)
                         {
-                            object[,] headerValues = new object[1, header.NumberOfColumns];
                             for (var col = 0; col < header.NumberOfColumns; col++)
                             {
-                                headerValues[0, col] = schedule.GetCellText(SectionType.Header, row, col);
+                                worksheet.Cells[row + 2, col + 1].Value =
+                                    schedule.GetCellText(SectionType.Header, row, col);
                             }
-
-                            var headerStart = (Excel.Range)worksheet.Cells[row + 1, 1];
-                            var headerEnd = (Excel.Range)worksheet.Cells[row + 1, header.NumberOfColumns];
-                            var headerRange = worksheet.Range[headerStart, headerEnd];
-                            headerRange.Value2 = headerValues;
-                            headerRange.Font.Bold = true;
-                            headerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
                         }
 
-                        // ✅ Data via 2D-array (veel sneller)
+                        // Body (snel via 2D-array)
                         int dataRows = body.NumberOfRows;
                         int dataCols = body.NumberOfColumns;
-                        object[,] data = new object[dataRows, dataCols];
+
+                        // EPPlus 8 verwacht IEnumerable<object[]>
+                        var rows = new List<object[]>(dataRows);
 
                         for (int r = 0; r < dataRows; r++)
                         {
+                            var rowValues = new object[dataCols];
                             for (int c = 0; c < dataCols; c++)
                             {
-                                data[r, c] = schedule.GetCellText(SectionType.Body, r, c);
+                                rowValues[c] = schedule.GetCellText(SectionType.Body, r, c);
                             }
+                            rows.Add(rowValues);
                         }
 
-                        var startCell = (Excel.Range)worksheet.Cells[headerRowCount + 2, 1];
-                        var endCell = (Excel.Range)worksheet.Cells[headerRowCount + 1 + dataRows, dataCols];
-                        var writeRange = worksheet.Range[startCell, endCell];
-                        writeRange.Value2 = data;
-                        writeRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-
-                        // Kolombreedtes automatisch aanpassen alleen bij kleinere tabellen
+                        worksheet.Cells[header.NumberOfRows + 2, 1].LoadFromArrays(rows);
+                        
                         if (body.NumberOfRows < 500)
-                            worksheet.Columns.AutoFit();
+                            worksheet.Cells.AutoFitColumns();
 
-                        workbook.SaveAs(fullPath);
+                        package.SaveAs(new System.IO.FileInfo(fullPath));
                         successCount++;
-
-                        Marshal.ReleaseComObject(worksheet);
                     }
                     catch (Exception ex)
                     {
                         failCount++;
-                        TaskDialog.Show("Fout",
-                            $"Fout bij exporteren van '{schedule.Name}': {ex.Message}");
+                        TaskDialog.Show("Fout", $"Fout bij exporteren van '{schedule.Name}': {ex.Message}");
                     }
-                    finally
-                    {
-                        if (workbook != null)
-                        {
-                            workbook.Close(false);
-                            Marshal.ReleaseComObject(workbook);
-                        }
-                    }
+
                 }
                 
-                excelApp.ScreenUpdating = true;
-                excelApp.Quit();
-                Marshal.ReleaseComObject(excelApp);
-
-                // ✅ Sluit voortgangsvenster
+                // Sluit voortgangsvenster
                 progressWindow.Close();
 
                 // Forceer garbage collection
@@ -192,7 +129,7 @@ public class Com_ExportExcel : IExternalEventHandler
 
                 // Toon resultaat
                 // TaskDialog.Show("Export Voltooid",
-                //     $"Export voltooid!\nSuccesvol: {successCount} schedules\nMislukt: {failCount} schedules");
+                // $"Export voltooid!\nSuccesvol: {successCount} schedules\nMislukt: {failCount} schedules");
             }
         }
     }

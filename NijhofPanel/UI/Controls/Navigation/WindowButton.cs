@@ -2,9 +2,13 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Input;
+using System.Windows.Media;
 
+/// <summary>
+/// Custom navigation button that triggers a command, typically used to open windows.
+/// Revit-safe: does not directly manipulate window ownership.
+/// </summary>
 public class WindowButton : ListBoxItem
 {
     static WindowButton()
@@ -20,7 +24,7 @@ public class WindowButton : ListBoxItem
     }
 
     public static readonly DependencyProperty NavlinkProperty =
-        DependencyProperty.Register("NavLink", typeof(string), typeof(WindowButton), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(Navlink), typeof(string), typeof(WindowButton), new PropertyMetadata(null));
 
     public Geometry Icon
     {
@@ -29,7 +33,7 @@ public class WindowButton : ListBoxItem
     }
 
     public static readonly DependencyProperty IconProperty =
-        DependencyProperty.Register("Icon", typeof(Geometry), typeof(WindowButton), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(Icon), typeof(Geometry), typeof(WindowButton), new PropertyMetadata(null));
 
     public bool IsWindowOpen
     {
@@ -38,9 +42,9 @@ public class WindowButton : ListBoxItem
     }
 
     public static readonly DependencyProperty IsWindowOpenProperty =
-        DependencyProperty.Register("IsWindowOpen", typeof(bool), typeof(WindowButton),
+        DependencyProperty.Register(nameof(IsWindowOpen), typeof(bool), typeof(WindowButton),
             new PropertyMetadata(false));
-    
+
     public ICommand Command
     {
         get => (ICommand)GetValue(CommandProperty);
@@ -48,15 +52,17 @@ public class WindowButton : ListBoxItem
     }
 
     public static readonly DependencyProperty CommandProperty =
-        DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(WindowButton), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(WindowButton),
+            new PropertyMetadata(null));
 
     protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
     {
         base.OnMouseLeftButtonUp(e);
-        if (Command != null)
-        {
-            if (Command.CanExecute(this))
-                Command.Execute(this);
-        }
+
+        if (Command == null)
+            return;
+
+        if (Command.CanExecute(this))
+            Command.Execute(this); // laat ViewModel afhandelen
     }
 }

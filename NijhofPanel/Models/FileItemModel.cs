@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 public class FileItemModel : INotifyPropertyChanged
@@ -16,40 +17,27 @@ public class FileItemModel : INotifyPropertyChanged
         SubFiles = new ObservableCollection<FileItemModel>();
     }
 
-    private bool _isSelected;
-
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set
-        {
-            _isSelected = value;
-            OnPropertyChanged();
-        }
-    }
-
     public string ItemName { get; set; }
     public string DisplayName { get; set; }
     public string FullPath { get; set; }
     public bool IsDirectory { get; set; }
     public ObservableCollection<FileItemModel> SubFiles { get; }
 
-    private BitmapImage? _thumbnail;
-
-    public BitmapImage? Thumbnail
+    private bool _isSelected;
+    public bool IsSelected
     {
-        get => _thumbnail;
-        set
-        {
-            _thumbnail = value;
-            OnPropertyChanged();
-        }
+        get => _isSelected;
+        set { _isSelected = value; OnPropertyChanged(); }
+    }
+
+    private Uri? _thumbnailUri;
+    public Uri? ThumbnailUri
+    {
+        get => _thumbnailUri;
+        set { _thumbnailUri = value; OnPropertyChanged(); }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

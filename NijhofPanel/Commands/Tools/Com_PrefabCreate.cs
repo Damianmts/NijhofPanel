@@ -9,7 +9,7 @@ using System.Linq;
 using ViewModels;
 using Autodesk.Revit.DB.Plumbing;
 using System.Text.RegularExpressions;
-using Microsoft.VisualBasic;
+using NijhofPanel.Helpers.Core;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]
@@ -76,10 +76,10 @@ public class Com_PrefabCreate : IExternalEventHandler
                 }
 
                 // Vraag gebruiker om invoer: BNR, Kavel of Type
-                string kavelnummer = Interaction.InputBox(
+                string? kavelnummer = InputBoxHelper.Show(
                     "Voer het Prefab kenmerk in (bijv. 'BNR 12', 'Kavel 5' of 'Type A2'):",
-                    "Prefab Kenmerk",
-                    "");
+                    "Prefab Kenmerk"
+                );
 
                 // Controleer of invoer geldig is
                 if (string.IsNullOrWhiteSpace(kavelnummer))
@@ -99,10 +99,10 @@ public class Com_PrefabCreate : IExternalEventHandler
                 }
                 
                 // Vraag gebruiker om Prefab Verdieping
-                string verdieping = Interaction.InputBox(
+                string? verdieping = InputBoxHelper.Show(
                     "Voer de Prefab Verdieping in (bijv. '-V01', 'V00', 'V01', etc.):",
-                    "Prefab Verdieping",
-                    "");
+                    "Prefab Verdieping"
+                );
 
                 // Controleer of invoer geldig is
                 if (string.IsNullOrWhiteSpace(verdieping))

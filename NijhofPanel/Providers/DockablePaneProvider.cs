@@ -5,9 +5,9 @@ namespace NijhofPanel.Providers;
 
 public class DockablePaneProvider : IDockablePaneProvider
 {
-    private UserControl _control;
+    private System.Windows.Controls.UserControl _control;
 
-    public DockablePaneProvider(UserControl control)
+    public DockablePaneProvider(System.Windows.Controls.UserControl control)
     {
         _control = control;
     }

@@ -108,54 +108,39 @@ public class LibraryWindowViewModel : ObservableObject
 
         try
         {
-            var files = Directory.GetFiles(SelectedFolder.FullPath)
-                .Where(f => Path.GetExtension(f).ToLower() == ".rfa");
+            var files = Directory.GetFiles(SelectedFolder.FullPath, "*.rfa", SearchOption.AllDirectories);
 
-            var fileTasks = files.Select(async f =>
+            // Voeg eerst de items toe (zonder thumbnails)
+            foreach (var file in files)
             {
-                var item = new FileItemModel(f);
-                item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(f);
-                return item;
-            });
-
-            var items = await Task.WhenAll(fileTasks);
-
-            foreach (var item in items)
+                var item = new FileItemModel(file);
                 SelectedFolderContent?.Add(item);
 
-            await LoadFilesFromSubfoldersAsync(SelectedFolder.FullPath);
+                // Start thumbnail-load asynchroon
+                _ = Task.Run(async () =>
+                {
+                    var thumbUri = await ThumbnailHelper.GetThumbnailUriAsync(file);
+                    if (thumbUri != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"🟢 Thumbnail gevonden: {thumbUri}");
+                        Application.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            item.ThumbnailUri = thumbUri;
+                        });
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"🔴 Geen thumbnail voor: {file}");
+                    }
+                });
+            }
         }
         catch (IOException ex)
         {
             MessageBox.Show($"Fout bij het laden van bestanden: {ex.Message}");
         }
     }
-
-    private async Task LoadFilesFromSubfoldersAsync(string folderPath)
-    {
-        try
-        {
-            foreach (var subDir in Directory.GetDirectories(folderPath))
-            {
-                var files = Directory.GetFiles(subDir)
-                    .Where(f => Path.GetExtension(f).ToLower() == ".rfa");
-
-                foreach (var file in files)
-                {
-                    var item = new FileItemModel(file);
-                    item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(file);
-                    SelectedFolderContent?.Add(item);
-                }
-
-                await LoadFilesFromSubfoldersAsync(subDir); // recursief
-            }
-        }
-        catch (IOException ex)
-        {
-            MessageBox.Show($"Fout bij het laden van submappen: {ex.Message}");
-        }
-    }
-
+    
     private void LoadFolderStructure()
     {
         var rootPath = @"F:\Stabiplan\Custom\Families";

@@ -16,6 +16,7 @@ using Providers;
 using Helpers.Core;
 using Helpers.Electrical;
 using Commands.Tools;
+using OfficeOpenXml;
 
 /// <summary>
 ///     Entry point voor de Revit-plugin 'Nijhof Tools'
@@ -26,7 +27,6 @@ using Commands.Tools;
 [UsedImplicitly]
 public class RevitApplication : ExternalApplication
 {
-    
     public static RevitRequestHandler LibraryHandler { get; private set; } = null!;
     public static ExternalEvent LibraryEvent { get; private set; } = null!;
     public static Com_ConnectElement ConnectElementHandler { get; private set; } = null!;
@@ -34,6 +34,13 @@ public class RevitApplication : ExternalApplication
 
     public override void OnStartup()
     {
+        // EPPlus licentie-instelling (verplicht sinds v8)
+        // #if NET8_0_OR_GREATER
+        ExcelPackage.License.SetNonCommercialPersonal("Nijhof Installaties");
+        // #else
+        // ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        // #endif
+        
         // WPF-resources en cultuurinstelling
         System.Windows.Application.ResourceAssembly = typeof(RevitApplication).Assembly;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -137,6 +144,21 @@ public class RevitApplication : ExternalApplication
             Image = icon
         };
         ribbonPanel.AddItem(toggleButtonData);
+        
+        ribbonPanel.AddSeparator();
+        
+        var thmbbuttonData = new PushButtonData(
+            "Genereer \n Thumbnails",
+            "Genereer \n Thumbnails",
+            assemblyPath,
+            "NijhofPanel.Helpers.Tools.ThumbnailGenerator")
+        {
+            ToolTip = "Klik om thumbnails te genereren",
+            LongDescription = "Genereert thumbnails voor de Nijhof Library",
+            LargeImage = icon,
+            Image = icon
+        };
+        ribbonPanel.AddItem(thmbbuttonData);
         
         // Slide out voor de tools waar een shortcut van gemaakt kan worden
         ribbonPanel.AddSlideOut();

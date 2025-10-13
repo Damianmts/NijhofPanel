@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>NijhofPanel</Name>
+    <Assembly>$DllPath$</Assembly>
+    <AddInId>15120B71-FEF8-4ECE-A8E5-7F390899380D</AddInId>
+    <FullClassName>NijhofPanel.RevitApplication</FullClassName>
+    <VendorId>Development</VendorId>
+  </AddIn>
+</RevitAddIns>

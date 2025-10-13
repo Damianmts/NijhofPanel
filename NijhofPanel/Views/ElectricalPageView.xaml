@@ -29,6 +29,8 @@
                     Source="pack://application:,,,/NijhofPanel;component/UI/Themes/Controls/ModernScrollbar.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorETools.xaml" />
+                <ResourceDictionary
+                        Source="pack://application:,,,/NijhofPanel;component/Resources/Icons/IconsVectorWTools.xaml" />
             </ResourceDictionary.MergedDictionaries>
         <SolidColorBrush x:Key="CurrentBackgroundColor"
                          Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
@@ -139,13 +141,13 @@
                         helpers:ElectricalProperties.ComponentType="SCHAK_DimmerWissel" Content="Dimmer Wissel" />
                 <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Jaloezie}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Jaloezie" Content="Jaloezie" />
-                <Button Style="{StaticResource BigButtonE}" 
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_BewegingWand}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_BewegingWand" Content="Beweging Wand" />
             </WrapPanel>
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonE}" 
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_BewegingPlafond}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_BewegingPlafond" Content="Beweging Plafond" />
-                <Button Style="{StaticResource BigButtonE}" 
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource SCHAK_Schemer}"
                         helpers:ElectricalProperties.ComponentType="SCHAK_Schemer" Content="Schemer- schakelaar" />
             </WrapPanel>
 
@@ -183,7 +185,7 @@
             <WrapPanel Orientation="Horizontal">
                 <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Intercom}"
                         helpers:ElectricalProperties.ComponentType="OVG_Intercom" Content="Intercom" />
-                <Button Style="{StaticResource BigButtonE}" 
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource OVG_Grondkabel}"
                         helpers:ElectricalProperties.ComponentType="OVG_Grondkabel" Content="Grond- kabel" />
             </WrapPanel>
 
@@ -193,11 +195,12 @@
                        FontSize="20"
                        Margin="0,15,0,5" />
             <WrapPanel Orientation="Horizontal">
-                <Button Style="{StaticResource BigButtonE}" Content="Groep nummer"
-                        Command="{Binding TagGroepnummerCommand}" />
-                <Button Style="{StaticResource BigButtonE}" Content="Switch code"
-                        Command="{Binding TagSwitchcodeCommand}" />
-                <Button Style="{StaticResource BigButtonE}" Content="Code lijst" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource TOOL_Groepnummer}"
+                        Command="{Binding TagGroepnummerCommand}" Content="Groep nummer" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource TOOL_Groepnummer}"
+                        Command="{Binding TagSwitchcodeCommand}" Content="Switch code" />
+                <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource TOOL_Groepnummer}"
+                        Content="Code lijst" />
             </WrapPanel>
 
         </StackPanel>
