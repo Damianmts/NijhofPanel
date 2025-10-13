@@ -8,6 +8,7 @@ using System.Linq;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using NijhofPanel.Views;
+using NijhofPanel.Helpers.Core;
 
 public class Com_ExportCSV : IExternalEventHandler
 {
@@ -47,6 +48,22 @@ public class Com_ExportCSV : IExternalEventHandler
             return;
         }
 
+        // Projectnaam ophalen
+        string projectNaam = string.Empty;
+        var pNaamParam = projectInfo.LookupParameter("Projectnaam");
+        if (pNaamParam?.HasValue == true)
+            projectNaam = pNaamParam.AsString() ?? string.Empty;
+
+        string? input = InputBoxHelper.Show("Voer de projectnaam in:", "Projectnaam invoeren");
+
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            TaskDialog.Show("Geannuleerd", "Export geannuleerd: projectnaam is vereist voor de zaagmachine-map.");
+            return;
+        }
+
+        projectNaam = input;
+        
         // Bestandslocatie bepalen
         var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
         var invul2 = projectNummer;
@@ -61,6 +78,15 @@ public class Com_ExportCSV : IExternalEventHandler
 
         if (!Directory.Exists(basePath))
             Directory.CreateDirectory(basePath);
+        
+        // Tweede exportlocatie voor zaagmachine
+        var zaagmachineBase = Path.Combine(
+            @"T:\Data\!Zaagmachine",
+            $"{projectNummer} - {projectNaam}"
+        );
+
+        if (!Directory.Exists(zaagmachineBase))
+            Directory.CreateDirectory(zaagmachineBase);
 
         int successCount = 0;
         int failCount = 0;
@@ -124,6 +150,17 @@ public class Com_ExportCSV : IExternalEventHandler
                 }
 
                 successCount++;
+                
+                // Kopie naar zaagmachine-map
+                try
+                {
+                    var destPath = Path.Combine(zaagmachineBase, Path.GetFileName(fullPath));
+                    File.Copy(fullPath, destPath, true);
+                }
+                catch (Exception copyEx)
+                {
+                    TaskDialog.Show("Waarschuwing", $"Kon bestand niet kopiëren naar zaagmachine-map: {copyEx.Message}");
+                }
             }
             catch (Exception ex)
             {
@@ -133,12 +170,9 @@ public class Com_ExportCSV : IExternalEventHandler
         }
 
         progressWindow.Close();
-        
-        // TaskDialog.Show("Export Voltooid",
-        //     $"Export voltooid!\nSuccesvol: {successCount} schedules\nMislukt: {failCount} schedules");
     }
 
-    public string GetName() => "Nijhof Panel Export CSV SawList";
+    public string GetName() => "Nijhof Panel Export CSV Zaaglijst";
     
     private string CleanFileName(string name)
     {
