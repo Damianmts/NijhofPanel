@@ -314,8 +314,8 @@ public class Com_PrefabCreate : IExternalEventHandler
                 // Wijs parameters toe aan de nested family
                 Parameter prefabSetParam = subElement.LookupParameter("Prefab Set");
                 Parameter prefabColorIDParam = subElement.LookupParameter("Prefab Color ID");
-                Parameter kavelParam = subElement.LookupParameter("Prefab Kavelnummer");
-                Parameter verdiepingParam = subElement.LookupParameter("Prefab Verdieping");
+                Parameter? kavelParam = subElement.LookupParameter("Prefab Kavelnummer") ?? subElement.LookupParameter("Kavelnummer");
+                Parameter? verdiepingParam = subElement.LookupParameter("Prefab Verdieping") ?? subElement.LookupParameter("Verdieping");
 
                 if (prefabSetParam != null && prefabSetParam.StorageType == StorageType.String)
                     prefabSetParam.Set(prefabSet);
@@ -344,8 +344,13 @@ public class Com_PrefabCreate : IExternalEventHandler
 
     private void AssignPrefabKavelnummer(Element element, string kavelnummer)
     {
-        Parameter kavelParam = element.LookupParameter("Prefab Kavelnummer");
-        if (kavelParam != null && kavelParam.StorageType == StorageType.String && !kavelParam.IsReadOnly)
+        Parameter? kavelParam =
+            element.LookupParameter("Prefab Kavelnummer") ??
+            element.LookupParameter("Kavelnummer");
+
+        if (kavelParam != null &&
+            kavelParam.StorageType == StorageType.String &&
+            !kavelParam.IsReadOnly)
         {
             kavelParam.Set(kavelnummer);
         }
@@ -353,8 +358,13 @@ public class Com_PrefabCreate : IExternalEventHandler
     
     private void AssignPrefabVerdieping(Element element, string verdieping)
     {
-        Parameter verdiepingParam = element.LookupParameter("Prefab Verdieping");
-        if (verdiepingParam != null && verdiepingParam.StorageType == StorageType.String && !verdiepingParam.IsReadOnly)
+        Parameter? verdiepingParam =
+            element.LookupParameter("Prefab Verdieping") ??
+            element.LookupParameter("Verdieping");
+
+        if (verdiepingParam != null &&
+            verdiepingParam.StorageType == StorageType.String &&
+            !verdiepingParam.IsReadOnly)
         {
             verdiepingParam.Set(verdieping);
         }

@@ -35,11 +35,7 @@ public class RevitApplication : ExternalApplication
     public override void OnStartup()
     {
         // EPPlus licentie-instelling (verplicht sinds v8)
-        // #if NET8_0_OR_GREATER
         ExcelPackage.License.SetNonCommercialPersonal("Nijhof Installaties");
-        // #else
-        // ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-        // #endif
         
         // WPF-resources en cultuurinstelling
         System.Windows.Application.ResourceAssembly = typeof(RevitApplication).Assembly;

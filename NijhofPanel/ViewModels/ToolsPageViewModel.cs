@@ -25,6 +25,7 @@ public class ToolsPageViewModel : ObservableObject
     private readonly ExternalEvent _tagHWALengthEvent;
     private readonly ExternalEvent _tagVWALengthEvent;
     private readonly ExternalEvent _create3DViewEvent;
+    private readonly ExternalEvent _refreshViewEvent;
 
     // Toolstrip commands
     public ICommand ConnectElementCommand { get; }
@@ -48,6 +49,7 @@ public class ToolsPageViewModel : ObservableObject
     public ICommand TagHWALengthCommand { get; }
     public ICommand TagVWALengthCommand { get; }
     public ICommand Create3DViewCommand { get; }
+    public ICommand RefreshViewCommand { get; }
 
     public ToolsPageViewModel()
     {
@@ -102,6 +104,11 @@ public class ToolsPageViewModel : ObservableObject
         var create3DViewHandler = new Com_Create3DView();
         _create3DViewEvent = ExternalEvent.Create(create3DViewHandler);
         
+        var refreshViewHandler = new Com_RefreshView();
+        _refreshViewEvent = ExternalEvent.Create(refreshViewHandler);
+        
+        
+        
         ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement);
         ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel);
         UpdateHWACommand = new RelayCommands.RelayCommand(ExecuteUpdateHWA);
@@ -120,6 +127,7 @@ public class ToolsPageViewModel : ObservableObject
         TagHWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagHWALength);
         TagVWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagVWALength);
         Create3DViewCommand = new RelayCommands.RelayCommand(ExecuteCreate3DView);
+        RefreshViewCommand = new RelayCommands.RelayCommand(ExecuteRefreshView);
     }
 
     private void ExecuteConnectElement(object parameter)
@@ -201,5 +209,10 @@ public class ToolsPageViewModel : ObservableObject
     private void ExecuteCreate3DView(object parameter)
     {
         _create3DViewEvent.Raise();
+    }
+    
+    private void ExecuteRefreshView(object parameter)
+    {
+        _refreshViewEvent.Raise();
     }
 }

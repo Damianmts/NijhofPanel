@@ -25,16 +25,6 @@ public class Com_RecessPlaceWall : IExternalEventHandler
             {
                 tx.Start();
 
-                // Implementatie voor het plaatsen van een recess in een muur.
-                // - Selecteer Pipe of Duct
-                // - Selecteer Wall (DirectShape of ander element)
-                // - Bepaal start en end van intersection
-                // - Plaats Generic Model (Sparing) op hart van intersectie en vul lengte in (NLRS_C_diepte)
-                // - Kies juiste grootte (NLRS_C_diameter) op basis van Pipe of Duct diameter
-                // - Validaties en foutafhandeling
-                
-                // - Optioneel uitbreiden voor Cabletray of andere elementen
-                
                 var sel = uiDoc.Selection;
 
                 // 1) Selecteer MEP (Pipe/Duct)
@@ -52,12 +42,11 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                 }
                 catch
                 {
-                    // Als gebruiker een native element kiest, fallback:
                     hostRef = sel.PickObject(ObjectType.Element, "Selecteer het host element (muur/vloer/etc.)");
                 }
                 if (hostRef == null) throw new OperationCanceledException("Geen host-element geselecteerd.");
 
-                // 3) Resolve host element en transform (naar host-doc coördinaten)
+                // 3) Resolve host element en transform
                 Element hostElem;
                 Document hostElemDoc = doc;
                 Transform toHost = Transform.Identity;
@@ -79,16 +68,15 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                                ?? throw new InvalidOperationException("Kon host-element niet ophalen.");
                 }
 
-                // 4) Haal solids op (view-onafhankelijk) en bereken intersecties
+                // 4) Haal solids op en bereken intersecties
                 var mepSolids = GetElementSolids(doc, mepElem, Transform.Identity);
-                var hostSolids = GetElementSolids(hostElemDoc, hostElem, toHost); // naar host-ruimte getransformeerd
+                var hostSolids = GetElementSolids(hostElemDoc, hostElem, toHost);
 
                 if (mepSolids.Count == 0)
                     throw new InvalidOperationException("Geen solide geometrie gevonden voor MEP-element.");
                 if (hostSolids.Count == 0)
                     throw new InvalidOperationException("Geen solide geometrie gevonden voor host-element.");
 
-                // Snelle bbox precheck
                 var mepBb = mepElem.get_BoundingBox(null);
                 var hostBb = TransformBoundingBox(hostElem.get_BoundingBox(null), toHost);
                 if (mepBb == null || hostBb == null || !BboxOverlap(mepBb, hostBb))
@@ -98,16 +86,13 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                 foreach (var ms in mepSolids)
                 foreach (var hs in hostSolids)
                 {
-                    Solid inter = null;
                     try
                     {
-                        inter = BooleanOperationsUtils.ExecuteBooleanOperation(ms, hs, BooleanOperationsType.Intersect);
+                        var inter = BooleanOperationsUtils.ExecuteBooleanOperation(ms, hs, BooleanOperationsType.Intersect);
+                        if (inter != null && inter.Volume > 1e-6)
+                            intersections.Add(inter);
                     }
-                    catch
-                    {
-                        inter = null;
-                    }
-                    if (inter != null && inter.Volume > 1e-6) intersections.Add(inter);
+                    catch { }
                 }
 
                 if (intersections.Count == 0)
@@ -117,45 +102,56 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                 var center = ComputeIntersectionCenter(intersections);
                 if (center == null)
                 {
-                    // Fallback op bbox-midden als centroid niet lukt
-                    var interBb = intersections
-                        .Select(s => s.GetBoundingBox()) // indien API-versie dit niet ondersteunt, vervang door fallback
-                        .Aggregate((acc, bb) => UnionBb(acc, bb));
+                    var interBb = intersections.Select(s => s.GetBoundingBox()).Aggregate((acc, bb) => UnionBb(acc, bb));
                     center = (interBb.Min + interBb.Max) * 0.5;
                 }
-                
+
                 bool isPipe = mepElem is Pipe;
                 bool isDuct = mepElem is Duct;
 
                 if (!isPipe && !isDuct)
                     throw new InvalidOperationException("Alleen Pipes of Ducts worden ondersteund in deze tool.");
 
-                double depth = EstimateDepth(hostElem, intersections);
-                Level level = FindNearestLevel(doc, center) ?? new FilteredElementCollector(doc).OfClass(typeof(Level)).Cast<Level>().FirstOrDefault();
+                // 🔹 Corrigeer Z-hoogte naar hart van de MEP
+                if (mepElem.Location is LocationCurve lc && lc.Curve != null)
+                {
+                    var mepLine = lc.Curve as Line ?? Line.CreateBound(lc.Curve.GetEndPoint(0), lc.Curve.GetEndPoint(1));
+                    var mepDir = mepLine.Direction.Normalize();
+
+                    var start = mepLine.GetEndPoint(0);
+                    var vecToCenter = center - start;
+                    var proj = start + mepDir.Multiply(vecToCenter.DotProduct(mepDir));
+
+                    center = new XYZ(center.X, center.Y, proj.Z);
+                }
+
+                double depth = EstimateDepth(hostElem, intersections, mepCurve);
+                Level level = FindNearestLevel(doc, center) 
+                              ?? new FilteredElementCollector(doc).OfClass(typeof(Level)).Cast<Level>().FirstOrDefault();
 
                 if (level == null)
                     throw new InvalidOperationException("Geen Level gevonden voor plaatsing.");
+
+                // 🔧 Bereken offset vanaf level
+                double offsetFromLevel = center.Z - level.Elevation;
+                XYZ placePoint = new XYZ(center.X, center.Y, offsetFromLevel);
 
                 // 6) Kies family en plaats instance
                 if (isPipe)
                 {
                     var pipe = (Pipe)mepElem;
-                    // Kies sparingsdiameter o.b.v. diameter-ranges (mm) -> interne units (ft)
                     double openingDiaFeet = MapPipeDiameterToOpening(pipe.Diameter);
 
-                    // Gebruik specifieke family + type
                     var symbol = FindFamilySymbol(doc, "NLRS_00.00_GM_LB_sparing rond", "wandsparing")
                                  ?? throw new InvalidOperationException("Family 'NLRS_00.00_GM_LB_sparing rond' met type 'wandsparing' niet gevonden.");
                     if (!symbol.IsActive) symbol.Activate();
 
-                    var fi = doc.Create.NewFamilyInstance(center, symbol, level, StructuralType.NonStructural);
+                    var fi = doc.Create.NewFamilyInstance(placePoint, symbol, level, StructuralType.NonStructural);
                     SetParam(fi, "ins_diameter", openingDiaFeet);
                     SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                    SetParam(fi, "ins_instal_status", 0);
 
-                    // Forceer geldige transform na plaatsing/parameters
                     doc.Regenerate();
-
-                    // Plan-rotatie: uitlijnen met pipe in XY, rotatie rond Z
                     TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
                 }
                 else if (isDuct)
@@ -164,82 +160,55 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                     var ductType = doc.GetElement(duct.GetTypeId()) as DuctType;
                     var shape = ductType?.Shape;
 
-                    // NB: Als de marge in de sparing-family zit, hier géén clearance toevoegen.
-                    // Round ⇒ ronde sparing op basis van duct diameter (zelfde mapping als pipe)
-                    // Rectangular/Square ⇒ rechthoekige sparing, breedte/hoogte = duct.Width/duct.Height
-                    // Oval ⇒ ovale sparing, major/minor = duct.Width/duct.Height
-
                     if (shape == ConnectorProfileType.Round)
                     {
                         double openingDiaFeet = MapPipeDiameterToOpening(duct.Diameter);
 
-                        // Pas familienaam/typename aan indien nodig
                         var symbol = FindFamilySymbol(doc, "NLRS_00.00_GM_LB_sparing rond", "wandsparing")
                                      ?? throw new InvalidOperationException("Family 'NLRS_00.00_GM_LB_sparing rond' met type 'wandsparing' niet gevonden.");
                         if (!symbol.IsActive) symbol.Activate();
 
-                        var fi = doc.Create.NewFamilyInstance(center, symbol, level, StructuralType.NonStructural);
-                        // Pas parameternamen aan indien jouw family andere namen gebruikt
+                        var fi = doc.Create.NewFamilyInstance(placePoint, symbol, level, StructuralType.NonStructural);
                         SetParam(fi, "ins_diameter", openingDiaFeet);
                         SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                        SetParam(fi, "ins_instal_status", 0);
 
                         doc.Regenerate();
                         TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
                     }
-                    else if (shape == ConnectorProfileType.Rectangular)
+                    else if (shape == ConnectorProfileType.Rectangular || shape == ConnectorProfileType.Oval)
                     {
-                        double width = duct.Width;   // géén extra marge in code
-                        double height = duct.Height; // géén extra marge in code
+                        double width = duct.Width;
+                        double height = duct.Height;
 
-                        // Rechthoekige sparing family
                         var symbol = FindFamilySymbol(doc, "NLRS_00.00_GM_LB_sparing recht", "wandsparing")
                                      ?? throw new InvalidOperationException("Familie 'NLRS_00.00_GM_LB_sparing recht' met type 'wandsparing' niet gevonden.");
                         if (!symbol.IsActive) symbol.Activate();
 
-                        var fi = doc.Create.NewFamilyInstance(center, symbol, level, StructuralType.NonStructural);
-                        // Pas parameternamen aan naar de parameters die jouw sparing-family verwacht
+                        var fi = doc.Create.NewFamilyInstance(placePoint, symbol, level, StructuralType.NonStructural);
                         SetParam(fi, "ins_breedte", width);
                         SetParam(fi, "ins_hoogte", height);
                         SetParam(fi, "ins_sparing_diepte_totaal", depth);
-
-                        doc.Regenerate();
-                        TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
-                    }
-                    else if (shape == ConnectorProfileType.Oval)
-                    {
-                        double width = duct.Width;   // géén extra marge in code
-                        double height = duct.Height; // géén extra marge in code
-
-                        // Rechthoekige sparing family
-                        var symbol = FindFamilySymbol(doc, "NLRS_00.00_GM_LB_sparing recht", "wandsparing")
-                                     ?? throw new InvalidOperationException("Familie 'NLRS_00.00_GM_LB_sparing recht' met type 'wandsparing' niet gevonden.");
-                        if (!symbol.IsActive) symbol.Activate();
-
-                        var fi = doc.Create.NewFamilyInstance(center, symbol, level, StructuralType.NonStructural);
-                        // Pas parameternamen aan naar de parameters die jouw sparing-family verwacht
-                        SetParam(fi, "ins_breedte", width);
-                        SetParam(fi, "ins_hoogte", height);
-                        SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                        SetParam(fi, "ins_instal_status", 0);
 
                         doc.Regenerate();
                         TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
                     }
                     else
                     {
-                        // Fallback: behandel als rechthoekig zonder extra marge
+                        // Fallback: behandel als rechthoekig
                         double width = duct.Width;
                         double height = duct.Height;
 
-                        // Rechthoekige sparing family
                         var symbol = FindFamilySymbol(doc, "NLRS_00.00_GM_LB_sparing recht", "wandsparing")
                                      ?? throw new InvalidOperationException("Familie 'NLRS_00.00_GM_LB_sparing recht' met type 'wandsparing' niet gevonden.");
                         if (!symbol.IsActive) symbol.Activate();
 
-                        var fi = doc.Create.NewFamilyInstance(center, symbol, level, StructuralType.NonStructural);
-                        // Pas parameternamen aan naar de parameters die jouw sparing-family verwacht
+                        var fi = doc.Create.NewFamilyInstance(placePoint, symbol, level, StructuralType.NonStructural);
                         SetParam(fi, "ins_breedte", width);
                         SetParam(fi, "ins_hoogte", height);
                         SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                        SetParam(fi, "ins_instal_status", 0);
 
                         doc.Regenerate();
                         TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
@@ -264,7 +233,7 @@ public class Com_RecessPlaceWall : IExternalEventHandler
 
     private class MepCurveSelectionFilter : ISelectionFilter
     {
-        public bool AllowElement(Element elem) => elem is MEPCurve; // Pipe/Duct/CableTray/etc.
+        public bool AllowElement(Element elem) => elem is MEPCurve;
         public bool AllowReference(Reference reference, XYZ position) => true;
     }
 
@@ -321,15 +290,11 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                 var c = s.ComputeCentroid();
                 if (c != null) pts.Add(c);
             }
-            catch
-            {
-                // Sommige solids kunnen geen centroid teruggeven; negeer en val later terug
-            }
+            catch { }
         }
 
         if (pts.Count == 0) return null;
 
-        // Gemiddelde van alle centroids
         double x = 0, y = 0, z = 0;
         foreach (var p in pts)
         {
@@ -337,7 +302,7 @@ public class Com_RecessPlaceWall : IExternalEventHandler
         }
         return new XYZ(x / pts.Count, y / pts.Count, z / pts.Count);
     }
-    
+
     private static BoundingBoxXYZ TransformBoundingBox(BoundingBoxXYZ bb, Transform t)
     {
         if (bb == null) return null;
@@ -377,14 +342,43 @@ public class Com_RecessPlaceWall : IExternalEventHandler
         return new BoundingBoxXYZ { Min = min, Max = max };
     }
 
-    private static double EstimateDepth(Element hostElem, IList<Solid> intersections)
+    private static double EstimateDepth(Element hostElem, IList<Solid> intersections, MEPCurve mep)
     {
-        // Voorkeurslogica: als host een Wall is, gebruik wanddikte
+        // Voor muren: gebruik wanddikte als primaire bron
         if (hostElem is Wall w) return w.Width;
 
-        // Anders: gebruik Z-range van intersectie als benadering
-        var bb = intersections.Select(s => s.GetBoundingBox()).Aggregate((acc, x) => UnionBb(acc, x));
-        return Math.Max(0.001, bb.Max.Z - bb.Min.Z); // minimale diepte fallback
+        // Voor andere elementen: bereken lengte langs MEP-richting
+        if (intersections?.Count > 0)
+        {
+            var bb = intersections.Select(s => s.GetBoundingBox()).Aggregate((acc, x) => UnionBb(acc, x));
+
+            double lengthX = Math.Abs(bb.Max.X - bb.Min.X);
+            double lengthY = Math.Abs(bb.Max.Y - bb.Min.Y);
+            double lengthZ = Math.Abs(bb.Max.Z - bb.Min.Z);
+
+            var mepDir = GetMepDirection(mep);
+            if (mepDir != null && !mepDir.IsAlmostEqualTo(XYZ.Zero))
+            {
+                var mepDirXY = new XYZ(mepDir.X, mepDir.Y, 0).Normalize();
+
+                // Kies afmeting op basis van MEP-richting
+                if (Math.Abs(mepDir.Z) > 0.7) // Verticaal
+                    return Math.Max(lengthZ, UnitUtils.ConvertToInternalUnits(50, UnitTypeId.Millimeters));
+                else if (Math.Abs(mepDirXY.X) > 0.7) // X-richting
+                    return Math.Max(lengthX, UnitUtils.ConvertToInternalUnits(50, UnitTypeId.Millimeters));
+                else if (Math.Abs(mepDirXY.Y) > 0.7) // Y-richting
+                    return Math.Max(lengthY, UnitUtils.ConvertToInternalUnits(50, UnitTypeId.Millimeters));
+                else // Diagonaal
+                    return Math.Max(Math.Max(lengthX, lengthY), UnitUtils.ConvertToInternalUnits(50, UnitTypeId.Millimeters));
+            }
+
+            // Fallback: grootste afmeting
+            double depth = Math.Max(Math.Max(lengthX, lengthY), lengthZ);
+            return Math.Max(depth, UnitUtils.ConvertToInternalUnits(50, UnitTypeId.Millimeters));
+        }
+
+        // Laatste fallback
+        return UnitUtils.ConvertToInternalUnits(300, UnitTypeId.Millimeters);
     }
 
     private static Level? FindNearestLevel(Document doc, XYZ p)
@@ -420,23 +414,19 @@ public class Com_RecessPlaceWall : IExternalEventHandler
         if (p != null && !p.IsReadOnly) p.Set(value);
     }
 
-    // Plan-view uitlijning: roteer rond Z zodat family-forward naar MEP-projectie wijst
     private static void TryAlignRotationToMepInPlan(Document doc, FamilyInstance fi, MEPCurve mep, double angleOffsetDegrees = 0)
     {
         try
         {
-            // 1) Bepaal MEP-richting en projecteer op XY
             var mepDir3D = GetMepDirection(mep);
             if (mepDir3D == null || mepDir3D.IsAlmostEqualTo(XYZ.Zero)) return;
             var target = new XYZ(mepDir3D.X, mepDir3D.Y, 0.0);
             if (target.IsAlmostEqualTo(XYZ.Zero)) return;
             target = target.Normalize();
 
-            // 2) Bepaal huidige “forward” van de family en projecteer op XY
             doc.Regenerate();
             var tf = fi.GetTransform();
 
-            // Voorkeur: BasisY als “verticale” symboolrichting in plan. Pas aan naar BasisX als jouw family dat gebruikt.
             XYZ current = tf.BasisY;
             if (current == null || current.IsAlmostEqualTo(XYZ.Zero)) current = tf.BasisX;
             if (current == null || current.IsAlmostEqualTo(XYZ.Zero)) return;
@@ -444,10 +434,8 @@ public class Com_RecessPlaceWall : IExternalEventHandler
             if (current.IsAlmostEqualTo(XYZ.Zero)) return;
             current = current.Normalize();
 
-            // 3) Bepaal signed delta-hoek in XY en roteer rond Z-as door het instance-centrum
             double angle = SignedAngle(current, target, XYZ.BasisZ);
 
-            // Eventuele vaste offset (bv. 90° als family langs X is getekend)
             if (Math.Abs(angleOffsetDegrees) > 1e-9)
                 angle += angleOffsetDegrees * Math.PI / 180.0;
 
@@ -457,10 +445,7 @@ public class Com_RecessPlaceWall : IExternalEventHandler
             var rotAxis = Line.CreateBound(origin, origin + XYZ.BasisZ);
             ElementTransformUtils.RotateElement(doc, fi.Id, rotAxis, angle);
         }
-        catch
-        {
-            // optioneel: logging
-        }
+        catch { }
     }
 
     private static double SignedAngle(XYZ v1, XYZ v2, XYZ axis)
@@ -476,13 +461,12 @@ public class Com_RecessPlaceWall : IExternalEventHandler
     {
         try
         {
-            // Probeer via end connectors
             var cm = mep.ConnectorManager;
             if (cm != null)
             {
                 var ends = cm.Connectors.Cast<Connector>()
                     .Where(c => c.ConnectorType == ConnectorType.End)
-                    .OrderBy(c => c.Origin.X) // stabiele volgorde, willekeurige sleutel
+                    .OrderBy(c => c.Origin.X)
                     .ThenBy(c => c.Origin.Y)
                     .ThenBy(c => c.Origin.Z)
                     .ToList();
@@ -494,7 +478,6 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                 }
             }
 
-            // Fallback: LocationCurve
             if (mep.Location is LocationCurve lc && lc.Curve != null)
             {
                 if (lc.Curve is Line ln)
@@ -508,20 +491,14 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                 if (!v2.IsAlmostEqualTo(XYZ.Zero)) return v2.Normalize();
             }
         }
-        catch
-        {
-            // negeer; we geven null terug bij falen
-        }
+        catch { }
         return null!;
     }
-    
-    // Pipe diameter (ft) -> opening diameter (ft) via ranges gedefinieerd in mm
+
     private static double MapPipeDiameterToOpening(double pipeDiaFeet)
     {
         double pipeDiaMM = UnitUtils.ConvertFromInternalUnits(pipeDiaFeet, UnitTypeId.Millimeters);
 
-        // Definieer ranges in mm (inclusief bovengrens)
-        // Voorbeeld: 50–75 mm → 75 mm
         var ranges = new (double min, double max, double openingMM)[]
         {
             (0,   40,  50),
@@ -529,7 +506,6 @@ public class Com_RecessPlaceWall : IExternalEventHandler
             (51,  90, 110),
             (91, 125, 160),
             (126, 160, 200),
-            // Voeg zo nodig meer ranges toe...
         };
 
         foreach (var (min, max, opening) in ranges)
@@ -539,7 +515,6 @@ public class Com_RecessPlaceWall : IExternalEventHandler
                 return UnitUtils.ConvertToInternalUnits(opening, UnitTypeId.Millimeters);
         }
 
-        // Fallback: rond naar boven op 10 mm
         double roundedUp = Math.Ceiling(pipeDiaMM / 10.0) * 10.0;
         return UnitUtils.ConvertToInternalUnits(roundedUp, UnitTypeId.Millimeters);
     }

@@ -87,6 +87,7 @@ public class Com_Create3DView : IExternalEventHandler
                 }
 
                 View3D view3D = View3D.CreateIsometric(doc, viewFamilyType.Id);
+                view3D.Scale = 50; // Stel schaal in op 1:50
 
                 // Unieke naam
                 string sheetNumber = sheet.get_Parameter(BuiltInParameter.SHEET_NUMBER).AsString();
