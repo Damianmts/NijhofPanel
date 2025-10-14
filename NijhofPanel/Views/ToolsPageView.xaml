@@ -155,7 +155,7 @@
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource View3DIcon}"
-                            Content="3D View" />
+                            Content="3D View" Command="{Binding Create3DViewCommand}" />
                     <Button Style="{StaticResource BigButtonSVG}" Tag="{StaticResource ViewUpdateIcon}"
                             Content="View Refreshen" />
                 </StackPanel>

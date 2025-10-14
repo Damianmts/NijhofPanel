@@ -92,14 +92,14 @@ public class Com_TagMVLength : IExternalEventHandler
             if (!(viewElement is Viewport viewport))
             {
                 TaskDialog.Show("Error", "Selecteer een geldige viewport.");
-                return null;
+                return null!;
             }
             
             return viewport;
         }
         catch (OperationCanceledException)
         {
-            return null;
+            return null!;
         }
     }
 
@@ -113,7 +113,7 @@ public class Com_TagMVLength : IExternalEventHandler
             activeView.ViewType == ViewType.ThreeD)
         {
             TaskDialog.Show("Error", "Selecteer een geschikte floorplan.");
-            return null;
+            return null!;
         }
         
         return activeView;
@@ -195,7 +195,7 @@ public class Com_TagMVLength : IExternalEventHandler
         {
             TaskDialog.Show("Error", 
                 $"Tag '{TAG_TYPE_NAME}' van familie '{TAG_FAMILY_NAME}' niet gevonden.\nLaad de tag en probeer het opnieuw.");
-            return null;
+            return null!;
         }
 
         return selectedDuctTag;

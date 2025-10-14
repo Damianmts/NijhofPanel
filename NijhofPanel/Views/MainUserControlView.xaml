@@ -10,8 +10,6 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:MainUserControlViewModel, IsDesignTimeCreatable=True}"
              Background="{DynamicResource CurrentBackgroundColor}"
-             Height="700"
-             Width="330"
              MinHeight="700"
              MinWidth="330">
 

@@ -27,6 +27,8 @@ public class Com_ToggleWindow : IExternalCommand
             var tagGroepnummerEvent = ExternalEvent.Create(tagGroepnummerHandler);
             var tagSwitchcodeHandler = new Com_TagSwitchcode();
             var tagSwitchcodeEvent = ExternalEvent.Create(tagSwitchcodeHandler);
+            var codeLijstHandler = new Com_CodeLijst();
+            var codeLijstEvent = ExternalEvent.Create(codeLijstHandler);
 
             // Maak & configureer de services
             var navigationService = new NavigationService();
@@ -36,7 +38,7 @@ public class Com_ToggleWindow : IExternalCommand
             var mainVm = new MainUserControlViewModel(navigationService, windowService)
             {
                 ElectricalVm = new ElectricalPageViewModel(familyHandler, familyEvent, 
-                    tagGroepnummerEvent, tagSwitchcodeEvent),
+                    tagGroepnummerEvent, tagSwitchcodeEvent, codeLijstEvent),
                 ToolsVm      = new ToolsPageViewModel(),
                 PrefabVm     = new PrefabWindowViewModel(prefabHandler, prefabEvent)
             };

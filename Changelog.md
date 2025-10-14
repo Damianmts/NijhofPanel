@@ -1,10 +1,13 @@
 # Changelog
 
-## 1.0.0-alpha.07102025.3
+## 1.0.0-beta.1 [14-10-2025]
 
-Test release 2.
+Eerste beta release met het grootste gedeelte van de functionaliteiten verwerkt.
 
----
+Wat nog niet werkt:
+
+    - USO Tool
+    - GPS
 
 ## 1.0.0-alpha.07102025.2
 

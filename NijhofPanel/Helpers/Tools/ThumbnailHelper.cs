@@ -1,13 +1,14 @@
 ﻿namespace NijhofPanel.Helpers.Tools;
 
-using Microsoft.WindowsAPICodePack.Shell;
-using System.Collections.Concurrent;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
-using System.Windows.Media.Imaging;
 
 public static class ThumbnailHelper
 {
@@ -27,10 +28,9 @@ public static class ThumbnailHelper
             return cached;
 
         var cacheFilePath = GetCacheFilePath(filePath);
-
         if (File.Exists(cacheFilePath) && IsCacheValid(filePath, cacheFilePath))
         {
-            var image = new BitmapImage(new Uri(cacheFilePath));
+            var image = LoadBitmapImage(cacheFilePath);
             Cache.TryAdd(filePath, image);
             return image;
         }
@@ -43,25 +43,124 @@ public static class ThumbnailHelper
             await Semaphore.WaitAsync();
             try
             {
-                var shellFile = ShellFile.FromFilePath(filePath);
-                using var shellThumb = shellFile?.Thumbnail?.Bitmap;
-                if (shellThumb == null) return null;
+                var bitmap = await GetThumbnailFromShell(filePath, 256);
+                if (bitmap == null) return null;
 
-                using var resized = ResizeBitmap(shellThumb, 256, 256);
-                using var mem = new MemoryStream();
-                resized.Save(mem, ImageFormat.Png);
-                File.WriteAllBytes(cacheFilePath, mem.ToArray());
+                // Opslaan naar cache
+                SaveBitmapToFile(bitmap, cacheFilePath);
                 File.SetLastWriteTimeUtc(cacheFilePath, File.GetLastWriteTimeUtc(filePath));
 
-                var result = ConvertToBitmapImage(resized);
-                Cache.TryAdd(filePath, result);
-                return result;
+                Cache.TryAdd(filePath, bitmap);
+                return bitmap;
             }
             finally
             {
                 Semaphore.Release();
             }
         });
+    }
+
+    private static async Task<BitmapImage?> GetThumbnailFromShell(string filePath, int size)
+    {
+        return await Task.Run(() =>
+        {
+            IntPtr hBitmap = IntPtr.Zero;
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"  🔍 GetThumbnailFromShell start: {Path.GetFileName(filePath)}");
+
+                // Verkrijg IShellItem
+                var guid = new Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe"); // IID_IShellItem
+                NativeMethods.SHCreateItemFromParsingName(filePath, IntPtr.Zero, ref guid, out var shellItem);
+
+                if (shellItem == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"  ❌ shellItem is null");
+                    return null;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"  ✓ ShellItem verkregen");
+
+                // Verkrijg thumbnail via IShellItemImageFactory
+                var imageFactory = (IShellItemImageFactory)shellItem;
+                var pixelSize = new SIZE { cx = size, cy = size };
+
+                var hr = imageFactory.GetImage(pixelSize, SIIGBF.SIIGBF_BIGGERSIZEOK, out hBitmap);
+                System.Diagnostics.Debug.WriteLine($"  GetImage HRESULT: 0x{hr:X8}");
+
+                if (hBitmap == IntPtr.Zero)
+                {
+                    System.Diagnostics.Debug.WriteLine($"  ❌ hBitmap is IntPtr.Zero");
+                    return null;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"  ✓ HBITMAP verkregen: {hBitmap}");
+
+                // Converteer naar BitmapImage
+                var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(
+                    hBitmap,
+                    IntPtr.Zero,
+                    Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"  ✓ BitmapSource gemaakt: {bitmapSource.PixelWidth}x{bitmapSource.PixelHeight}");
+
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+
+                using var stream = new MemoryStream();
+                encoder.Save(stream);
+                stream.Position = 0;
+
+                System.Diagnostics.Debug.WriteLine($"  ✓ Stream size: {stream.Length} bytes");
+
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.StreamSource = stream;
+                bitmap.EndInit();
+                bitmap.Freeze();
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"  ✅ BitmapImage gemaakt: {bitmap.PixelWidth}x{bitmap.PixelHeight}");
+
+                return bitmap;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"  💥 Exception in GetThumbnailFromShell: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"     {ex.StackTrace}");
+                return null;
+            }
+            finally
+            {
+                if (hBitmap != IntPtr.Zero)
+                {
+                    NativeMethods.DeleteObject(hBitmap);
+                    System.Diagnostics.Debug.WriteLine($"  🗑️ HBITMAP deleted");
+                }
+            }
+        });
+    }
+
+    private static BitmapImage LoadBitmapImage(string path)
+    {
+        var bitmap = new BitmapImage();
+        bitmap.BeginInit();
+        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+        bitmap.UriSource = new Uri(path);
+        bitmap.EndInit();
+        bitmap.Freeze();
+        return bitmap;
+    }
+
+    private static void SaveBitmapToFile(BitmapImage bitmap, string path)
+    {
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(bitmap));
+        using var stream = new FileStream(path, FileMode.Create);
+        encoder.Save(stream);
     }
 
     private static string GetCacheFilePath(string path)
@@ -78,27 +177,49 @@ public static class ThumbnailHelper
                File.GetLastWriteTimeUtc(originalPath) <= File.GetLastWriteTimeUtc(cachePath);
     }
 
-    private static Bitmap ResizeBitmap(Bitmap bitmap, int width, int height)
+    #region Native Methods
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct SIZE
     {
-        var result = new Bitmap(width, height);
-        using var graphics = Graphics.FromImage(result);
-        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-        graphics.DrawImage(bitmap, 0, 0, width, height);
-        return result;
+        public int cx;
+        public int cy;
     }
 
-    private static BitmapImage ConvertToBitmapImage(Bitmap bitmap)
+    [Flags]
+    private enum SIIGBF
     {
-        using var memory = new MemoryStream();
-        bitmap.Save(memory, ImageFormat.Png);
-        memory.Position = 0;
-
-        var bitmapImage = new BitmapImage();
-        bitmapImage.BeginInit();
-        bitmapImage.StreamSource = memory;
-        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-        bitmapImage.EndInit();
-        bitmapImage.Freeze();
-        return bitmapImage;
+        SIIGBF_RESIZETOFIT = 0x00,
+        SIIGBF_BIGGERSIZEOK = 0x01,
+        SIIGBF_MEMORYONLY = 0x02,
+        SIIGBF_ICONONLY = 0x04,
+        SIIGBF_THUMBNAILONLY = 0x08,
+        SIIGBF_INCACHEONLY = 0x10,
     }
+
+    [ComImport]
+    [Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface IShellItemImageFactory
+    {
+        [PreserveSig]
+        int GetImage(SIZE size, SIIGBF flags, out IntPtr phbm);
+    }
+
+    private static class NativeMethods
+    {
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+        public static extern void SHCreateItemFromParsingName(
+            [In] [MarshalAs(UnmanagedType.LPWStr)] string pszPath,
+            [In] IntPtr pbc,
+            ref Guid riid,
+            [Out] [MarshalAs(UnmanagedType.Interface, IidParameterIndex = 2)]
+            out IShellItemImageFactory ppv);
+
+        [DllImport("gdi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DeleteObject(IntPtr hObject);
+    }
+
+    #endregion
 }

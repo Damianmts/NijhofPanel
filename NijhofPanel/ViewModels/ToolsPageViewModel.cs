@@ -24,6 +24,8 @@ public class ToolsPageViewModel : ObservableObject
     private readonly ExternalEvent _tagMVLengthEvent;
     private readonly ExternalEvent _tagHWALengthEvent;
     private readonly ExternalEvent _tagVWALengthEvent;
+    private readonly ExternalEvent _create3DViewEvent;
+    private readonly ExternalEvent _refreshViewEvent;
 
     // Toolstrip commands
     public ICommand ConnectElementCommand { get; }
@@ -46,6 +48,8 @@ public class ToolsPageViewModel : ObservableObject
     public ICommand TagMVLengthCommand { get; }
     public ICommand TagHWALengthCommand { get; }
     public ICommand TagVWALengthCommand { get; }
+    public ICommand Create3DViewCommand { get; }
+    public ICommand RefreshViewCommand { get; }
 
     public ToolsPageViewModel()
     {
@@ -96,24 +100,34 @@ public class ToolsPageViewModel : ObservableObject
         
         var tagVWALengthHandler = new Com_TagVWALength();
         _tagVWALengthEvent = ExternalEvent.Create(tagVWALengthHandler);
-
-        ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement);
-        ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel);
-        UpdateHWACommand = new RelayCommands.RelayCommand(ExecuteUpdateHWA);
-        UpdateHWALengthCommand = new RelayCommands.RelayCommand(ExecuteUpdateHWALength);
-        SplitPipeCommand = new RelayCommands.RelayCommand(ExecuteSplitPipe);
-
-        RecessPlaceWallCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceWall);
-        RecessPlaceBeamCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceBeam);
-        RecessPlaceFloorCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceFloor);
         
-        PrefabNewCommand = new RelayCommands.RelayCommand(ExecutePrefabCreate);
-        PrefabAddCommand = new RelayCommands.RelayCommand(ExecutePrefabAdd);
-        PrefabDeleteCommand = new RelayCommands.RelayCommand(ExecutePrefabDelete);
+        var create3DViewHandler = new Com_Create3DView();
+        _create3DViewEvent = ExternalEvent.Create(create3DViewHandler);
         
-        TagMVLengthCommand = new RelayCommands.RelayCommand(ExecuteTagMVLength);
-        TagHWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagHWALength);
-        TagVWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagVWALength);
+        var refreshViewHandler = new Com_RefreshView();
+        _refreshViewEvent = ExternalEvent.Create(refreshViewHandler);
+        
+        
+        
+        ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement!);
+        ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel!);
+        UpdateHWACommand = new RelayCommands.RelayCommand(ExecuteUpdateHWA!);
+        UpdateHWALengthCommand = new RelayCommands.RelayCommand(ExecuteUpdateHWALength!);
+        SplitPipeCommand = new RelayCommands.RelayCommand(ExecuteSplitPipe!);
+
+        RecessPlaceWallCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceWall!);
+        RecessPlaceBeamCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceBeam!);
+        RecessPlaceFloorCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceFloor!);
+        
+        PrefabNewCommand = new RelayCommands.RelayCommand(ExecutePrefabCreate!);
+        PrefabAddCommand = new RelayCommands.RelayCommand(ExecutePrefabAdd!);
+        PrefabDeleteCommand = new RelayCommands.RelayCommand(ExecutePrefabDelete!);
+        
+        TagMVLengthCommand = new RelayCommands.RelayCommand(ExecuteTagMVLength!);
+        TagHWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagHWALength!);
+        TagVWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagVWALength!);
+        Create3DViewCommand = new RelayCommands.RelayCommand(ExecuteCreate3DView!);
+        RefreshViewCommand = new RelayCommands.RelayCommand(ExecuteRefreshView!);
     }
 
     private void ExecuteConnectElement(object parameter)
@@ -190,5 +204,15 @@ public class ToolsPageViewModel : ObservableObject
     private void ExecuteTagVWALength(object parameter)
     {
         _tagVWALengthEvent.Raise();
+    }
+    
+    private void ExecuteCreate3DView(object parameter)
+    {
+        _create3DViewEvent.Raise();
+    }
+    
+    private void ExecuteRefreshView(object parameter)
+    {
+        _refreshViewEvent.Raise();
     }
 }

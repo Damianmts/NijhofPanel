@@ -1,4 +1,6 @@
-﻿namespace NijhofPanel.Commands.Tools;
+﻿using System.Globalization;
+
+namespace NijhofPanel.Commands.Tools;
 
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
@@ -8,85 +10,145 @@ using System.Collections.Generic;
 using System.Linq;
 using ViewModels;
 using Autodesk.Revit.DB.Plumbing;
+using System.Text.RegularExpressions;
+using NijhofPanel.Helpers.Core;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]
 public class Com_PrefabCreate : IExternalEventHandler
 {
     public void Execute(UIApplication app)
-{
-    UIDocument uidoc = app.ActiveUIDocument;
-    Document doc = uidoc.Document;
-
-    using (Transaction transaction = new Transaction(doc, "Prefab Set Assign"))
     {
-        transaction.Start();
+        UIDocument uidoc = app.ActiveUIDocument;
+        Document doc = uidoc.Document;
 
-        try
+        using (Transaction transaction = new Transaction(doc, "Prefab Set Assign"))
         {
-            IList<Reference> selectedReferences;
-            
-            // Controleer of er al elementen geselecteerd zijn
-            var preSelectedIds = uidoc.Selection.GetElementIds();
-            
-            if (preSelectedIds != null && preSelectedIds.Count > 0)
+            transaction.Start();
+
+            try
             {
-                // Gebruik bestaande selectie
-                selectedReferences = preSelectedIds
-                    .Select(id => new Reference(doc.GetElement(id)))
+                IList<Reference> selectedReferences;
+
+                // Controleer of er al elementen geselecteerd zijn
+                var preSelectedIds = uidoc.Selection.GetElementIds();
+
+                if (preSelectedIds != null && preSelectedIds.Count > 0)
+                {
+                    // Gebruik bestaande selectie
+                    selectedReferences = preSelectedIds
+                        .Select(id => new Reference(doc.GetElement(id)))
+                        .ToList();
+                }
+                else
+                {
+                    // Vraag gebruiker om elementen te selecteren
+                    selectedReferences = uidoc.Selection.PickObjects(ObjectType.Element, "Selecteer objecten");
+                }
+
+                if (selectedReferences == null || selectedReferences.Count == 0)
+                {
+                    TaskDialog.Show("Prefab Set", "Geen elementen geselecteerd.");
+                    transaction.RollBack();
+                    return;
+                }
+
+                // Zoek beschikbare 'Prefab Set' nummers en 'Prefab Color ID'
+                HashSet<int> existingSetNumbers = GetUsedPrefabSetNumbers(doc);
+                int nextAvailableNumber = FindNextAvailableNumber(existingSetNumbers);
+                string prefabColorID = GetNextAvailableColorID(nextAvailableNumber);
+
+                // Haal de geselecteerde elementen op
+                List<Element> selectedElements = selectedReferences
+                    .Select(reference => doc.GetElement(reference))
+                    .Where(element => element != null)
                     .ToList();
-            }
-            else
-            {
-                // Vraag gebruiker om elementen te selecteren
-                selectedReferences = uidoc.Selection.PickObjects(ObjectType.Element, "Selecteer objecten");
-            }
-            
-            if (selectedReferences == null || selectedReferences.Count == 0)
-            {
-                TaskDialog.Show("Prefab Set", "Geen elementen geselecteerd.");
-                transaction.RollBack();
-                return;
-            }
 
-            // Zoek beschikbare 'Prefab Set' nummers en 'Prefab Color ID'
-            HashSet<int> existingSetNumbers = GetUsedPrefabSetNumbers(doc);
-            int nextAvailableNumber = FindNextAvailableNumber(existingSetNumbers);
-            string prefabColorID = GetNextAvailableColorID(nextAvailableNumber);
-
-            // Haal de elementen op en sorteer ze op hun locatie (Y- en X-coördinaten)
-            List<Element> sortedElements = selectedReferences
-                .Select(reference => doc.GetElement(reference))
-                .Where(element => element != null)
-                .OrderBy(element => GetElementLocation(element).Y) // Sorteren op Y (van onder naar boven)
-                .ThenBy(element => GetElementLocation(element).X)  // Daarna sorteren op X (links naar rechts)
-                .ToList();
-
-                // Begin nummering voor elk element binnen de prefab set
-                int prefabElementNumber = 1;
-
-                // Verwerk de selectie en nummer alleen diep geneste elementen en normale elementen zonder geneste componenten
-                foreach (Element element in sortedElements)
+                // Wijs prefab parameters toe aan alle geselecteerde elementen
+                foreach (Element element in selectedElements)
                 {
                     if (element is FamilyInstance familyInstance && familyInstance.GetSubComponentIds().Count > 0)
                     {
-                        // Wijs parameters toe aan geneste elementen
                         AssignParametersToNestedFamilies(doc, familyInstance, nextAvailableNumber.ToString(), prefabColorID);
                     }
                     else
                     {
-                        // Wijs parameters toe aan het element zelf als het geen geneste elementen bevat
                         AssignPrefabParameters(element, nextAvailableNumber, prefabColorID);
-                        
-                        // Wijs artikelnummer toe als het een pipe is
-                        AssignArticleNumberToPipe(element);
                     }
                 }
 
+                // Vraag gebruiker om invoer: BNR, Kavel of Type
+                string? kavelnummer = InputBoxHelper.Show(
+                    "Voer het Prefab kenmerk in (bijv. 'BNR 12', 'Kavel 5' of 'Type A2'):",
+                    "Prefab Kenmerk"
+                );
+
+                // Controleer of invoer geldig is
+                if (string.IsNullOrWhiteSpace(kavelnummer))
+                {
+                    TaskDialog.Show("Prefab Set", "Geen invoer gedaan. De actie is geannuleerd.");
+                    transaction.RollBack();
+                    return;
+                }
+
+                // Sta 'BNR', 'Kavel' of 'Type' toe
+                if (!Regex.IsMatch(kavelnummer, @"^(BNR|Kavel|Type)\s+\S+$", RegexOptions.IgnoreCase))
+                {
+                    TaskDialog.Show("Prefab Set",
+                        "Ongeldige invoer. Gebruik 'BNR [nummer]', 'Kavel [nummer]' of 'Type [code]'.");
+                    transaction.RollBack();
+                    return;
+                }
+                
+                // Vraag gebruiker om Prefab Verdieping
+                string? verdieping = InputBoxHelper.Show(
+                    "Voer de Prefab Verdieping in (bijv. '-V01', 'V00', 'V01', etc.):",
+                    "Prefab Verdieping"
+                );
+
+                // Controleer of invoer geldig is
+                if (string.IsNullOrWhiteSpace(verdieping))
+                {
+                    TaskDialog.Show("Prefab Set", "Geen verdieping ingevuld. De actie is geannuleerd.");
+                    transaction.RollBack();
+                    return;
+                }
+                
+                // Wijs het kavelnummer toe aan alle geselecteerde elementen (ook geneste)
+                foreach (Element element in selectedElements)
+                {
+                    AssignPrefabKavelnummer(element, kavelnummer!);
+                    AssignPrefabVerdieping(element, verdieping!);
+
+                    if (element is FamilyInstance familyInstance && familyInstance.GetSubComponentIds().Count > 0)
+                    {
+                        AssignParametersToNestedFamilies(doc, familyInstance, nextAvailableNumber.ToString(), prefabColorID, kavelnummer!, verdieping!);
+                    }
+                }
+                
                 transaction.Commit();
 
                 // Toon één melding met het toegewezen 'Prefab Set' nummer en 'Prefab Color ID'
-                TaskDialog.Show("Prefab Set", $"Prefab Set {nextAvailableNumber} met Prefab Color ID {prefabColorID} is aangemaakt.");
+                // Toon bevestigingsvenster met Yes/No
+                TaskDialogResult result = TaskDialog.Show(
+                    "Prefab Set",
+                    $"Prefab Set {nextAvailableNumber} met Prefab Color ID {prefabColorID} is aangemaakt.\n\n" +
+                    "Wil je de views en sheet aanmaken?",
+                    TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No);
+
+                if (result == TaskDialogResult.Yes)
+                {
+                    try
+                    {
+                        // Roep nieuwe class aan om sheets en views aan te maken
+                        var command = new Com_PrefabCreateSheetsAndViews(nextAvailableNumber.ToString());
+                        command.Execute(app);
+                    }
+                    catch (Exception ex)
+                    {
+                        TaskDialog.Show("Prefab Set - Fout", $"Fout bij aanmaken sheets/views:\n{ex.Message}");
+                    }
+                }
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException)
             {
@@ -119,11 +181,11 @@ public class Com_PrefabCreate : IExternalEventHandler
         {
             prefabColorIDParam.Set(prefabColorID);
         }
-        
+
         // Wijs artikelnummer toe als het een pipe is
         AssignArticleNumberToPipe(element);
     }
-    
+
     // Methode om artikelnummer toe te wijzen aan een pipe
     private void AssignArticleNumberToPipe(Element element)
     {
@@ -137,35 +199,35 @@ public class Com_PrefabCreate : IExternalEventHandler
             ElementId typeId = pipe.GetTypeId();
             Element pipeType = pipe.Document.GetElement(typeId);
             string pipeTypeName = pipeType?.Name ?? "";
-            
+
             // Haal Family Name op als backup
             string familyName = element.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM)?.AsValueString() ?? "";
-            
+
             // Haal System Abbreviation op
             Parameter systemAbbrevParam = element.get_Parameter(BuiltInParameter.RBS_SYSTEM_ABBREVIATION_PARAM);
             string systemAbbreviation = systemAbbrevParam?.AsString() ?? "";
-            
+
             // Haal Diameter op (in millimeters)
             Parameter diameterParam = element.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM);
             if (diameterParam == null)
                 return;
-            
+
             double diameterInFeet = diameterParam.AsDouble();
             double diameterInMM = UnitUtils.ConvertFromInternalUnits(diameterInFeet, UnitTypeId.Millimeters);
-            string diameter = Math.Round(diameterInMM).ToString();
-            
+            string diameter = Math.Round(diameterInMM).ToString(CultureInfo.InvariantCulture);
+
             // Bepaal het producttype op basis van Pipe Type Name en System Abbreviation
             string productType = DetermineProductType(pipeTypeName, familyName, systemAbbreviation, diameter);
-            
+
             if (string.IsNullOrEmpty(productType))
                 return;
-            
+
             // Haal het artikelnummer op
             string artikelnummer = SettingsPageViewModel.GetArtikelnummer(productType, diameter);
-            
+
             if (string.IsNullOrEmpty(artikelnummer))
                 return;
-            
+
             // Probeer eerst NLRS_C_code_product in te vullen
             Parameter nlrsParam = element.LookupParameter("NLRS_C_code_product");
             if (nlrsParam != null && !nlrsParam.IsReadOnly)
@@ -189,16 +251,18 @@ public class Com_PrefabCreate : IExternalEventHandler
     }
 
     // Methode om het producttype te bepalen op basis van Pipe Type Name en System Abbreviation
-    private string DetermineProductType(string pipeTypeName, string familyName, string systemAbbreviation, string diameter)
+    private string DetermineProductType(string pipeTypeName, string familyName, string systemAbbreviation,
+        string diameter)
     {
         // Normaliseer de strings (lowercase en trim)
-        pipeTypeName = pipeTypeName?.ToLower().Trim() ?? "";
-        familyName = familyName?.ToLower().Trim() ?? "";
-        systemAbbreviation = systemAbbreviation?.ToLower().Trim() ?? "";
-        
+        pipeTypeName = pipeTypeName.ToLower().Trim() ?? "";
+        familyName = familyName.ToLower().Trim() ?? "";
+        systemAbbreviation = systemAbbreviation.ToLower().Trim() ?? "";
+
         // Check of het HWA is (via pipe type naam of system abbreviation)
-        bool isHWA = (pipeTypeName.Contains("hwa") || pipeTypeName.Contains("dyka") && systemAbbreviation.Contains("m521"));
-        
+        bool isHWA = (pipeTypeName.Contains("hwa") ||
+                      pipeTypeName.Contains("dyka") && systemAbbreviation.Contains("m521"));
+
         if (isHWA)
         {
             // Voor HWA: alleen 80mm uit HWA lijst, rest uit PVC lijst
@@ -211,33 +275,34 @@ public class Com_PrefabCreate : IExternalEventHandler
                 return "DykaPVC";
             }
         }
-        
+
         // Dyka Sono - voor geluidsisolatie
         if (pipeTypeName.Contains("sono") || familyName.Contains("sono") && systemAbbreviation.Contains("m524"))
         {
             return "DykaSono";
         }
-        
+
         // Dyka PVC - voor sanitair/vuilwater
-        if (pipeTypeName.Contains("pvc") || pipeTypeName.Contains("dyka") || 
+        if (pipeTypeName.Contains("pvc") || pipeTypeName.Contains("dyka") ||
             familyName.Contains("dyka") && systemAbbreviation.Contains("m524"))
         {
             return "DykaPVC";
         }
-        
+
         // Dyka Air - voor ventilatie
         if (pipeTypeName.Contains("air") || pipeTypeName.Contains("lucht") ||
-            systemAbbreviation.Contains("air") || systemAbbreviation.Contains("vent") || 
+            systemAbbreviation.Contains("air") || systemAbbreviation.Contains("vent") ||
             systemAbbreviation.Contains("lucht"))
         {
             return "DykaAir";
         }
-        
-        return null;
+
+        return null!;
     }
 
     // Functie om parameters toe te wijzen aan alle nested families (recursief)
-    private void AssignParametersToNestedFamilies(Document doc, FamilyInstance parentInstance, string prefabSet, string prefabColorID)
+    private void AssignParametersToNestedFamilies(Document doc, FamilyInstance parentInstance, string prefabSet,
+        string prefabColorID, string kavelnummer = null!, string verdieping = null!)
     {
         // Haal alle sub-componenten (nested families) op
         ICollection<ElementId> subComponentIds = parentInstance.GetSubComponentIds();
@@ -245,18 +310,27 @@ public class Com_PrefabCreate : IExternalEventHandler
         foreach (ElementId subId in subComponentIds)
         {
             Element subElement = doc.GetElement(subId);
-            
+
             if (subElement != null)
             {
                 // Wijs parameters toe aan de nested family
                 Parameter prefabSetParam = subElement.LookupParameter("Prefab Set");
                 Parameter prefabColorIDParam = subElement.LookupParameter("Prefab Color ID");
+                Parameter? kavelParam = subElement.LookupParameter("Prefab Kavelnummer") ?? subElement.LookupParameter("Kavelnummer");
+                Parameter? verdiepingParam = subElement.LookupParameter("Prefab Verdieping") ?? subElement.LookupParameter("Verdieping");
 
-                if (prefabSetParam != null && prefabColorIDParam != null)
-                {
+                if (prefabSetParam != null && prefabSetParam.StorageType == StorageType.String)
                     prefabSetParam.Set(prefabSet);
+
+                if (prefabColorIDParam != null && prefabColorIDParam.StorageType == StorageType.String)
                     prefabColorIDParam.Set(prefabColorID);
-                }
+
+                if (!string.IsNullOrEmpty(kavelnummer) && kavelParam != null && kavelParam.StorageType == StorageType.String && !kavelParam.IsReadOnly)
+                    kavelParam.Set(kavelnummer);
+                
+                if (!string.IsNullOrEmpty(verdieping) && verdiepingParam != null && verdiepingParam.StorageType == StorageType.String && !verdiepingParam.IsReadOnly)
+                    verdiepingParam.Set(verdieping);
+                
 
                 // Wijs artikelnummer toe als het een pipe is
                 AssignArticleNumberToPipe(subElement);
@@ -264,12 +338,40 @@ public class Com_PrefabCreate : IExternalEventHandler
                 // Als dit sub-element ook een FamilyInstance is, ga dan recursief door
                 if (subElement is FamilyInstance nestedFamilyInstance)
                 {
-                    AssignParametersToNestedFamilies(doc, nestedFamilyInstance, prefabSet, prefabColorID);
+                    AssignParametersToNestedFamilies(doc, nestedFamilyInstance, prefabSet, prefabColorID, kavelnummer, verdieping);
                 }
             }
         }
     }
 
+    private void AssignPrefabKavelnummer(Element element, string kavelnummer)
+    {
+        Parameter? kavelParam =
+            element.LookupParameter("Prefab Kavelnummer") ??
+            element.LookupParameter("Kavelnummer");
+
+        if (kavelParam != null &&
+            kavelParam.StorageType == StorageType.String &&
+            !kavelParam.IsReadOnly)
+        {
+            kavelParam.Set(kavelnummer);
+        }
+    }
+    
+    private void AssignPrefabVerdieping(Element element, string verdieping)
+    {
+        Parameter? verdiepingParam =
+            element.LookupParameter("Prefab Verdieping") ??
+            element.LookupParameter("Verdieping");
+
+        if (verdiepingParam != null &&
+            verdiepingParam.StorageType == StorageType.String &&
+            !verdiepingParam.IsReadOnly)
+        {
+            verdiepingParam.Set(verdieping);
+        }
+    }
+    
     private HashSet<int> GetUsedPrefabSetNumbers(Document doc)
     {
         HashSet<int> usedNumbers = new HashSet<int>();
@@ -278,7 +380,8 @@ public class Com_PrefabCreate : IExternalEventHandler
         foreach (Element element in collector)
         {
             Parameter prefabSetParam = element.LookupParameter("Prefab Set");
-            if (prefabSetParam?.StorageType == StorageType.String && int.TryParse(prefabSetParam.AsString(), out int setValue) && setValue > 0)
+            if (prefabSetParam?.StorageType == StorageType.String &&
+                int.TryParse(prefabSetParam.AsString(), out int setValue) && setValue > 0)
             {
                 usedNumbers.Add(setValue);
             }
@@ -294,6 +397,7 @@ public class Com_PrefabCreate : IExternalEventHandler
         {
             number++;
         }
+
         return number;
     }
 
@@ -301,19 +405,5 @@ public class Com_PrefabCreate : IExternalEventHandler
     {
         int colorID = (prefabSetNumber - 1) % 10 + 1;
         return colorID.ToString("D2"); // Zorg ervoor dat het een twee-cijferige string is, bv. "01"
-    }
-
-    private XYZ GetElementLocation(Element element)
-    {
-        Location location = element.Location;
-        if (location is LocationPoint pointLocation)
-        {
-            return pointLocation.Point;
-        }
-        else if (location is LocationCurve curveLocation)
-        {
-            return curveLocation.Curve.GetEndPoint(0); // Startpunt van de curve
-        }
-        return XYZ.Zero;
     }
 }

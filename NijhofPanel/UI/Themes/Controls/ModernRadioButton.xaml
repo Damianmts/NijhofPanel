@@ -1,0 +1,55 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Style x:Key="ModernRadioButton" TargetType="RadioButton">
+    <Setter Property="Foreground" Value="#111827"/>
+    <Setter Property="FontSize" Value="13"/>
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="RadioButton">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Grid Width="18" Height="18" Margin="0,0,6,0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Border x:Name="Box"
+                                Width="18" Height="18"
+                                CornerRadius="3"
+                                BorderBrush="#9ca3af"
+                                BorderThickness="2"
+                                Background="Transparent"/>
+                        <Border x:Name="InnerFill"
+                                Width="10" Height="10"
+                                CornerRadius="2"
+                                Background="#3b82f6"
+                                Visibility="Collapsed"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                    </Grid>
+                    <ContentPresenter VerticalAlignment="Center" />
+                </StackPanel>
+
+                <ControlTemplate.Triggers>
+                    <!-- Hover -->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Box" Property="BorderBrush" Value="#3b82f6"/>
+                    </Trigger>
+
+                    <!-- Checked -->
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter TargetName="Box" Property="BorderBrush" Value="#3b82f6"/>
+                        <Setter TargetName="InnerFill" Property="Visibility" Value="Visible"/>
+                    </Trigger>
+
+                    <!-- Disabled -->
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter TargetName="Box" Property="Background" Value="#e5e7eb"/>
+                        <Setter TargetName="Box" Property="BorderBrush" Value="#d1d5db"/>
+                        <Setter Property="Foreground" Value="#9ca3af"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>
+    
+</ResourceDictionary>

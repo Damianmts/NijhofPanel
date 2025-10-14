@@ -3,5 +3,5 @@
 public interface ILibraryActions
 {
     void LoadFamily(string path);
-    void PlaceFamily();
+    void PlaceFamily(string path);
 }

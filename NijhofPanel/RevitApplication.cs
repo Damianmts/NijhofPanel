@@ -16,6 +16,7 @@ using Providers;
 using Helpers.Core;
 using Helpers.Electrical;
 using Commands.Tools;
+using OfficeOpenXml;
 
 /// <summary>
 ///     Entry point voor de Revit-plugin 'Nijhof Tools'
@@ -26,7 +27,6 @@ using Commands.Tools;
 [UsedImplicitly]
 public class RevitApplication : ExternalApplication
 {
-    
     public static RevitRequestHandler LibraryHandler { get; private set; } = null!;
     public static ExternalEvent LibraryEvent { get; private set; } = null!;
     public static Com_ConnectElement ConnectElementHandler { get; private set; } = null!;
@@ -34,6 +34,9 @@ public class RevitApplication : ExternalApplication
 
     public override void OnStartup()
     {
+        // EPPlus licentie-instelling (verplicht sinds v8)
+        ExcelPackage.License.SetNonCommercialPersonal("Nijhof Installaties");
+        
         // WPF-resources en cultuurinstelling
         System.Windows.Application.ResourceAssembly = typeof(RevitApplication).Assembly;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -53,6 +56,8 @@ public class RevitApplication : ExternalApplication
         var tagGroepnummerEvent = ExternalEvent.Create(tagGroepnummerHandler);
         var tagSwitchcodeHandler = new Com_TagSwitchcode();
         var tagSwitchcodeEvent = ExternalEvent.Create(tagSwitchcodeHandler);
+        var codeLijstHandler = new Com_CodeLijst();
+        var codeLijstEvent = ExternalEvent.Create(codeLijstHandler);
 
         
         LibraryHandler = new RevitRequestHandler();
@@ -66,7 +71,7 @@ public class RevitApplication : ExternalApplication
 
         // Bouw sub-VM's
         var electricalVm = new ElectricalPageViewModel(familyHandler, familyEvent, 
-            tagGroepnummerEvent, tagSwitchcodeEvent);
+            tagGroepnummerEvent, tagSwitchcodeEvent, codeLijstEvent);
         var toolsVm = new ToolsPageViewModel();
         var prefabVm = new PrefabWindowViewModel(prefabHandler, prefabEvent);
         var libraryVm = new LibraryWindowViewModel(new Services.RevitLibraryActions(LibraryHandler, LibraryEvent));

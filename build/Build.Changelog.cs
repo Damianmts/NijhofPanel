@@ -40,7 +40,7 @@ sealed partial class Build
     /// </summary>
     StringBuilder BuildChangelog()
     {
-        const string separator = "# ";
+        const string separator = "## ";
 
         var hasEntry = false;
         var changelog = new StringBuilder();

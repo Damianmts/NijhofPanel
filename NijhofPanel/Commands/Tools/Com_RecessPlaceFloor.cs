@@ -25,15 +25,13 @@ public class Com_RecessPlaceFloor : IExternalEventHandler
             {
                 tx.Start();
 
-                // Implementatie voor het plaatsen van een recess in een muur.
+                // Implementatie voor het plaatsen van een recess in een vloer.
                 // - Selecteer Pipe of Duct
                 // - Selecteer Floor (DirectShape of ander element)
                 // - Bepaal start en end van intersection
                 // - Plaats Generic Model (Sparing) op hart van intersectie en vul lengte in (NLRS_C_diepte)
                 // - Kies juiste grootte (NLRS_C_diameter) op basis van Pipe of Duct diameter
                 // - Validaties en foutafhandeling
-                
-                // - Optioneel uitbreiden voor Cabletray of andere elementen
                 
                 var sel = uiDoc.Selection;
 
@@ -151,12 +149,10 @@ public class Com_RecessPlaceFloor : IExternalEventHandler
                     var fi = doc.Create.NewFamilyInstance(center, symbol, level, StructuralType.NonStructural);
                     SetParam(fi, "ins_diameter", openingDiaFeet);
                     SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                    SetParam(fi, "ins_instal_status", 0);
 
                     // Forceer geldige transform na plaatsing/parameters
                     doc.Regenerate();
-
-                    // Plan-rotatie: uitlijnen met pipe in XY, rotatie rond Z
-                    TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
                 }
                 else if (isDuct)
                 {
@@ -182,9 +178,9 @@ public class Com_RecessPlaceFloor : IExternalEventHandler
                         // Pas parameternamen aan indien jouw family andere namen gebruikt
                         SetParam(fi, "ins_diameter", openingDiaFeet);
                         SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                        SetParam(fi, "ins_instal_status", 0);
 
                         doc.Regenerate();
-                        TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
                     }
                     else if (shape == ConnectorProfileType.Rectangular)
                     {
@@ -201,9 +197,9 @@ public class Com_RecessPlaceFloor : IExternalEventHandler
                         SetParam(fi, "ins_breedte", width);
                         SetParam(fi, "ins_hoogte", height);
                         SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                        SetParam(fi, "ins_instal_status", 0);
 
                         doc.Regenerate();
-                        TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
                     }
                     else if (shape == ConnectorProfileType.Oval)
                     {
@@ -220,9 +216,9 @@ public class Com_RecessPlaceFloor : IExternalEventHandler
                         SetParam(fi, "ins_breedte", width);
                         SetParam(fi, "ins_hoogte", height);
                         SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                        SetParam(fi, "ins_instal_status", 0);
 
                         doc.Regenerate();
-                        TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
                     }
                     else
                     {
@@ -240,9 +236,9 @@ public class Com_RecessPlaceFloor : IExternalEventHandler
                         SetParam(fi, "ins_breedte", width);
                         SetParam(fi, "ins_hoogte", height);
                         SetParam(fi, "ins_sparing_diepte_totaal", depth);
+                        SetParam(fi, "ins_instal_status", 0);
 
                         doc.Regenerate();
-                        TryAlignRotationToMepInPlan(doc, fi, mepCurve, angleOffsetDegrees: 0);
                     }
                 }
                 tx.Commit();
@@ -418,101 +414,6 @@ public class Com_RecessPlaceFloor : IExternalEventHandler
     {
         var p = e.LookupParameter(name);
         if (p != null && !p.IsReadOnly) p.Set(value);
-    }
-
-    // Plan-view uitlijning: roteer rond Z zodat family-forward naar MEP-projectie wijst
-    private static void TryAlignRotationToMepInPlan(Document doc, FamilyInstance fi, MEPCurve mep, double angleOffsetDegrees = 0)
-    {
-        try
-        {
-            // 1) Bepaal MEP-richting en projecteer op XY
-            var mepDir3D = GetMepDirection(mep);
-            if (mepDir3D == null || mepDir3D.IsAlmostEqualTo(XYZ.Zero)) return;
-            var target = new XYZ(mepDir3D.X, mepDir3D.Y, 0.0);
-            if (target.IsAlmostEqualTo(XYZ.Zero)) return;
-            target = target.Normalize();
-
-            // 2) Bepaal huidige “forward” van de family en projecteer op XY
-            doc.Regenerate();
-            var tf = fi.GetTransform();
-
-            // Voorkeur: BasisY als “verticale” symboolrichting in plan. Pas aan naar BasisX als jouw family dat gebruikt.
-            XYZ current = tf.BasisY;
-            if (current == null || current.IsAlmostEqualTo(XYZ.Zero)) current = tf.BasisX;
-            if (current == null || current.IsAlmostEqualTo(XYZ.Zero)) return;
-            current = new XYZ(current.X, current.Y, 0.0);
-            if (current.IsAlmostEqualTo(XYZ.Zero)) return;
-            current = current.Normalize();
-
-            // 3) Bepaal signed delta-hoek in XY en roteer rond Z-as door het instance-centrum
-            double angle = SignedAngle(current, target, XYZ.BasisZ);
-
-            // Eventuele vaste offset (bv. 90° als family langs X is getekend)
-            if (Math.Abs(angleOffsetDegrees) > 1e-9)
-                angle += angleOffsetDegrees * Math.PI / 180.0;
-
-            if (Math.Abs(angle) < 1e-9) return;
-
-            var origin = tf.Origin;
-            var rotAxis = Line.CreateBound(origin, origin + XYZ.BasisZ);
-            ElementTransformUtils.RotateElement(doc, fi.Id, rotAxis, angle);
-        }
-        catch
-        {
-            // optioneel: logging
-        }
-    }
-
-    private static double SignedAngle(XYZ v1, XYZ v2, XYZ axis)
-    {
-        var cross = v1.CrossProduct(v2);
-        double sin = cross.GetLength();
-        double sign = Math.Sign(cross.DotProduct(axis));
-        double cos = v1.DotProduct(v2);
-        return Math.Atan2(sign * sin, cos);
-    }
-
-    private static XYZ GetMepDirection(MEPCurve mep)
-    {
-        try
-        {
-            // Probeer via end connectors
-            var cm = mep.ConnectorManager;
-            if (cm != null)
-            {
-                var ends = cm.Connectors.Cast<Connector>()
-                    .Where(c => c.ConnectorType == ConnectorType.End)
-                    .OrderBy(c => c.Origin.X) // stabiele volgorde, willekeurige sleutel
-                    .ThenBy(c => c.Origin.Y)
-                    .ThenBy(c => c.Origin.Z)
-                    .ToList();
-
-                if (ends.Count >= 2)
-                {
-                    var v = (ends[1].Origin - ends[0].Origin);
-                    if (!v.IsAlmostEqualTo(XYZ.Zero)) return v.Normalize();
-                }
-            }
-
-            // Fallback: LocationCurve
-            if (mep.Location is LocationCurve lc && lc.Curve != null)
-            {
-                if (lc.Curve is Line ln)
-                    return ln.Direction.Normalize();
-
-                var der = lc.Curve.ComputeDerivatives(0.5, true);
-                var v = der?.BasisX;
-                if (v != null && !v.IsAlmostEqualTo(XYZ.Zero)) return v.Normalize();
-
-                var v2 = lc.Curve.GetEndPoint(1) - lc.Curve.GetEndPoint(0);
-                if (!v2.IsAlmostEqualTo(XYZ.Zero)) return v2.Normalize();
-            }
-        }
-        catch
-        {
-            // negeer; we geven null terug bij falen
-        }
-        return null!;
     }
     
     // Pipe diameter (ft) -> opening diameter (ft) via ranges gedefinieerd in mm

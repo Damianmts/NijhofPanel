@@ -34,8 +34,8 @@ public class Com_PrefabAdd : IExternalEventHandler
                     Element element = doc.GetElement(reference);
 
                     // Zoek naar verbonden elementen en haal de Prefab Set en Prefab Color ID parameters op
-                    string prefabSet = null;
-                    string prefabColorID = null;
+                    string prefabSet = null!;
+                    string prefabColorID = null!;
 
                     // Check eerst het geselecteerde element zelf
                     prefabSet = GetParameterValue(element, "Prefab Set");
@@ -131,7 +131,7 @@ public class Com_PrefabAdd : IExternalEventHandler
         {
             return param.AsString();
         }
-        return null;
+        return null!;
     }
 
     // Functie om de connectoren van een element op te halen
@@ -169,7 +169,7 @@ public class Com_PrefabAdd : IExternalEventHandler
                 return connected;
             }
         }
-        return null;
+        return null!;
     }
 
     // Functie om parameters toe te wijzen aan alle nested families (recursief)

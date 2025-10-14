@@ -7,8 +7,11 @@ using UI.Themes;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Collections.Generic;
 using UI.Controls.Navigation;
+using Core;
+using NijhofPanel.Helpers.Core;
 using Visibility = System.Windows.Visibility;
 
 public class MainUserControlViewModel : ObservableObject
@@ -32,7 +35,7 @@ public class MainUserControlViewModel : ObservableObject
     public ToolsPageViewModel? ToolsVm { get; set; }
     public PrefabWindowViewModel? PrefabVm { get; set; }
     public LibraryWindowViewModel? LibraryVm { get; set; }
-    
+
     private bool _isDarkMode;
     private readonly Dictionary<string, Window> _openWindows = new();
     private NavButton? _activeNavButton;
@@ -96,8 +99,8 @@ public class MainUserControlViewModel : ObservableObject
         _windowService = windowService;
         Com_ToggleTheme = new RelayCommand(ExecuteToggleTheme);
         LoginCommand = new RelayCommand(ExecuteLogin);
-        NavigateCommand = new RelayCommand<NavButton>(ExecuteNavigate);
-        OpenWindowCommand = new RelayCommand<WindowButton>(ExecuteOpenWindow);
+        NavigateCommand = new RelayCommand<NavButton>(ExecuteNavigate!);
+        OpenWindowCommand = new RelayCommand<WindowButton>(ExecuteOpenWindow!);
         IsDarkMode = false;
         IsLoggedIn = false;
         NavigateToLogin();
@@ -121,7 +124,7 @@ public class MainUserControlViewModel : ObservableObject
     {
         _navigationService.NavigateTo<StartPageView>();
     }
-    
+
     private void ExecuteNavigate(NavButton navButton)
     {
         if (_activeNavButton != null && _activeNavButton != navButton)
@@ -139,62 +142,139 @@ public class MainUserControlViewModel : ObservableObject
     }
 
     private void ExecuteOpenWindow(WindowButton windowButton)
+{
+    if (string.IsNullOrEmpty(windowButton.Navlink))
+        return;
+
+    // Controleer of venster al open is
+    if (_openWindows.TryGetValue(windowButton.Navlink, out var existing))
     {
-        if (string.IsNullOrEmpty(windowButton.Navlink)) return;
-
-        if (_openWindows.TryGetValue(windowButton.Navlink, out var existing))
+        if (existing.IsVisible)
         {
-            if (existing.IsVisible)
-            {
-                if (existing.WindowState == WindowState.Minimized)
-                    existing.WindowState = WindowState.Normal;
+            if (existing.WindowState == WindowState.Minimized)
+                existing.WindowState = WindowState.Normal;
 
-                existing.Topmost = true;
-                existing.Topmost = false;
-                existing.Activate();
-                return;
-            }
-
-            _openWindows.Remove(windowButton.Navlink);
+            existing.Topmost = true;
+            existing.Topmost = false;
+            existing.Activate();
+            return;
         }
 
-        Window? newWindow = windowButton.Navlink switch
-        {
-            "LibraryWindowView" => new LibraryWindowView(),
-            "PrefabWindowView" => PrefabVm != null ? new PrefabWindowView(PrefabVm) : null,
-            "FittingListWindowView" => new FittingListWindowView(),
-            "SawListWindowView" => new SawListWindowView(),
-            _ => null
-        };
+        _openWindows.Remove(windowButton.Navlink);
+    }
 
-        if (newWindow != null)
+    // Maak nieuw venster
+    Window? newWindow = windowButton.Navlink switch
+    {
+        "LibraryWindowView" => new LibraryWindowView(),
+        "PrefabWindowView" => PrefabVm != null ? new PrefabWindowView(PrefabVm) : null,
+        "FittingListWindowView" => TryCreateFittingListWindow(),
+        "SawListWindowView" => TryCreateSawListWindow(),
+        _ => null
+    };
+
+    if (newWindow == null)
+        return;
+
+    // Stel DataContext in waar nodig
+    if (windowButton.Navlink == "LibraryWindowView")
+    {
+        if (LibraryVm == null)
+            LibraryVm = new LibraryWindowViewModel(new Services.DevHostLibraryActions());
+        newWindow.DataContext = LibraryVm;
+    }
+
+    // 🔧 Cross-version veilige koppeling met Revit-hoofdvenster (zonder Autodesk.Windows)
+    try
+    {
+        // Ophalen van de actieve UIApplication
+        var uiApp = RevitWindowHelper.GetUIApplication();
+
+        if (uiApp != null)
         {
-            if (windowButton.Navlink == "LibraryWindowView")
+            IntPtr revitHandle = uiApp.MainWindowHandle;
+
+            if (revitHandle != IntPtr.Zero)
             {
-                // In Revit is LibraryVm al gezet via RevitApplication.
-                // In DevHost is LibraryVm null -> maak een VM met DevHostActions
-                if (LibraryVm == null)
+                var interop = new System.Windows.Interop.WindowInteropHelper(newWindow)
                 {
-                    LibraryVm = new LibraryWindowViewModel(new Services.DevHostLibraryActions());
-                }
-                newWindow.DataContext = LibraryVm;
+                    Owner = revitHandle
+                };
             }
-
-            newWindow.Owner = Application.Current?.MainWindow;
-            windowButton.IsWindowOpen = true;
-            _openWindows[windowButton.Navlink] = newWindow;
-
-            newWindow.Closed += (_, _) =>
-            {
-                _openWindows.Remove(windowButton.Navlink);
-                windowButton.IsWindowOpen = false;
-            };
-
-            newWindow.Show();
-            ThemeManager.UpdateTheme(IsDarkMode, newWindow);
         }
     }
-    
+    catch
+    {
+        // negeren – veilig bij opstart of foutieve Revit handle
+    }
+
+    // Markeer venster als open
+    windowButton.IsWindowOpen = true;
+    _openWindows[windowButton.Navlink] = newWindow;
+
+    // Wanneer venster sluit, markeren als gesloten
+    newWindow.Closed += (_, _) =>
+    {
+        _openWindows.Remove(windowButton.Navlink);
+        windowButton.IsWindowOpen = false;
+    };
+
+    // Toon venster
+    newWindow.Show();
+
+    // Pas thema toe
+    ThemeManager.UpdateTheme(IsDarkMode, newWindow);
+}
+
+
+    private Window? TryCreateFittingListWindow()
+    {
+        try
+        {
+            var uiApp = RevitContext.UiApp;
+            if (uiApp?.ActiveUIDocument?.Document is { } doc)
+            {
+                var handler = RevitApplication.LibraryHandler;
+                var externalEvent = RevitApplication.LibraryEvent;
+
+                return new FittingListWindowView(doc, handler, externalEvent);
+            }
+
+            // DevHost fallback
+            return new FittingListWindowView(null!, new RevitRequestHandler(),
+                Autodesk.Revit.UI.ExternalEvent.Create(new RevitRequestHandler()));
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Fout bij openen FittingListWindow:\n{ex.Message}");
+            return null;
+        }
+    }
+
+    private Window? TryCreateSawListWindow()
+    {
+        try
+        {
+            var uiApp = RevitContext.UiApp;
+            if (uiApp?.ActiveUIDocument?.Document is { } doc)
+            {
+                var handler = RevitApplication.LibraryHandler;
+                var externalEvent = RevitApplication.LibraryEvent;
+
+                return new SawListWindowView(doc, handler, externalEvent);
+            }
+
+            // DevHost fallback
+            return new SawListWindowView(null!, new RevitRequestHandler(),
+                Autodesk.Revit.UI.ExternalEvent.Create(new RevitRequestHandler()));
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Fout bij openen SawListWindow:\n{ex.Message}");
+            return null;
+        }
+    }
+
     private DockablePane GetDockablePane(UIApplication uiApp)
     {
         var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
@@ -205,7 +285,7 @@ public class MainUserControlViewModel : ObservableObject
     {
         IsDarkMode = !IsDarkMode;
     }
-    
+
     private bool _isWarningVisible;
 
     public bool IsWarningVisible

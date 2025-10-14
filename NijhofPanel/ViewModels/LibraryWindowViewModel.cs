@@ -2,12 +2,16 @@
 
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using Models;
 using Helpers.Tools;
-using Helpers.Core;
-using NijhofPanel.Services;
+using Services;
 
 public class LibraryWindowViewModel : ObservableObject
 {
@@ -19,6 +23,8 @@ public class LibraryWindowViewModel : ObservableObject
     private ICommand? _placeCommand;
     private ICommand? _closeCommand;
 
+    public Action? CloseAction { get; set; }
+
     public ICommand LoadCommand => _loadCommand ??= new RelayCommand(ExecuteLoad);
     public ICommand PlaceCommand => _placeCommand ??= new RelayCommand(ExecutePlace);
     public ICommand CloseCommand => _closeCommand ??= new RelayCommand(ExecuteClose);
@@ -29,7 +35,7 @@ public class LibraryWindowViewModel : ObservableObject
     {
         _actions = actions;
 
-        RootFiles             = new ObservableCollection<FileItemModel>();
+        RootFiles = new ObservableCollection<FileItemModel>();
         SelectedFolderContent = new ObservableCollection<FileItemModel>();
         LoadFolderStructure();
     }
@@ -39,7 +45,7 @@ public class LibraryWindowViewModel : ObservableObject
         if (SelectedFile == null ||
             !SelectedFile.FullPath.EndsWith(".rfa", StringComparison.OrdinalIgnoreCase))
         {
-            MessageBox.Show("Selecteer eerst een geldig .rfa-bestand.", "Waarschuwing",
+            MessageBox.Show("Selecteer eerst een geldig family-bestand.", "Waarschuwing",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -49,13 +55,19 @@ public class LibraryWindowViewModel : ObservableObject
 
     private void ExecutePlace()
     {
-        _actions.PlaceFamily();
+        if (SelectedFile == null || !File.Exists(SelectedFile.FullPath))
+        {
+            MessageBox.Show("Selecteer eerst een geldig family-bestand.", "Waarschuwing",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        _actions.PlaceFamily(SelectedFile.FullPath);
     }
 
     private void ExecuteClose()
     {
-        Application.Current.Windows.OfType<Window>()
-            .FirstOrDefault(w => w.DataContext == this)?.Close();
+        CloseAction?.Invoke();
     }
 
     public ObservableCollection<FileItemModel>? RootFiles
@@ -100,46 +112,70 @@ public class LibraryWindowViewModel : ObservableObject
 
         try
         {
-            var files = Directory.GetFiles(SelectedFolder.FullPath)
-                .Where(f => Path.GetExtension(f).ToLower() == ".rfa");
+            var files = Directory.GetFiles(SelectedFolder.FullPath, "*.rfa", SearchOption.AllDirectories);
+            System.Diagnostics.Debug.WriteLine($"📁 Gevonden bestanden: {files.Length}");
+
+            var itemDictionary = new Dictionary<string, FileItemModel>();
 
             foreach (var file in files)
             {
                 var item = new FileItemModel(file);
-                item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(file);
+                itemDictionary[file] = item;
                 SelectedFolderContent?.Add(item);
             }
 
-            await LoadFilesFromSubfoldersAsync(SelectedFolder.FullPath);
+            System.Diagnostics.Debug.WriteLine($"🔄 Start laden van {files.Length} thumbnails...");
+
+            var uiContext = SynchronizationContext.Current;
+
+            // Parallel verwerken met maximaal 4 tegelijk (door je Semaphore in ThumbnailHelper)
+            var tasks = files.Select(file => LoadThumbnailForFileAsync(file, itemDictionary, uiContext));
+            await Task.WhenAll(tasks);
+
+            System.Diagnostics.Debug.WriteLine($"🏁 Alle thumbnails geladen!");
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"💥 Exception in LoadSelectedFolderContentAsync: {ex.Message}");
             MessageBox.Show($"Fout bij het laden van bestanden: {ex.Message}");
         }
     }
 
-    private async Task LoadFilesFromSubfoldersAsync(string folderPath)
+    private async Task LoadThumbnailForFileAsync(
+        string file,
+        Dictionary<string, FileItemModel> itemDictionary,
+        SynchronizationContext? uiContext)
     {
         try
         {
-            foreach (var subDir in Directory.GetDirectories(folderPath))
+            var bitmap = await ThumbnailHelper.GetThumbnailAsync(file);
+
+            if (bitmap != null)
             {
-                var files = Directory.GetFiles(subDir)
-                    .Where(f => Path.GetExtension(f).ToLower() == ".rfa");
-
-                foreach (var file in files)
+                // Update op UI thread
+                if (uiContext != null)
                 {
-                    var item = new FileItemModel(file);
-                    item.Thumbnail = await ThumbnailHelper.GetThumbnailAsync(file);
-                    SelectedFolderContent?.Add(item);
+                    uiContext.Post(_ =>
+                    {
+                        if (itemDictionary.TryGetValue(file, out var item))
+                        {
+                            item.Thumbnail = bitmap;
+                        }
+                    }, null);
                 }
-
-                await LoadFilesFromSubfoldersAsync(subDir); // recursief
+                else
+                {
+                    // Fallback: direct zetten (als we al op UI thread zijn)
+                    if (itemDictionary.TryGetValue(file, out var item))
+                    {
+                        item.Thumbnail = bitmap;
+                    }
+                }
             }
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
-            MessageBox.Show($"Fout bij het laden van submappen: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"❌ Error bij {Path.GetFileName(file)}: {ex.Message}");
         }
     }
 
