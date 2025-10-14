@@ -201,7 +201,7 @@ public class Com_TagVWALength : IExternalEventHandler
         {
             TaskDialog.Show("Error", 
                 $"Tag '{TAG_TYPE_NAME}' van familie '{TAG_FAMILY_NAME}' niet gevonden.\nLaad de tag en probeer het opnieuw.");
-            return null;
+            return null!;
         }
 
         return selectedPipeTag;

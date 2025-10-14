@@ -4,11 +4,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using System.Windows;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.Attributes;
-using NijhofPanel.Views;
+using Views;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -98,7 +97,7 @@ public class ThumbnailGenerator : IExternalCommand
                         using (Transaction tx = new Transaction(doc, "Create 3D View"))
                         {
                             tx.Start();
-                            view = View3D.CreateIsometric(doc, viewFamilyType.Id);
+                            view = View3D.CreateIsometric(doc, viewFamilyType!.Id);
                             tx.Commit();
                         }
                     }

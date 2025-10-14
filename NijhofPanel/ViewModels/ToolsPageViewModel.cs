@@ -109,25 +109,25 @@ public class ToolsPageViewModel : ObservableObject
         
         
         
-        ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement);
-        ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel);
-        UpdateHWACommand = new RelayCommands.RelayCommand(ExecuteUpdateHWA);
-        UpdateHWALengthCommand = new RelayCommands.RelayCommand(ExecuteUpdateHWALength);
-        SplitPipeCommand = new RelayCommands.RelayCommand(ExecuteSplitPipe);
+        ConnectElementCommand = new RelayCommands.RelayCommand(ExecuteConnectElement!);
+        ExportExcelCommand = new RelayCommands.RelayCommand(ExecuteExportExcel!);
+        UpdateHWACommand = new RelayCommands.RelayCommand(ExecuteUpdateHWA!);
+        UpdateHWALengthCommand = new RelayCommands.RelayCommand(ExecuteUpdateHWALength!);
+        SplitPipeCommand = new RelayCommands.RelayCommand(ExecuteSplitPipe!);
 
-        RecessPlaceWallCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceWall);
-        RecessPlaceBeamCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceBeam);
-        RecessPlaceFloorCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceFloor);
+        RecessPlaceWallCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceWall!);
+        RecessPlaceBeamCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceBeam!);
+        RecessPlaceFloorCommand = new RelayCommands.RelayCommand(ExecuteRecessPlaceFloor!);
         
-        PrefabNewCommand = new RelayCommands.RelayCommand(ExecutePrefabCreate);
-        PrefabAddCommand = new RelayCommands.RelayCommand(ExecutePrefabAdd);
-        PrefabDeleteCommand = new RelayCommands.RelayCommand(ExecutePrefabDelete);
+        PrefabNewCommand = new RelayCommands.RelayCommand(ExecutePrefabCreate!);
+        PrefabAddCommand = new RelayCommands.RelayCommand(ExecutePrefabAdd!);
+        PrefabDeleteCommand = new RelayCommands.RelayCommand(ExecutePrefabDelete!);
         
-        TagMVLengthCommand = new RelayCommands.RelayCommand(ExecuteTagMVLength);
-        TagHWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagHWALength);
-        TagVWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagVWALength);
-        Create3DViewCommand = new RelayCommands.RelayCommand(ExecuteCreate3DView);
-        RefreshViewCommand = new RelayCommands.RelayCommand(ExecuteRefreshView);
+        TagMVLengthCommand = new RelayCommands.RelayCommand(ExecuteTagMVLength!);
+        TagHWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagHWALength!);
+        TagVWALengthCommand = new RelayCommands.RelayCommand(ExecuteTagVWALength!);
+        Create3DViewCommand = new RelayCommands.RelayCommand(ExecuteCreate3DView!);
+        RefreshViewCommand = new RelayCommands.RelayCommand(ExecuteRefreshView!);
     }
 
     private void ExecuteConnectElement(object parameter)

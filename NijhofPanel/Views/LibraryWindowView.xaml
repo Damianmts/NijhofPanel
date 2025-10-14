@@ -26,7 +26,6 @@
             </ResourceDictionary.MergedDictionaries>
             <SolidColorBrush x:Key="CurrentBackgroundColor" Color="{Binding Color, Source={StaticResource BackgroundColor}}" />
             <conv:ZeroVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
-            <conv:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
         </ResourceDictionary>
     </Window.Resources>
 

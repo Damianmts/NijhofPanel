@@ -2,7 +2,6 @@
 
 using Helpers.Core;
 using Helpers.Electrical;
-using Commands.Electrical;
 using System.Windows.Input;
 using Autodesk.Revit.UI;
 
@@ -29,9 +28,9 @@ public class ElectricalPageViewModel : ObservableObject
         _codeLijstEvent = codeLijstEvent;
 
         PlaceElectricalComponentCommand = new RelayCommand<object>(OnPlaceElectricalComponent!);
-        TagGroepnummerCommand = new RelayCommands.RelayCommand(ExecuteTagGroepnummer);
-        TagSwitchcodeCommand = new RelayCommands.RelayCommand(ExecuteTagSwitchcode);
-        CodeLijstCommand = new RelayCommands.RelayCommand(ExecuteCodeLijst);
+        TagGroepnummerCommand = new RelayCommands.RelayCommand(ExecuteTagGroepnummer!);
+        TagSwitchcodeCommand = new RelayCommands.RelayCommand(ExecuteTagSwitchcode!);
+        CodeLijstCommand = new RelayCommands.RelayCommand(ExecuteCodeLijst!);
     }
 
     private void OnPlaceElectricalComponent(object componentType)

@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Mechanical;
-using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 
@@ -28,14 +26,14 @@ public class Com_Create3DView : IExternalEventHandler
 
             // --- 2️⃣ Gebruiker selecteert een viewport
             Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Selecteer een viewport op de sheet.");
-            Viewport viewport = doc.GetElement(pickedRef) as Viewport;
+            Viewport viewport = (doc.GetElement(pickedRef) as Viewport)!;
             if (viewport == null)
             {
                 TaskDialog.Show("Fout", "Geen geldige viewport geselecteerd.");
                 return;
             }
 
-            View planView = doc.GetElement(viewport.ViewId) as View;
+            View planView = (doc.GetElement(viewport.ViewId) as View)!;
             if (planView == null || planView.ViewType is ViewType.Legend or ViewType.ThreeD)
             {
                 TaskDialog.Show("Fout", "Selecteer een plattegrond (geen legenda of 3D).");
@@ -125,7 +123,7 @@ public class Com_Create3DView : IExternalEventHandler
     // 👉 Bereken gecombineerde boundingbox van elementen
     private static BoundingBoxXYZ GetCombinedBoundingBox(IEnumerable<Element> elements)
     {
-        BoundingBoxXYZ totalBox = null;
+        BoundingBoxXYZ totalBox = null!;
         foreach (Element e in elements)
         {
             BoundingBoxXYZ box = e.get_BoundingBox(null);
@@ -160,7 +158,7 @@ public class Com_Create3DView : IExternalEventHandler
             totalBox.Max += new XYZ(0.4, 0.4, 0.4);
         }
 
-        return totalBox;
+        return totalBox!;
     }
 
     // 👉 Unieke naam genereren

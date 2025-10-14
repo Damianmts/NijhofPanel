@@ -49,7 +49,7 @@ public class Com_ExportCSV : IExternalEventHandler
 
         // Projectnaam ophalen
         string projectNaam = string.Empty;
-        var pNaamParam = projectInfo.LookupParameter("Projectnaam");
+        var pNaamParam = projectInfo!.LookupParameter("Projectnaam");
         if (pNaamParam?.HasValue == true)
             projectNaam = pNaamParam.AsString() ?? string.Empty;
 
@@ -61,7 +61,7 @@ public class Com_ExportCSV : IExternalEventHandler
             return;
         }
 
-        projectNaam = input;
+        projectNaam = input!;
         
         // Bestandslocatie bepalen
         var invul1 = projectNummer.Length >= 2 ? projectNummer.Substring(0, 2) + "000" : "";
@@ -169,6 +169,9 @@ public class Com_ExportCSV : IExternalEventHandler
         }
 
         progressWindow.Close();
+        
+        TaskDialog.Show("Export voltooid",
+            $"Excel-export afgerond!\nSuccesvol: {successCount}\nMislukt: {failCount}\n\nBestanden opgeslagen in:\n{basePath}");
     }
 
     public string GetName() => "Nijhof Panel Export CSV Zaaglijst";

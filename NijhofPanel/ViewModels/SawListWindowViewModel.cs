@@ -117,7 +117,7 @@ public partial class SawListWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Close() => _window?.Close();
+    private void Close() => _window.Close();
 
     // ---------------- MODEL ----------------
     
@@ -145,7 +145,7 @@ public partial class SawListWindowViewModel : ObservableObject
         [ObservableProperty] private string discipline = string.Empty;
         [ObservableProperty] private string prefabset = string.Empty;
         [ObservableProperty] private string bouwnummer = string.Empty;
-        [ObservableProperty] private ElementId viewId;
+        [ObservableProperty] private ElementId viewId = null!;
     }
 
     // ---------------- EXPORTTYPE ----------------

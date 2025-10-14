@@ -29,10 +29,10 @@ public class StartPageViewModel : ObservableObject
     }
 
     // Notities-tekst (auto-save met debounce)
-    private string _notesText;
+    private string? _notesText;
     public string NotesText
     {
-        get => _notesText;
+        get => _notesText!;
         set
         {
             if (SetProperty(ref _notesText, value))
@@ -45,7 +45,7 @@ public class StartPageViewModel : ObservableObject
     }
 
     private readonly DispatcherTimer _saveTimer;
-    private string _notesFilePath;
+    private string? _notesFilePath;
 
     // Bepaalt en onthoudt het pad naar het notitiebestand
     private void TryEnsureNotesPath()
@@ -102,7 +102,7 @@ public class StartPageViewModel : ObservableObject
     // Probeert het projectpad via veelvoorkomende property-namen op _mainVm
     private string ResolveProjectFolder()
     {
-        if (_mainVm == null) return null;
+        if (_mainVm == null) return null!;
 
         var candidates = new[]
         {
@@ -122,7 +122,7 @@ public class StartPageViewModel : ObservableObject
             {
                 var value = prop.GetValue(_mainVm) as string;
                 if (!string.IsNullOrWhiteSpace(value) && Directory.Exists(value))
-                    return value;
+                    return value!;
             }
         }
 
@@ -145,17 +145,17 @@ public class StartPageViewModel : ObservableObject
             {
                 var value = innerPathProp.GetValue(objVal) as string;
                 if (!string.IsNullOrWhiteSpace(value) && Directory.Exists(value))
-                    return value;
+                    return value!;
             }
         }
 
-        return null;
+        return null!;
     }
 
     // Bepaalt een sleutel/naam voor fallback-bestandsnaam
     private string ResolveProjectKey()
     {
-        if (_mainVm == null) return null;
+        if (_mainVm == null) return null!;
 
         var nameCandidates = new[] { "CurrentProjectName", "ProjectName", "SelectedProjectName", "Name", "Title" };
         foreach (var propName in nameCandidates)
@@ -165,7 +165,7 @@ public class StartPageViewModel : ObservableObject
             {
                 var val = p.GetValue(_mainVm) as string;
                 if (!string.IsNullOrWhiteSpace(val))
-                    return val;
+                    return val!;
             }
         }
 

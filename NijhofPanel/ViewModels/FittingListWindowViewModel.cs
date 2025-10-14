@@ -89,17 +89,17 @@ public partial class FittingListWindowViewModel : ObservableObject
             .OfType<ViewSchedule>()
             .ToList();
 
-        _requestHandler.Request = new RevitRequest(doc =>
+        _requestHandler.Request = new RevitRequest(_ =>
         {
             var exporter = new Com_ExportExcelFittingList(schedules);
             exporter.Execute(RevitContext.UiApp!);
         });
-
+        
         _externalEvent.Raise();
     }
 
     [RelayCommand]
-    private void Close() => _window?.Close();
+    private void Close() => _window.Close();
 
     // ---------------- MODEL ----------------
     
@@ -127,6 +127,6 @@ public partial class FittingListWindowViewModel : ObservableObject
         [ObservableProperty] private string discipline = string.Empty;
         [ObservableProperty] private string prefabset = string.Empty;
         [ObservableProperty] private string bouwnummer = string.Empty;
-        [ObservableProperty] private ElementId viewId;
+        [ObservableProperty] private ElementId viewId = null!;
     }
 }

@@ -155,8 +155,8 @@ public class Com_ExportExcelFittingList : IExternalEventHandler
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        // TaskDialog.Show("Export voltooid",
-        //     $"Excel-export afgerond!\nSuccesvol: {successCount}\nMislukt: {failCount}\n\nBestanden opgeslagen in:\n{basePath}");
+        TaskDialog.Show("Export voltooid",
+            $"Excel-export afgerond!\nSuccesvol: {successCount}\nMislukt: {failCount}\n\nBestanden opgeslagen in:\n{basePath}");
     }
 
     private string CleanSheetName(string name)

@@ -1,7 +1,5 @@
 ﻿namespace NijhofPanel.Services;
 
-using System.IO;
-using System.Linq;
 using NijhofPanel.Helpers.Core;
 using Autodesk.Revit.UI;
 
@@ -44,12 +42,12 @@ public class RevitLibraryActions : ILibraryActions
         _event.Raise();
     }
 
-    private FamilySymbol? GetFamilySymbol(Document doc, string path)
-    {
-        var familyName = Path.GetFileNameWithoutExtension(path);
-        return new FilteredElementCollector(doc)
-            .OfClass(typeof(FamilySymbol))
-            .Cast<FamilySymbol>()
-            .FirstOrDefault(f => f.FamilyName.Equals(familyName, StringComparison.OrdinalIgnoreCase));
-    }
+    // private FamilySymbol? GetFamilySymbol(Document doc, string path)
+    // {
+    //     var familyName = Path.GetFileNameWithoutExtension(path);
+    //     return new FilteredElementCollector(doc)
+    //         .OfClass(typeof(FamilySymbol))
+    //         .Cast<FamilySymbol>()
+    //         .FirstOrDefault(f => f.FamilyName.Equals(familyName, StringComparison.OrdinalIgnoreCase));
+    // }
 }

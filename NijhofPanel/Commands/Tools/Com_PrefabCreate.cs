@@ -1,4 +1,6 @@
-﻿namespace NijhofPanel.Commands.Tools;
+﻿using System.Globalization;
+
+namespace NijhofPanel.Commands.Tools;
 
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
@@ -115,12 +117,12 @@ public class Com_PrefabCreate : IExternalEventHandler
                 // Wijs het kavelnummer toe aan alle geselecteerde elementen (ook geneste)
                 foreach (Element element in selectedElements)
                 {
-                    AssignPrefabKavelnummer(element, kavelnummer);
-                    AssignPrefabVerdieping(element, verdieping);
+                    AssignPrefabKavelnummer(element, kavelnummer!);
+                    AssignPrefabVerdieping(element, verdieping!);
 
                     if (element is FamilyInstance familyInstance && familyInstance.GetSubComponentIds().Count > 0)
                     {
-                        AssignParametersToNestedFamilies(doc, familyInstance, nextAvailableNumber.ToString(), prefabColorID, kavelnummer, verdieping);
+                        AssignParametersToNestedFamilies(doc, familyInstance, nextAvailableNumber.ToString(), prefabColorID, kavelnummer!, verdieping!);
                     }
                 }
                 
@@ -212,7 +214,7 @@ public class Com_PrefabCreate : IExternalEventHandler
 
             double diameterInFeet = diameterParam.AsDouble();
             double diameterInMM = UnitUtils.ConvertFromInternalUnits(diameterInFeet, UnitTypeId.Millimeters);
-            string diameter = Math.Round(diameterInMM).ToString();
+            string diameter = Math.Round(diameterInMM).ToString(CultureInfo.InvariantCulture);
 
             // Bepaal het producttype op basis van Pipe Type Name en System Abbreviation
             string productType = DetermineProductType(pipeTypeName, familyName, systemAbbreviation, diameter);
@@ -253,9 +255,9 @@ public class Com_PrefabCreate : IExternalEventHandler
         string diameter)
     {
         // Normaliseer de strings (lowercase en trim)
-        pipeTypeName = pipeTypeName?.ToLower().Trim() ?? "";
-        familyName = familyName?.ToLower().Trim() ?? "";
-        systemAbbreviation = systemAbbreviation?.ToLower().Trim() ?? "";
+        pipeTypeName = pipeTypeName.ToLower().Trim() ?? "";
+        familyName = familyName.ToLower().Trim() ?? "";
+        systemAbbreviation = systemAbbreviation.ToLower().Trim() ?? "";
 
         // Check of het HWA is (via pipe type naam of system abbreviation)
         bool isHWA = (pipeTypeName.Contains("hwa") ||
@@ -295,12 +297,12 @@ public class Com_PrefabCreate : IExternalEventHandler
             return "DykaAir";
         }
 
-        return null;
+        return null!;
     }
 
     // Functie om parameters toe te wijzen aan alle nested families (recursief)
     private void AssignParametersToNestedFamilies(Document doc, FamilyInstance parentInstance, string prefabSet,
-        string prefabColorID, string kavelnummer = null, string verdieping = null)
+        string prefabColorID, string kavelnummer = null!, string verdieping = null!)
     {
         // Haal alle sub-componenten (nested families) op
         ICollection<ElementId> subComponentIds = parentInstance.GetSubComponentIds();

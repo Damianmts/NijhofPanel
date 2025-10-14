@@ -128,8 +128,8 @@ public class Com_ExportExcel : IExternalEventHandler
                 GC.WaitForPendingFinalizers();
 
                 // Toon resultaat
-                // TaskDialog.Show("Export Voltooid",
-                // $"Export voltooid!\nSuccesvol: {successCount} schedules\nMislukt: {failCount} schedules");
+                TaskDialog.Show("Export Voltooid",
+                $"Export voltooid!\nSuccesvol: {successCount} schedules\nMislukt: {failCount} schedules");
             }
         }
     }

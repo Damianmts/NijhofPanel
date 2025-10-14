@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using Newtonsoft.Json;
 
@@ -12,20 +11,20 @@ public class SettingsPageViewModel : ObservableObject
 {
     private const string SettingsFileName = "ArtikelnummerSettings.json";
     
-    private string _networkPath;
-    private Dictionary<string, Dictionary<string, string>> _artikelnummerData;
+    private string _networkPath = null!;
+    private Dictionary<string, Dictionary<string, string>> _artikelnummerData = null!;
     
-    private string _selectedProductType;
-    private string _diameter40;
-    private string _diameter50;
-    private string _diameter75;
-    private string _diameter80;
-    private string _diameter90;
-    private string _diameter110;
-    private string _diameter125;
-    private string _diameter160;
-    private string _diameter19580;
-    private string _diameter23580;
+    private string _selectedProductType = null!;
+    private string _diameter40 = null!;
+    private string _diameter50 = null!;
+    private string _diameter75 = null!;
+    private string _diameter80 = null!;
+    private string _diameter90 = null!;
+    private string _diameter110 = null!;
+    private string _diameter125 = null!;
+    private string _diameter160 = null!;
+    private string _diameter19580 = null!;
+    private string _diameter23580 = null!;
 
     public ObservableCollection<ProductTypeItem> ProductTypes { get; }
     public RelayCommand SaveCommand { get; }
@@ -44,64 +43,64 @@ public class SettingsPageViewModel : ObservableObject
     }
 
     // Diameter properties
-    public string Diameter40
+    public string? Diameter40
     {
         get => _diameter40;
-        set => SetProperty(ref _diameter40, value);
+        set => SetProperty(ref _diameter40!, value);
     }
 
-    public string Diameter50
+    public string? Diameter50
     {
         get => _diameter50;
-        set => SetProperty(ref _diameter50, value);
+        set => SetProperty(ref _diameter50!, value);
     }
 
-    public string Diameter75
+    public string? Diameter75
     {
         get => _diameter75;
-        set => SetProperty(ref _diameter75, value);
+        set => SetProperty(ref _diameter75!, value);
     }
 
-    public string Diameter80
+    public string? Diameter80
     {
         get => _diameter80;
-        set => SetProperty(ref _diameter80, value);
+        set => SetProperty(ref _diameter80!, value);
     }
 
-    public string Diameter90
+    public string? Diameter90
     {
         get => _diameter90;
-        set => SetProperty(ref _diameter90, value);
+        set => SetProperty(ref _diameter90!, value);
     }
 
-    public string Diameter110
+    public string? Diameter110
     {
         get => _diameter110;
-        set => SetProperty(ref _diameter110, value);
+        set => SetProperty(ref _diameter110!, value);
     }
 
-    public string Diameter125
+    public string? Diameter125
     {
         get => _diameter125;
-        set => SetProperty(ref _diameter125, value);
+        set => SetProperty(ref _diameter125!, value);
     }
 
-    public string Diameter160
+    public string? Diameter160
     {
         get => _diameter160;
-        set => SetProperty(ref _diameter160, value);
+        set => SetProperty(ref _diameter160!, value);
     }
 
-    public string Diameter19580
+    public string? Diameter19580
     {
         get => _diameter19580;
-        set => SetProperty(ref _diameter19580, value);
+        set => SetProperty(ref _diameter19580!, value);
     }
 
-    public string Diameter23580
+    public string? Diameter23580
     {
         get => _diameter23580;
-        set => SetProperty(ref _diameter23580, value);
+        set => SetProperty(ref _diameter23580!, value);
     }
 
     // Visibility properties
@@ -360,7 +359,7 @@ public class SettingsPageViewModel : ObservableObject
 
 public class ProductTypeItem
 {
-    public string DisplayName { get; set; }
-    public string Tag { get; set; }
+    public string DisplayName { get; set; } = null!;
+    public string Tag { get; set; } = null!;
     public bool IsEnabled { get; set; } = true;
 }

@@ -46,7 +46,6 @@
 
     <!-- ====== Centered TextBox (for Grid cells) ====== -->
     <Style x:Key="CenteredCellTextBox" TargetType="TextBox" BasedOn="{StaticResource ModernUnderlineTextBox}">
-        <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Padding" Value="8,2"/>

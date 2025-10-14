@@ -9,9 +9,9 @@ public partial class ScheduleSelectionWindowView
 {
     public class ScheduleItem
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public bool IsSelected { get; set; }
-        public ViewSchedule Schedule { get; set; } // Verander Schedule naar ViewSchedule
+        public ViewSchedule? Schedule { get; set; } // Verander Schedule naar ViewSchedule
     }
 
     public List<ViewSchedule> SelectedSchedules { get; private set; } = null!; // Verander Schedule naar ViewSchedule
@@ -36,7 +36,7 @@ public partial class ScheduleSelectionWindowView
             .Cast<ScheduleItem>()
             .Where(item => item.IsSelected)
             .Select(item => item.Schedule)
-            .ToList();
+            .ToList()!;
 
         DialogResult = true;
         Close();

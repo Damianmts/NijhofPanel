@@ -1,7 +1,6 @@
 ﻿namespace NijhofPanel.ViewModels;
 
 using Autodesk.Revit.UI;
-using Autodesk.Windows;
 using Views;
 using Services;
 using UI.Themes;
@@ -100,8 +99,8 @@ public class MainUserControlViewModel : ObservableObject
         _windowService = windowService;
         Com_ToggleTheme = new RelayCommand(ExecuteToggleTheme);
         LoginCommand = new RelayCommand(ExecuteLogin);
-        NavigateCommand = new RelayCommand<NavButton>(ExecuteNavigate);
-        OpenWindowCommand = new RelayCommand<WindowButton>(ExecuteOpenWindow);
+        NavigateCommand = new RelayCommand<NavButton>(ExecuteNavigate!);
+        OpenWindowCommand = new RelayCommand<WindowButton>(ExecuteOpenWindow!);
         IsDarkMode = false;
         IsLoggedIn = false;
         NavigateToLogin();
@@ -223,7 +222,7 @@ public class MainUserControlViewModel : ObservableObject
         try
         {
             var uiApp = RevitContext.UiApp;
-            if (uiApp?.ActiveUIDocument?.Document is Document doc)
+            if (uiApp?.ActiveUIDocument?.Document is { } doc)
             {
                 var handler = RevitApplication.LibraryHandler;
                 var externalEvent = RevitApplication.LibraryEvent;
@@ -247,7 +246,7 @@ public class MainUserControlViewModel : ObservableObject
         try
         {
             var uiApp = RevitContext.UiApp;
-            if (uiApp?.ActiveUIDocument?.Document is Document doc)
+            if (uiApp?.ActiveUIDocument?.Document is { } doc)
             {
                 var handler = RevitApplication.LibraryHandler;
                 var externalEvent = RevitApplication.LibraryEvent;
