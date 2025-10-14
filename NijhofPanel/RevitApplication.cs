@@ -143,21 +143,6 @@ public class RevitApplication : ExternalApplication
         };
         ribbonPanel.AddItem(toggleButtonData);
         
-        ribbonPanel.AddSeparator();
-        
-        var thmbbuttonData = new PushButtonData(
-            "Genereer \n Thumbnails",
-            "Genereer \n Thumbnails",
-            assemblyPath,
-            "NijhofPanel.Helpers.Tools.ThumbnailGenerator")
-        {
-            ToolTip = "Klik om thumbnails te genereren",
-            LongDescription = "Genereert thumbnails voor de Nijhof Library",
-            LargeImage = icon,
-            Image = icon
-        };
-        ribbonPanel.AddItem(thmbbuttonData);
-        
         // Slide out voor de tools waar een shortcut van gemaakt kan worden
         ribbonPanel.AddSlideOut();
         

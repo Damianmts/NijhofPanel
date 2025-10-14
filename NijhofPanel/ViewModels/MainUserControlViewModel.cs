@@ -142,80 +142,90 @@ public class MainUserControlViewModel : ObservableObject
     }
 
     private void ExecuteOpenWindow(WindowButton windowButton)
+{
+    if (string.IsNullOrEmpty(windowButton.Navlink))
+        return;
+
+    // Controleer of venster al open is
+    if (_openWindows.TryGetValue(windowButton.Navlink, out var existing))
     {
-        if (string.IsNullOrEmpty(windowButton.Navlink))
-            return;
-
-        // Controleer of venster al open is
-        if (_openWindows.TryGetValue(windowButton.Navlink, out var existing))
+        if (existing.IsVisible)
         {
-            if (existing.IsVisible)
-            {
-                if (existing.WindowState == WindowState.Minimized)
-                    existing.WindowState = WindowState.Normal;
+            if (existing.WindowState == WindowState.Minimized)
+                existing.WindowState = WindowState.Normal;
 
-                existing.Topmost = true;
-                existing.Topmost = false;
-                existing.Activate();
-                return;
-            }
-
-            _openWindows.Remove(windowButton.Navlink);
+            existing.Topmost = true;
+            existing.Topmost = false;
+            existing.Activate();
+            return;
         }
 
-        // Maak nieuw venster
-        Window? newWindow = windowButton.Navlink switch
-        {
-            "LibraryWindowView" => new LibraryWindowView(),
-            "PrefabWindowView" => PrefabVm != null ? new PrefabWindowView(PrefabVm) : null,
-            "FittingListWindowView" => TryCreateFittingListWindow(),
-            "SawListWindowView" => TryCreateSawListWindow(),
-            _ => null
-        };
+        _openWindows.Remove(windowButton.Navlink);
+    }
 
-        if (newWindow == null)
-            return;
+    // Maak nieuw venster
+    Window? newWindow = windowButton.Navlink switch
+    {
+        "LibraryWindowView" => new LibraryWindowView(),
+        "PrefabWindowView" => PrefabVm != null ? new PrefabWindowView(PrefabVm) : null,
+        "FittingListWindowView" => TryCreateFittingListWindow(),
+        "SawListWindowView" => TryCreateSawListWindow(),
+        _ => null
+    };
 
-        // Stel DataContext in waar nodig
-        if (windowButton.Navlink == "LibraryWindowView")
-        {
-            if (LibraryVm == null)
-                LibraryVm = new LibraryWindowViewModel(new Services.DevHostLibraryActions());
-            newWindow.DataContext = LibraryVm;
-        }
+    if (newWindow == null)
+        return;
 
-        // ✅ Cross-version veilige koppeling met Revit-hoofdvenster
-        try
+    // Stel DataContext in waar nodig
+    if (windowButton.Navlink == "LibraryWindowView")
+    {
+        if (LibraryVm == null)
+            LibraryVm = new LibraryWindowViewModel(new Services.DevHostLibraryActions());
+        newWindow.DataContext = LibraryVm;
+    }
+
+    // 🔧 Cross-version veilige koppeling met Revit-hoofdvenster (zonder Autodesk.Windows)
+    try
+    {
+        // Ophalen van de actieve UIApplication
+        var uiApp = RevitWindowHelper.GetUIApplication();
+
+        if (uiApp != null)
         {
-            var revitHandle = Autodesk.Windows.ComponentManager.ApplicationWindow;
+            IntPtr revitHandle = uiApp.MainWindowHandle;
+
             if (revitHandle != IntPtr.Zero)
             {
-                var interop = new WindowInteropHelper(newWindow);
-                interop.Owner = revitHandle;
+                var interop = new System.Windows.Interop.WindowInteropHelper(newWindow)
+                {
+                    Owner = revitHandle
+                };
             }
         }
-        catch
-        {
-            // negeren – veilig bij opstart of foutieve Revit handle
-        }
-
-        // Markeer venster als open
-        windowButton.IsWindowOpen = true;
-        _openWindows[windowButton.Navlink] = newWindow;
-
-        // Wanneer venster sluit, markeren als gesloten
-        newWindow.Closed += (_, _) =>
-        {
-            _openWindows.Remove(windowButton.Navlink);
-            windowButton.IsWindowOpen = false;
-        };
-
-        // Toon venster
-        newWindow.Show();
-
-        // Pas thema toe
-        ThemeManager.UpdateTheme(IsDarkMode, newWindow);
     }
+    catch
+    {
+        // negeren – veilig bij opstart of foutieve Revit handle
+    }
+
+    // Markeer venster als open
+    windowButton.IsWindowOpen = true;
+    _openWindows[windowButton.Navlink] = newWindow;
+
+    // Wanneer venster sluit, markeren als gesloten
+    newWindow.Closed += (_, _) =>
+    {
+        _openWindows.Remove(windowButton.Navlink);
+        windowButton.IsWindowOpen = false;
+    };
+
+    // Toon venster
+    newWindow.Show();
+
+    // Pas thema toe
+    ThemeManager.UpdateTheme(IsDarkMode, newWindow);
+}
+
 
     private Window? TryCreateFittingListWindow()
     {

@@ -91,13 +91,6 @@
             <SubType>Designer</SubType>
         </Page>
     </ItemGroup>
-
-    <!-- Alleen toevoegen als de DLL bestaat -->
-    <ItemGroup Condition="Exists('C:\Program Files\Autodesk\Revit $(RevitVersion)\AdWindows.dll')">
-        <Reference Include="AdWindows">
-            <HintPath>C:\Program Files\Autodesk\Revit $(RevitVersion)\AdWindows.dll</HintPath>
-        </Reference>
-    </ItemGroup>
     
     <ItemGroup Condition="$(TargetFramework)=='net48'">
         <Reference Include="System.IO.Compression" />

@@ -3,22 +3,24 @@
 using System;
 using System.Windows;
 using System.Windows.Interop;
-using Autodesk.Windows;
+using Autodesk.Revit.UI;
+using NijhofPanel.Core;
 
-public class RevitWindowHelper
+public static class RevitWindowHelper
 {
     /// <summary>
-    /// Probeert het Revit-hoofdvenster als owner te koppelen aan een WPF-window.
-    /// Veilig voor Revit 2024, 2025 en 2026.
+    /// Stelt het Revit-hoofdvenster in als owner voor een WPF-venster.
+    /// Werkt in Revit 2024, 2025 en 2026.
     /// </summary>
-    public static void SetRevitOwner(Window window)
+    public static void SetRevitOwner(Window window, UIApplication uiApp)
     {
-        if (window == null)
+        if (window == null || uiApp == null)
             return;
 
         try
         {
-            var revitHandle = ComponentManager.ApplicationWindow;
+            IntPtr revitHandle = uiApp.MainWindowHandle;
+
             if (revitHandle != IntPtr.Zero)
             {
                 var interop = new WindowInteropHelper(window)
@@ -29,7 +31,15 @@ public class RevitWindowHelper
         }
         catch
         {
-            // Negeer als Revit venster nog niet volledig geïnitialiseerd is
+            // Revit-venster mogelijk nog niet geïnitialiseerd
         }
+    }
+
+    /// <summary>
+    /// Haalt de actieve UIApplication op via de globale RevitContext.
+    /// </summary>
+    public static UIApplication? GetUIApplication()
+    {
+        return RevitContext.UiApp;
     }
 }
