@@ -92,22 +92,40 @@ public class Com_ExportExcelFittingList : IExternalEventHandler
                 var header = tableData.GetSectionData(SectionType.Header);
                 var body = tableData.GetSectionData(SectionType.Body);
 
-                // Headers
-                var headerRowCount = header.NumberOfRows;
-                for (int row = 0; row < headerRowCount; row++)
+                // ===== Headers (titelregel uitsluiten als die gelijk is aan schedule-naam) =====
+                int headerRowCount = header.NumberOfRows;
+                int headerColCount = header.NumberOfColumns;
+
+                // Controleer of de eerste headercel gelijk is aan de titel → dan overslaan
+                int headerStartIndex = 0;
+                if (headerRowCount > 0)
                 {
-                    for (int col = 0; col < header.NumberOfColumns; col++)
+                    string firstHeaderText = schedule.GetCellText(SectionType.Header, 0, 0)?.Trim() ?? "";
+                    if (string.Equals(firstHeaderText, schedule.Name, StringComparison.OrdinalIgnoreCase))
+                        headerStartIndex = 1;
+                }
+
+                // Headers schrijven (vanaf headerStartIndex)
+                for (int r = headerStartIndex; r < headerRowCount; r++)
+                {
+                    for (int c = 0; c < headerColCount; c++)
                     {
-                        worksheet.Cells[row + 1, col + 1].Value = schedule.GetCellText(SectionType.Header, row, col);
+                        worksheet.Cells[(r - headerStartIndex) + 1, c + 1].Value =
+                            schedule.GetCellText(SectionType.Header, r, c);
                     }
                 }
 
-                using (var headerRange = worksheet.Cells[1, 1, headerRowCount, header.NumberOfColumns])
+                // Header-opmaak
+                int styledHeaderRows = headerRowCount - headerStartIndex;
+                if (styledHeaderRows > 0)
                 {
-                    headerRange.Style.Font.Bold = true;
-                    headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    headerRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    using (var headerRange = worksheet.Cells[1, 1, styledHeaderRows, headerColCount])
+                    {
+                        headerRange.Style.Font.Bold = true;
+                        headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        headerRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    }
                 }
 
                 // Body data → IEnumerable<object[]>
@@ -125,13 +143,14 @@ public class Com_ExportExcelFittingList : IExternalEventHandler
                     rows.Add(rowValues);
                 }
 
-                worksheet.Cells[headerRowCount + 1, 1].LoadFromArrays(rows);
+                // Body onder header zetten
+                worksheet.Cells[styledHeaderRows + 1, 1].LoadFromArrays(rows);
 
                 if (body.NumberOfRows < 500)
                     worksheet.Cells.AutoFitColumns();
 
-                // Eventuele rand
-                using (var range = worksheet.Cells[1, 1, headerRowCount + dataRows, dataCols])
+                // Rand toevoegen
+                using (var range = worksheet.Cells[1, 1, styledHeaderRows + dataRows, dataCols])
                 {
                     range.Style.Border.BorderAround(ExcelBorderStyle.Thin);
                     range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -155,8 +174,32 @@ public class Com_ExportExcelFittingList : IExternalEventHandler
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        TaskDialog.Show("Export voltooid",
-            $"Excel-export afgerond!\nSuccesvol: {successCount}\nMislukt: {failCount}\n\nBestanden opgeslagen in:\n{basePath}");
+        // Dialoog met één extra knop om de map te openen
+        var td = new TaskDialog("Export voltooid")
+        {
+            MainInstruction = "Excel-export afgerond!",
+            MainContent =
+                $"Succesvol: {successCount}\nMislukt: {failCount}\n\nBestanden opgeslagen in:\n{basePath}",
+            CommonButtons = TaskDialogCommonButtons.Close
+        };
+
+        // Knop toevoegen om de map te openen
+        td.AddCommandLink(TaskDialogCommandLinkId.CommandLink1, "📂 Open Exportmap");
+
+        var result = td.Show();
+
+        // Als gebruiker op de knop drukt → map openen
+        if (result == TaskDialogResult.CommandLink1)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("explorer.exe", basePath);
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Fout", $"Kon de map niet openen: {ex.Message}");
+            }
+        }
     }
 
     private string CleanSheetName(string name)

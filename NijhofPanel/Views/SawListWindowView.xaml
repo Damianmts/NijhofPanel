@@ -116,6 +116,29 @@
                          Style="{StaticResource ModernRadioButton}"/>
         </StackPanel>
 
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    Margin="210,10,0,0">
+            <TextBlock Text="Exporteren naar zaagmachine:"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"
+                       FontWeight="Bold"/>
+            <CheckBox IsChecked="{Binding ExportToSawMachine, Mode=TwoWay}"
+                      VerticalAlignment="Center">
+                <CheckBox.Style>
+                    <Style TargetType="CheckBox" BasedOn="{StaticResource ModernCheckBox}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsExcelSelected}" Value="True">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Setter Property="Opacity" Value="0.6"/> <!-- visueel 'grijs' -->
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </CheckBox.Style>
+            </CheckBox>
+        </StackPanel>
+        
         <!-- Knoppen rechtsonder -->
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal"

@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Main Theme -->
-    
+    <SolidColorBrush x:Key="PrimaryColor" Color="#046434"/>
+    <SolidColorBrush x:Key="SecondaryColor" Color="#f5d105"/>
     
     <!-- Light Theme -->
     <SolidColorBrush x:Key="BackgroundColor" Color="White" />

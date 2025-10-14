@@ -39,7 +39,7 @@
 
     <!-- Build configuration -->
     <!-- https://github.com/Nice3point/Revit.Build.Tasks -->
-    <PropertyGroup Condition="$(TargetFramework.Contains('net48'))">
+    <PropertyGroup>
         <IsRepackable>false</IsRepackable>
         <DeployRevitAddin>true</DeployRevitAddin>
     </PropertyGroup>

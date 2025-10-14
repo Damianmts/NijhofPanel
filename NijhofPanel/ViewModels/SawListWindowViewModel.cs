@@ -108,7 +108,7 @@ public partial class SawListWindowViewModel : ObservableObject
 
             _requestHandler.Request = new RevitRequest(doc =>
             {
-                var exporter = new Com_ExportCSV(schedules);
+                var exporter = new Com_ExportCSV(schedules, ExportToSawMachine);
                 exporter.Execute(RevitContext.UiApp!);
             });
 
@@ -150,9 +150,38 @@ public partial class SawListWindowViewModel : ObservableObject
 
     // ---------------- EXPORTTYPE ----------------
 
-    [ObservableProperty]
-    private bool isCsvSelected = true;
+    private bool _isCsvSelected = true;
+    public bool IsCsvSelected
+    {
+        get => _isCsvSelected;
+        set
+        {
+            if (SetProperty(ref _isCsvSelected, value))
+            {
+                if (value) // CSV geselecteerd
+                    ExportToSawMachine = true;
+            }
+        }
+    }
 
-    [ObservableProperty]
-    private bool isExcelSelected = false;
+    private bool _isExcelSelected = false;
+    public bool IsExcelSelected
+    {
+        get => _isExcelSelected;
+        set
+        {
+            if (SetProperty(ref _isExcelSelected, value))
+            {
+                if (value) // Excel geselecteerd
+                    ExportToSawMachine = false;
+            }
+        }
+    }
+
+    private bool _exportToSawMachine = true; // standaard aan
+    public bool ExportToSawMachine
+    {
+        get => _exportToSawMachine;
+        set => SetProperty(ref _exportToSawMachine, value);
+    }
 }

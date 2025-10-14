@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace NijhofPanel.Commands.Tools;
+﻿namespace NijhofPanel.Commands.Tools;
 
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
@@ -12,6 +10,8 @@ using ViewModels;
 using Autodesk.Revit.DB.Plumbing;
 using System.Text.RegularExpressions;
 using NijhofPanel.Helpers.Core;
+using System.Globalization;
+using Autodesk.Revit.DB.Mechanical;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]
@@ -64,6 +64,33 @@ public class Com_PrefabCreate : IExternalEventHandler
                     .Where(element => element != null)
                     .ToList();
 
+                // Controleer of er Pipes of Ducts zijn langer dan 5000 mm
+                bool hasTooLongElements = selectedElements.Any(e =>
+                {
+                    if (e is Pipe pipe)
+                    {
+                        double lengthFeet = pipe.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsDouble();
+                        double lengthMM = UnitUtils.ConvertFromInternalUnits(lengthFeet, UnitTypeId.Millimeters);
+                        return lengthMM > 5001;
+                    }
+                    else if (e is Duct duct)
+                    {
+                        double lengthFeet = duct.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsDouble();
+                        double lengthMM = UnitUtils.ConvertFromInternalUnits(lengthFeet, UnitTypeId.Millimeters);
+                        return lengthMM > 5001;
+                    }
+                    return false;
+                });
+
+                if (hasTooLongElements)
+                {
+                    TaskDialog.Show("Prefab Set",
+                        "Er zijn leidingen of kanalen langer dan 5000 mm geselecteerd.\n" +
+                        "Splits deze eerst op voordat je een Prefab Set aanmaakt.");
+                    transaction.RollBack();
+                    return;
+                }
+                
                 // Wijs prefab parameters toe aan alle geselecteerde elementen
                 foreach (Element element in selectedElements)
                 {
