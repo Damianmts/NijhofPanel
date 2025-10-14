@@ -56,6 +56,8 @@ public class RevitApplication : ExternalApplication
         var tagGroepnummerEvent = ExternalEvent.Create(tagGroepnummerHandler);
         var tagSwitchcodeHandler = new Com_TagSwitchcode();
         var tagSwitchcodeEvent = ExternalEvent.Create(tagSwitchcodeHandler);
+        var codeLijstHandler = new Com_CodeLijst();
+        var codeLijstEvent = ExternalEvent.Create(codeLijstHandler);
 
         
         LibraryHandler = new RevitRequestHandler();
@@ -69,7 +71,7 @@ public class RevitApplication : ExternalApplication
 
         // Bouw sub-VM's
         var electricalVm = new ElectricalPageViewModel(familyHandler, familyEvent, 
-            tagGroepnummerEvent, tagSwitchcodeEvent);
+            tagGroepnummerEvent, tagSwitchcodeEvent, codeLijstEvent);
         var toolsVm = new ToolsPageViewModel();
         var prefabVm = new PrefabWindowViewModel(prefabHandler, prefabEvent);
         var libraryVm = new LibraryWindowViewModel(new Services.RevitLibraryActions(LibraryHandler, LibraryEvent));

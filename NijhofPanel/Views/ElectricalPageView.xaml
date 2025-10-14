@@ -200,7 +200,7 @@
                 <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource TOOL_Groepnummer}"
                         Command="{Binding TagSwitchcodeCommand}" Content="Switch code" />
                 <Button Style="{StaticResource BigButtonE}" Tag="{StaticResource TOOL_Groepnummer}"
-                        Content="Code lijst" />
+                        Command="{Binding CodeLijstCommand}" Content="Code lijst" />
             </WrapPanel>
 
         </StackPanel>
