@@ -2,12 +2,16 @@
 
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using Models;
 using Helpers.Tools;
-using Helpers.Core;
-using NijhofPanel.Services;
+using Services;
 
 public class LibraryWindowViewModel : ObservableObject
 {
@@ -18,7 +22,7 @@ public class LibraryWindowViewModel : ObservableObject
     private ICommand? _loadCommand;
     private ICommand? _placeCommand;
     private ICommand? _closeCommand;
-    
+
     public Action? CloseAction { get; set; }
 
     public ICommand LoadCommand => _loadCommand ??= new RelayCommand(ExecuteLoad);
@@ -31,7 +35,7 @@ public class LibraryWindowViewModel : ObservableObject
     {
         _actions = actions;
 
-        RootFiles             = new ObservableCollection<FileItemModel>();
+        RootFiles = new ObservableCollection<FileItemModel>();
         SelectedFolderContent = new ObservableCollection<FileItemModel>();
         LoadFolderStructure();
     }
@@ -109,38 +113,72 @@ public class LibraryWindowViewModel : ObservableObject
         try
         {
             var files = Directory.GetFiles(SelectedFolder.FullPath, "*.rfa", SearchOption.AllDirectories);
+            System.Diagnostics.Debug.WriteLine($"📁 Gevonden bestanden: {files.Length}");
 
-            // Voeg eerst de items toe (zonder thumbnails)
+            var itemDictionary = new Dictionary<string, FileItemModel>();
+
             foreach (var file in files)
             {
                 var item = new FileItemModel(file);
+                itemDictionary[file] = item;
                 SelectedFolderContent?.Add(item);
-
-                // Start thumbnail-load asynchroon
-                _ = Task.Run(async () =>
-                {
-                    var thumbUri = await ThumbnailHelper.GetThumbnailUriAsync(file);
-                    if (thumbUri != null)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"🟢 Thumbnail gevonden: {thumbUri}");
-                        Application.Current.Dispatcher.BeginInvoke(() =>
-                        {
-                            item.ThumbnailUri = thumbUri;
-                        });
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"🔴 Geen thumbnail voor: {file}");
-                    }
-                });
             }
+
+            System.Diagnostics.Debug.WriteLine($"🔄 Start laden van {files.Length} thumbnails...");
+
+            var uiContext = SynchronizationContext.Current;
+
+            // Parallel verwerken met maximaal 4 tegelijk (door je Semaphore in ThumbnailHelper)
+            var tasks = files.Select(file => LoadThumbnailForFileAsync(file, itemDictionary, uiContext));
+            await Task.WhenAll(tasks);
+
+            System.Diagnostics.Debug.WriteLine($"🏁 Alle thumbnails geladen!");
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"💥 Exception in LoadSelectedFolderContentAsync: {ex.Message}");
             MessageBox.Show($"Fout bij het laden van bestanden: {ex.Message}");
         }
     }
-    
+
+    private async Task LoadThumbnailForFileAsync(
+        string file,
+        Dictionary<string, FileItemModel> itemDictionary,
+        SynchronizationContext? uiContext)
+    {
+        try
+        {
+            var bitmap = await ThumbnailHelper.GetThumbnailAsync(file);
+
+            if (bitmap != null)
+            {
+                // Update op UI thread
+                if (uiContext != null)
+                {
+                    uiContext.Post(_ =>
+                    {
+                        if (itemDictionary.TryGetValue(file, out var item))
+                        {
+                            item.Thumbnail = bitmap;
+                        }
+                    }, null);
+                }
+                else
+                {
+                    // Fallback: direct zetten (als we al op UI thread zijn)
+                    if (itemDictionary.TryGetValue(file, out var item))
+                    {
+                        item.Thumbnail = bitmap;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"❌ Error bij {Path.GetFileName(file)}: {ex.Message}");
+        }
+    }
+
     private void LoadFolderStructure()
     {
         var rootPath = @"F:\Stabiplan\Custom\Families";

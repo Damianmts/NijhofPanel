@@ -110,14 +110,13 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="5" Width="130" HorizontalAlignment="Center">
-                                <Image Style="{x:Null}"
-                                       Source="{Binding ThumbnailUri, Converter={StaticResource UriToBitmapConverter}}"
+                                <Image Source="{Binding Thumbnail}"
                                        Width="120"
                                        Height="120"
                                        Stretch="UniformToFill"
                                        SnapsToDevicePixels="True"
                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                       ToolTip="{Binding ThumbnailUri}" />
+                                       ToolTip="{Binding DisplayName}" />
                                 <TextBlock Text="{Binding DisplayName}"
                                            TextAlignment="Center"
                                            Margin="0,5,0,0"

@@ -1,13 +1,12 @@
 ﻿namespace NijhofPanel.Commands.Tools;
 
 using System;
-using System.Windows;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using NijhofPanel.Views;
+using Views;
 using NijhofPanel.Helpers.Core;
 
 public class Com_ExportCSV : IExternalEventHandler

@@ -30,11 +30,19 @@ public class FileItemModel : INotifyPropertyChanged
         set { _isSelected = value; OnPropertyChanged(); }
     }
 
-    private Uri? _thumbnailUri;
-    public Uri? ThumbnailUri
+    private BitmapImage? _thumbnail;
+    public BitmapImage? Thumbnail
     {
-        get => _thumbnailUri;
-        set { _thumbnailUri = value; OnPropertyChanged(); }
+        get => _thumbnail;
+        set 
+        { 
+            if (_thumbnail != value)
+            {
+                _thumbnail = value;
+                System.Diagnostics.Debug.WriteLine($"🔔 PropertyChanged voor Thumbnail: {DisplayName} - Value: {value != null}");
+                OnPropertyChanged();
+            }
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
