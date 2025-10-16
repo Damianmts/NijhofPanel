@@ -287,12 +287,10 @@ public class Com_ExportCSV : IExternalEventHandler
                 if (result == TaskDialogResult.CommandLink1)
                 {
                     System.Diagnostics.Process.Start("explorer.exe", basePath);
-                    continue;
                 }
                 else if (_exportToSawMachine && result == TaskDialogResult.CommandLink2)
                 {
                     System.Diagnostics.Process.Start("explorer.exe", zaagmachineBase);
-                    continue;
                 }
                 else
                 {

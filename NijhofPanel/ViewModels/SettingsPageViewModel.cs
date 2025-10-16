@@ -1,19 +1,46 @@
 ﻿namespace NijhofPanel.ViewModels;
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
+using Autodesk.Revit.DB;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Core;
+using Helpers.Core;
+using Visibility = System.Windows.Visibility;
 
 public class SettingsPageViewModel : ObservableObject
 {
+    // --- Prefab Template configuratie ---
+
+    // --- Beschikbare templates (gevuld vanuit Revit) ---
+    public ObservableCollection<string> AvailableViewTemplates { get; } = new();
+    public ObservableCollection<string> AvailablePlanTemplates { get; } = new();
+    public ObservableCollection<string> Available3DTemplates { get; } = new();
+
+    public class TemplateSet
+    {
+        public string Plan { get; set; } = "";
+        public string Maatvoering { get; set; } = "";
+        public string View3D { get; set; } = "";
+    }
+
+    public class PrefabTemplateSettings
+    {
+        public TemplateSet M524 { get; set; } = new();
+        public TemplateSet M521 { get; set; } = new();
+        public TemplateSet M570 { get; set; } = new();
+    }
+
     private const string SettingsFileName = "ArtikelnummerSettings.json";
-    
+
     private string _networkPath = null!;
     private Dictionary<string, Dictionary<string, string>> _artikelnummerData = null!;
-    
+
     private string _selectedProductType = null!;
     private string _diameter40 = null!;
     private string _diameter50 = null!;
@@ -28,6 +55,7 @@ public class SettingsPageViewModel : ObservableObject
 
     public ObservableCollection<ProductTypeItem> ProductTypes { get; }
     public RelayCommand SaveCommand { get; }
+    public RelayCommand SavePrefabTemplateCommand { get; }
 
     public string SelectedProductType
     {
@@ -175,6 +203,76 @@ public class SettingsPageViewModel : ObservableObject
         set => SetProperty(ref _diameter23580Visibility, value);
     }
 
+    // --- M524 ---
+    public string SelectedM524Plan
+    {
+        get => _m524Plan;
+        set => SetProperty(ref _m524Plan, value);
+    }
+
+    public string SelectedM524Maatvoering
+    {
+        get => _m524Maatvoering;
+        set => SetProperty(ref _m524Maatvoering, value);
+    }
+
+    public string SelectedM5243D
+    {
+        get => _m5243D;
+        set => SetProperty(ref _m5243D, value);
+    }
+
+    private string _m524Plan = "P52_Riolering";
+    private string _m524Maatvoering = "P50_Lucht_Riolering_Maatvoering";
+    private string _m5243D = "3D_P52_Riolering";
+
+    // --- M521 ---
+    public string SelectedM521Plan
+    {
+        get => _m521Plan;
+        set => SetProperty(ref _m521Plan, value);
+    }
+
+    public string SelectedM521Maatvoering
+    {
+        get => _m521Maatvoering;
+        set => SetProperty(ref _m521Maatvoering, value);
+    }
+
+    public string SelectedM5213D
+    {
+        get => _m5213D;
+        set => SetProperty(ref _m5213D, value);
+    }
+
+    private string _m521Plan = "P52_Riolering";
+    private string _m521Maatvoering = "";
+    private string _m5213D = "3D_P52_Riolering";
+
+    // --- M570 ---
+    public string SelectedM570Plan
+    {
+        get => _m570Plan;
+        set => SetProperty(ref _m570Plan, value);
+    }
+
+    public string SelectedM570Maatvoering
+    {
+        get => _m570Maatvoering;
+        set => SetProperty(ref _m570Maatvoering, value);
+    }
+
+    public string SelectedM5703D
+    {
+        get => _m5703D;
+        set => SetProperty(ref _m5703D, value);
+    }
+
+    private string _m570Plan = "P57_Lucht";
+    private string _m570Maatvoering = "P50_Lucht_Riolering_Maatvoering";
+    private string _m5703D = "3D_P57_Lucht";
+
+
     public SettingsPageViewModel()
     {
         ProductTypes = new ObservableCollection<ProductTypeItem>
@@ -184,14 +282,101 @@ public class SettingsPageViewModel : ObservableObject
             new ProductTypeItem { DisplayName = "Dyka Sono", Tag = "DykaSono" },
             new ProductTypeItem { DisplayName = "Dyka HWA", Tag = "DykaHWA" },
             new ProductTypeItem { DisplayName = "───────────────", Tag = "Separator1", IsEnabled = false },
-            
+
             // Lucht sectie
             new ProductTypeItem { DisplayName = "Dyka Air", Tag = "DykaAir" }
         };
 
         SaveCommand = new RelayCommand(ExecuteSave);
-        
+
+        SavePrefabTemplateCommand = new RelayCommand(() =>
+        {
+            var doc = RevitContext.Uidoc?.Document;
+            string projectNummer = ProjectInfoHelper.GetProjectNummer(doc);
+
+            if (string.IsNullOrWhiteSpace(projectNummer))
+            {
+                MessageBox.Show("Projectnummer niet gevonden in Revit.", "Fout",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            SavePrefabTemplateSettings(projectNummer);
+        });
+
         InitializeArtikelnummerSettings();
+
+        // Laad alle view templates uit Revit
+        LoadAvailableViewTemplates();
+
+        var doc = RevitContext.Uidoc?.Document;
+        string projectNummer = ProjectInfoHelper.GetProjectNummer(doc);
+
+        // Laad de instellingen (of gebruik fallback waarden)
+        var prefabSettings = LoadPrefabTemplateSettings(projectNummer);
+
+        // Helper functie om de beste match te vinden
+        string FindBestMatch(string preferred, string fallback, ObservableCollection<string> availableList)
+        {
+            // Check eerst of de preferred waarde bestaat
+            if (availableList.Contains(preferred))
+                return preferred;
+
+            // Check dan de fallback waarde
+            if (availableList.Contains(fallback))
+                return fallback;
+
+            // Als beide niet bestaan, return de eerste niet-lege waarde of lege string
+            return "";
+        }
+
+        // M524 - Riolering
+        SelectedM524Plan = FindBestMatch(
+            prefabSettings.M524.Plan,
+            "02_Prefab_Riolering_Prefab",
+            AvailablePlanTemplates);
+
+        SelectedM524Maatvoering = FindBestMatch(
+            prefabSettings.M524.Maatvoering,
+            "02_Prefab_Riolering_Maatvoering",
+            AvailablePlanTemplates);
+
+        SelectedM5243D = FindBestMatch(
+            prefabSettings.M524.View3D,
+            "04_Plot_Prefab_Riool_3D",
+            Available3DTemplates);
+
+        // M521 - Hemelwater
+        SelectedM521Plan = FindBestMatch(
+            prefabSettings.M521.Plan,
+            "02_Prefab_Riolering_Prefab",
+            AvailablePlanTemplates);
+
+        SelectedM521Maatvoering = FindBestMatch(
+            prefabSettings.M521.Maatvoering,
+            "",
+            AvailablePlanTemplates);
+
+        SelectedM5213D = FindBestMatch(
+            prefabSettings.M521.View3D,
+            "04_Plot_Prefab_Riool_3D",
+            Available3DTemplates);
+
+        // M570 - Lucht
+        SelectedM570Plan = FindBestMatch(
+            prefabSettings.M570.Plan,
+            "02_Prefab_Lucht_Prefab",
+            AvailablePlanTemplates);
+
+        SelectedM570Maatvoering = FindBestMatch(
+            prefabSettings.M570.Maatvoering,
+            "02_Prefab_Lucht_Maatvoering",
+            AvailablePlanTemplates);
+
+        SelectedM5703D = FindBestMatch(
+            prefabSettings.M570.View3D,
+            "03_Plot_Prefab_Lucht_3D",
+            Available3DTemplates);
 
         SelectedProductType = "DykaPVC";
     }
@@ -199,12 +384,12 @@ public class SettingsPageViewModel : ObservableObject
     private void InitializeArtikelnummerSettings()
     {
         _networkPath = @"F:\Revit\Plugin\Nijhof Panel\Data";
-        
+
         if (!Directory.Exists(_networkPath))
         {
             Directory.CreateDirectory(_networkPath);
         }
-        
+
         _artikelnummerData = new Dictionary<string, Dictionary<string, string>>();
         LoadSettings();
     }
@@ -307,6 +492,36 @@ public class SettingsPageViewModel : ObservableObject
         }
     }
 
+    public void SavePrefabTemplateSettings(string projectNummer)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(projectNummer))
+                throw new Exception("Projectnummer ontbreekt – kan PrefabManager.json niet opslaan.");
+
+            var existing = PrefabManagerHelper.LoadPrefabManager(projectNummer);
+
+            var prefabTemplates = new PrefabTemplateSettings
+            {
+                M524 = new TemplateSet { Plan = SelectedM524Plan, Maatvoering = SelectedM524Maatvoering, View3D = SelectedM5243D },
+                M521 = new TemplateSet { Plan = SelectedM521Plan, Maatvoering = SelectedM521Maatvoering, View3D = SelectedM5213D },
+                M570 = new TemplateSet { Plan = SelectedM570Plan, Maatvoering = SelectedM570Maatvoering, View3D = SelectedM5703D }
+            };
+
+            existing["PrefabTemplates"] = JToken.FromObject(prefabTemplates);
+
+            PrefabManagerHelper.SavePrefabManager(projectNummer, existing);
+
+            MessageBox.Show("Instellingen succesvol opgeslagen!",
+                "Succes", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij opslaan van PrefabManager.json:\n{ex.Message}",
+                "Fout", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private void LoadSettings()
     {
         try
@@ -317,13 +532,85 @@ public class SettingsPageViewModel : ObservableObject
             {
                 var json = File.ReadAllText(filePath);
                 _artikelnummerData = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(json)
-                    ?? new Dictionary<string, Dictionary<string, string>>();
+                                     ?? new Dictionary<string, Dictionary<string, string>>();
             }
         }
         catch (Exception ex)
         {
             MessageBox.Show($"Fout bij laden van instellingen: {ex.Message}", "Fout",
                 MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void LoadAvailableViewTemplates()
+    {
+        try
+        {
+            var doc = RevitContext.Uidoc?.Document;
+            if (doc == null) return;
+
+            // Voeg een lege optie toe aan alle lijsten
+            AvailableViewTemplates.Add("");
+            AvailablePlanTemplates.Add("");
+            Available3DTemplates.Add("");
+
+            // Haal alle view templates op uit Revit
+            var allViewTemplates = new FilteredElementCollector(doc)
+                .OfClass(typeof(View))
+                .Cast<View>()
+                .Where(v => v.IsTemplate)
+                .OrderBy(v => v.Name)
+                .ToList();
+
+            foreach (var view in allViewTemplates)
+            {
+                string templateName = view.Name;
+
+                // Voeg toe aan algemene lijst
+                AvailableViewTemplates.Add(templateName);
+
+                // Splits op basis van view type
+                if (view.ViewType == ViewType.ThreeD)
+                {
+                    Available3DTemplates.Add(templateName);
+                }
+                else if (view.ViewType == ViewType.FloorPlan || view.ViewType == ViewType.CeilingPlan)
+                {
+                    AvailablePlanTemplates.Add(templateName);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fout bij laden van view templates: {ex.Message}", "Fout",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    public static PrefabTemplateSettings LoadPrefabTemplateSettings(string projectNummer)
+    {
+        var fallbackSettings = new PrefabTemplateSettings
+        {
+            M524 = new TemplateSet { Plan = "P52_Riolering", Maatvoering = "P50_Lucht_Riolering_Maatvoering", View3D = "3D_P52_Riolering" },
+            M521 = new TemplateSet { Plan = "P52_Riolering", Maatvoering = "", View3D = "3D_P52_Riolering" },
+            M570 = new TemplateSet { Plan = "P57_Lucht", Maatvoering = "P50_Lucht_Riolering_Maatvoering", View3D = "3D_P57_Lucht" }
+        };
+
+        if (string.IsNullOrWhiteSpace(projectNummer))
+            return fallbackSettings;
+
+        try
+        {
+            var json = PrefabManagerHelper.LoadPrefabManager(projectNummer);
+            var token = json["PrefabTemplates"];
+            if (token == null)
+                return fallbackSettings;
+
+            return token.ToObject<PrefabTemplateSettings>() ?? fallbackSettings;
+        }
+        catch
+        {
+            return fallbackSettings;
         }
     }
 

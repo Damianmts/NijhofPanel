@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModel:PrefabWindowViewModel}"
         Title="Prefablijst"
+        WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
+        Closed="Window_Closed"
         Height="600"
         Width="1250"
         Background="{DynamicResource CurrentBackgroundColor}" > 
@@ -216,7 +218,7 @@
                                         ToolTip="Verwijderen"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Command="{Binding DataContext.DeletePrefabSetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                         CommandParameter="{Binding}"
                                         Style="{StaticResource DeleteButtonStyle}" />
                             </DataTemplate>

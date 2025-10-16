@@ -177,7 +177,7 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                     // Controleer of dit een 5m-element is
                     bool isFiveMeter = rowValues.Any(v =>
                     {
-                        var text = v?.ToString()?.Trim() ?? "";
+                        var text = v?.ToString().Trim() ?? "";
                         return text.Equals("5000", StringComparison.OrdinalIgnoreCase)
                                || text.Equals("5000.0", StringComparison.OrdinalIgnoreCase)
                                || text.Equals("5.000", StringComparison.OrdinalIgnoreCase);

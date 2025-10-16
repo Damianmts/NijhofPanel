@@ -6,6 +6,7 @@
         xmlns:conv="clr-namespace:NijhofPanel.Views.Converters"
         mc:Ignorable="d"
         Title="Nijhof Library"
+        WindowStartupLocation="CenterScreen"
         Height="700"
         Width="1150"
         Background="{DynamicResource CurrentBackgroundColor}">

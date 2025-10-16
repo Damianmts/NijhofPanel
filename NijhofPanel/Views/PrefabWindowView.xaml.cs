@@ -19,6 +19,24 @@ public partial class PrefabWindowView
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        if (DataContext is PrefabWindowViewModel viewModel) viewModel.CollectAndSaveData();
+        if (DataContext is PrefabWindowViewModel viewModel)
+        {
+            viewModel.CollectAndSaveData();
+
+            // Start live synchronisatie met Revit
+            viewModel.StartRevitChangeListener();
+
+            // Direct ook even een initiële status-update van de checkboxen
+            viewModel.RefreshScheduleStatusFromRevit();
+        }
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+        if (DataContext is PrefabWindowViewModel viewModel)
+        {
+            // Stop luisteren zodra het venster sluit
+            viewModel.StopRevitChangeListener();
+        }
     }
 }

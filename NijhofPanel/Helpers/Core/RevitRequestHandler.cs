@@ -36,4 +36,13 @@ public class RevitRequestHandler : IExternalEventHandler
     {
         return "RevitRequestHandler";
     }
+    
+    public enum RequestType
+    {
+        None,
+        CreateMaterialList,
+        CreateSawList,
+        RegisterChangeListener,
+        UnregisterChangeListener
+    }
 }
