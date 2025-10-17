@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace NijhofPanel.Commands.Tools;
+﻿namespace NijhofPanel.Commands.Tools;
 
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
@@ -12,6 +10,8 @@ using ViewModels;
 using Autodesk.Revit.DB.Plumbing;
 using System.Text.RegularExpressions;
 using NijhofPanel.Helpers.Core;
+using System.Globalization;
+using Autodesk.Revit.DB.Mechanical;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]
@@ -64,6 +64,38 @@ public class Com_PrefabCreate : IExternalEventHandler
                     .Where(element => element != null)
                     .ToList();
 
+                // Controleer of er Pipes of Ducts zijn langer dan 5000 mm
+                bool hasTooLongElements = selectedElements.Any(e =>
+                {
+                    LocationCurve locCurve = e.Location as LocationCurve;
+                    if (locCurve == null)
+                        return false;
+
+                    XYZ direction = locCurve.Curve.GetEndPoint(1) - locCurve.Curve.GetEndPoint(0);
+                    direction = direction.Normalize();
+
+                    // Controleer of de buis of duct bijna verticaal is (Z-component > 0.9)
+                    bool isVertical = Math.Abs(direction.Z) > 0.9;
+
+                    // Alleen horizontale elementen controleren
+                    if (isVertical)
+                        return false;
+
+                    double lengthFeet = e.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsDouble();
+                    double lengthMM = UnitUtils.ConvertFromInternalUnits(lengthFeet, UnitTypeId.Millimeters);
+
+                    return lengthMM > 5001;
+                });
+
+                if (hasTooLongElements)
+                {
+                    TaskDialog.Show("Prefab Set",
+                        "Er zijn leidingen of kanalen langer dan 5000 mm geselecteerd.\n" +
+                        "Splits deze eerst op voordat je een Prefab Set aanmaakt.");
+                    transaction.RollBack();
+                    return;
+                }
+                
                 // Wijs prefab parameters toe aan alle geselecteerde elementen
                 foreach (Element element in selectedElements)
                 {
@@ -100,16 +132,24 @@ public class Com_PrefabCreate : IExternalEventHandler
                     return;
                 }
                 
-                // Vraag gebruiker om Prefab Verdieping
-                string? verdieping = InputBoxHelper.Show(
-                    "Voer de Prefab Verdieping in (bijv. '-V01', 'V00', 'V01', etc.):",
-                    "Prefab Verdieping"
+                // Haal alle levels op uit het Revit-model
+                var levels = new FilteredElementCollector(doc)
+                    .OfClass(typeof(Level))
+                    .Cast<Level>()
+                    .OrderBy(l => l.Elevation)
+                    .Select(l => l.Name)
+                    .ToList();
+
+                // Toon ComboBox met beschikbare levels
+                string? verdieping = ComboBoxHelper.SelectItem(
+                    levels,
+                    "Selecteer Prefab Verdieping",
+                    "Kies de verdieping voor deze prefabset:"
                 );
 
-                // Controleer of invoer geldig is
                 if (string.IsNullOrWhiteSpace(verdieping))
                 {
-                    TaskDialog.Show("Prefab Set", "Geen verdieping ingevuld. De actie is geannuleerd.");
+                    TaskDialog.Show("Prefab Set", "Geen verdieping geselecteerd. De actie is geannuleerd.");
                     transaction.RollBack();
                     return;
                 }
@@ -259,9 +299,9 @@ public class Com_PrefabCreate : IExternalEventHandler
         familyName = familyName.ToLower().Trim() ?? "";
         systemAbbreviation = systemAbbreviation.ToLower().Trim() ?? "";
 
-        // Check of het HWA is (via pipe type naam of system abbreviation)
-        bool isHWA = (pipeTypeName.Contains("hwa") ||
-                      pipeTypeName.Contains("dyka") && systemAbbreviation.Contains("m521"));
+        // Check of het HWA is
+        bool isHWA = pipeTypeName.Contains("hwa") ||
+                     systemAbbreviation.Equals("m521", StringComparison.OrdinalIgnoreCase);
 
         if (isHWA)
         {
@@ -283,8 +323,9 @@ public class Com_PrefabCreate : IExternalEventHandler
         }
 
         // Dyka PVC - voor sanitair/vuilwater
-        if (pipeTypeName.Contains("pvc") || pipeTypeName.Contains("dyka") ||
-            familyName.Contains("dyka") && systemAbbreviation.Contains("m524"))
+        if (pipeTypeName.Contains("pvc") ||
+            pipeTypeName.Contains("dyka") ||
+            systemAbbreviation.Equals("m524", StringComparison.OrdinalIgnoreCase))
         {
             return "DykaPVC";
         }

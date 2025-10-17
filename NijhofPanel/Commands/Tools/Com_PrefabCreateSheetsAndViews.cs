@@ -6,6 +6,7 @@ using Autodesk.Revit.DB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ViewModels;
 
 [Transaction(TransactionMode.Manual)]
 [Regeneration(RegenerationOption.Manual)]
@@ -61,12 +62,18 @@ public class Com_PrefabCreateSheetsAndViews : IExternalEventHandler
                 systeem = systeem?.Trim().ToUpperInvariant() ?? "ONBEKEND";
 
 
-                // Views per systeem
+                // Laad viewtemplate-instellingen uit PrefabManager.json
+                string projectNummer = doc.ProjectInformation.Number ?? "00000";
+                var prefabSettings = NijhofPanel.ViewModels.SettingsPageViewModel.LoadPrefabTemplateSettings(projectNummer);
+
                 var viewTemplates = new Dictionary<string, List<string>>
                 {
-                    { "M524", new List<string> { "P52_Riolering", "P50_Lucht_Riolering_Maatvoering", "3D_P52_Riolering" } },
-                    { "M521", new List<string> { "P52_Riolering", "3D_P52_Riolering" } },
-                    { "M570", new List<string> { "P57_Lucht", "P50_Lucht_Riolering_Maatvoering", "3D_P57_Lucht" } },
+                    { "M524", new List<string> 
+                        { prefabSettings.M524.Plan, prefabSettings.M524.Maatvoering, prefabSettings.M524.View3D } },
+                    { "M521", new List<string> 
+                        { prefabSettings.M521.Plan, prefabSettings.M521.Maatvoering, prefabSettings.M521.View3D } },
+                    { "M570", new List<string> 
+                        { prefabSettings.M570.Plan, prefabSettings.M570.Maatvoering, prefabSettings.M570.View3D } },
                 };
 
                 if (!viewTemplates.ContainsKey(systeem))
@@ -182,6 +189,56 @@ public class Com_PrefabCreateSheetsAndViews : IExternalEventHandler
                             // Activeer section box
                             view3D.IsSectionBoxActive = true;
                             view3D.SetSectionBox(combinedBox);
+                            
+                            // --- Verberg verticale elementen en 'Caps' ---
+                            // Verzamel alle prefab-elementen in de view
+                            var all3DElements = new FilteredElementCollector(doc)
+                                .WhereElementIsNotElementType()
+                                .ToElements();
+
+                            // Lijst van elementen die we willen verbergen
+                            List<ElementId> toHide = new();
+
+                            // Verberg elementen met "Deksel" of "Kap" in naam of type
+                            foreach (var el in all3DElements)
+                            {
+                                string name = el.Name ?? string.Empty;
+                                string typeName = el.Document.GetElement(el.GetTypeId())?.Name ?? string.Empty;
+
+                                if (name.Contains("Deksel", StringComparison.OrdinalIgnoreCase) ||
+                                    name.Contains("Kap", StringComparison.OrdinalIgnoreCase) ||
+                                    typeName.Contains("Deksel", StringComparison.OrdinalIgnoreCase) ||
+                                    typeName.Contains("Kap", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    toHide.Add(el.Id);
+                                    continue;
+                                }
+
+                                // Verberg verticale elementen op basis van hun oriëntatie
+                                // Alleen toepassen als het een geometrisch object is met een LocationCurve
+                                if (el.Location is LocationCurve loc)
+                                {
+                                    Curve curve = loc.Curve;
+
+                                    // Check of de curve bound is (heeft start- en eindpunt)
+                                    if (curve.IsBound)
+                                    {
+                                        XYZ dir = (curve.GetEndPoint(1) - curve.GetEndPoint(0)).Normalize();
+
+                                        // Als Z-richting dominant is → verticaal element
+                                        if (Math.Abs(dir.Z) > 0.9)
+                                        {
+                                            toHide.Add(el.Id);
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Verberg de verzamelde elementen in de 3D-view
+                            if (toHide.Any())
+                            {
+                                view3D.HideElements(toHide);
+                            }
 
                             // Midden van prefab
                             XYZ center = (combinedBox.Min + combinedBox.Max) / 2;

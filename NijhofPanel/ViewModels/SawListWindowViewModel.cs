@@ -44,7 +44,8 @@ public partial class SawListWindowViewModel : ObservableObject
             .OfClass(typeof(ViewSchedule))
             .Cast<ViewSchedule>()
             .Where(vs => !vs.IsTemplate &&
-                         vs.Name.IndexOf("zaaglijst", StringComparison.OrdinalIgnoreCase) >= 0);
+                         vs.Name.IndexOf("zaag", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                         vs.Name.IndexOf("set", StringComparison.OrdinalIgnoreCase) >= 0);
 
         var result = collector
             .Select(vs =>
@@ -108,7 +109,7 @@ public partial class SawListWindowViewModel : ObservableObject
 
             _requestHandler.Request = new RevitRequest(doc =>
             {
-                var exporter = new Com_ExportCSV(schedules);
+                var exporter = new Com_ExportCSV(schedules, ExportToSawMachine);
                 exporter.Execute(RevitContext.UiApp!);
             });
 
@@ -135,7 +136,7 @@ public partial class SawListWindowViewModel : ObservableObject
 
     private static string ExtractBouwnummer(string name)
     {
-        var match = Regex.Match(name, @"\bBNR\s*\d{1,3}\b", RegexOptions.IgnoreCase);
+        var match = Regex.Match(name, @"\b(BNR|Kavel|Type)\s*[A-Za-z0-9\*]+", RegexOptions.IgnoreCase);
         return match.Success ? match.Value : string.Empty;
     }
 
@@ -150,9 +151,38 @@ public partial class SawListWindowViewModel : ObservableObject
 
     // ---------------- EXPORTTYPE ----------------
 
-    [ObservableProperty]
-    private bool isCsvSelected = true;
+    private bool _isCsvSelected = true;
+    public bool IsCsvSelected
+    {
+        get => _isCsvSelected;
+        set
+        {
+            if (SetProperty(ref _isCsvSelected, value))
+            {
+                if (value) // CSV geselecteerd
+                    ExportToSawMachine = true;
+            }
+        }
+    }
 
-    [ObservableProperty]
-    private bool isExcelSelected = false;
+    private bool _isExcelSelected = false;
+    public bool IsExcelSelected
+    {
+        get => _isExcelSelected;
+        set
+        {
+            if (SetProperty(ref _isExcelSelected, value))
+            {
+                if (value) // Excel geselecteerd
+                    ExportToSawMachine = false;
+            }
+        }
+    }
+
+    private bool _exportToSawMachine = true; // standaard aan
+    public bool ExportToSawMachine
+    {
+        get => _exportToSawMachine;
+        set => SetProperty(ref _exportToSawMachine, value);
+    }
 }

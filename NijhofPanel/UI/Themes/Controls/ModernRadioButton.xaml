@@ -20,7 +20,7 @@
                         <Border x:Name="InnerFill"
                                 Width="10" Height="10"
                                 CornerRadius="2"
-                                Background="#3b82f6"
+                                Background="#046434"
                                 Visibility="Collapsed"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"/>
@@ -31,12 +31,12 @@
                 <ControlTemplate.Triggers>
                     <!-- Hover -->
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="Box" Property="BorderBrush" Value="#3b82f6"/>
+                        <Setter TargetName="Box" Property="BorderBrush" Value="#f5d105"/>
                     </Trigger>
 
                     <!-- Checked -->
                     <Trigger Property="IsChecked" Value="True">
-                        <Setter TargetName="Box" Property="BorderBrush" Value="#3b82f6"/>
+                        <Setter TargetName="Box" Property="BorderBrush" Value="#046434"/>
                         <Setter TargetName="InnerFill" Property="Visibility" Value="Visible"/>
                     </Trigger>
 

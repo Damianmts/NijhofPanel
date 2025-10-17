@@ -44,7 +44,8 @@ public partial class FittingListWindowViewModel : ObservableObject
             .OfClass(typeof(ViewSchedule))
             .Cast<ViewSchedule>()
             .Where(vs => !vs.IsTemplate &&
-                         vs.Name.IndexOf("mat", StringComparison.OrdinalIgnoreCase) >= 0);
+                         vs.Name.IndexOf("mat", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                         vs.Name.IndexOf("set", StringComparison.OrdinalIgnoreCase) >= 0);
 
         var result = collector
             .Select(vs =>
@@ -111,13 +112,13 @@ public partial class FittingListWindowViewModel : ObservableObject
 
     private static string ExtractPrefabset(string name)
     {
-        var match = Regex.Match(name, @"\bSet\s*\d{1,2}\b", RegexOptions.IgnoreCase);
+        var match = Regex.Match(name, @"\bSet\s*\d{1,3}\b", RegexOptions.IgnoreCase);
         return match.Success ? match.Value : string.Empty;
     }
 
     private static string ExtractBouwnummer(string name)
     {
-        var match = Regex.Match(name, @"\bBNR\s*\d{1,3}\b", RegexOptions.IgnoreCase);
+        var match = Regex.Match(name, @"\b(BNR|Kavel|Type)\s*[A-Za-z0-9\*]+", RegexOptions.IgnoreCase);
         return match.Success ? match.Value : string.Empty;
     }
 

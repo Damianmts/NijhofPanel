@@ -16,7 +16,7 @@ public class Com_Create3DView : IExternalEventHandler
 
         try
         {
-            // --- 1️⃣ Controleer of actieve view een sheet is
+            // Controleer of actieve view een sheet is
             View activeView = doc.ActiveView;
             if (activeView is not ViewSheet sheet)
             {
@@ -24,7 +24,7 @@ public class Com_Create3DView : IExternalEventHandler
                 return;
             }
 
-            // --- 2️⃣ Gebruiker selecteert een viewport
+            // Gebruiker selecteert een viewport
             Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Selecteer een viewport op de sheet.");
             Viewport viewport = (doc.GetElement(pickedRef) as Viewport)!;
             if (viewport == null)
@@ -40,7 +40,7 @@ public class Com_Create3DView : IExternalEventHandler
                 return;
             }
 
-            // --- 3️⃣ Verzamel elementen in de geselecteerde view
+            // Verzamel elementen in de geselecteerde view
             var filter = new ElementMulticategoryFilter(new List<BuiltInCategory>
             {
                 BuiltInCategory.OST_PipeCurves,
@@ -60,19 +60,35 @@ public class Com_Create3DView : IExternalEventHandler
                 return;
             }
 
-            // --- 4️⃣ Bereken gecombineerde boundingbox
+            var elementsToHide = new List<ElementId>();
+
+            foreach (var elem in collector)
+            {
+                if (IsVertical(elem))
+                    elementsToHide.Add(elem.Id);
+            }
+            
+            // Bereken gecombineerde boundingbox
             BoundingBoxXYZ combinedBox = GetCombinedBoundingBox(collector);
             if (combinedBox == null)
             {
                 TaskDialog.Show("Fout", "Kon geen geldige bounding box berekenen.");
                 return;
             }
-
+            
+            // Laat gebruiker eerst een 3D-template kiezen via het WPF-venster
+            var templateView = NijhofPanel.Helpers.Core.ComboBoxHelper.SelectViewTemplate(doc);
+            if (templateView == null)
+            {
+                TaskDialog.Show("Geannuleerd", "Geen template geselecteerd. De actie is afgebroken.");
+                return;
+            }
+            
             using (Transaction t = new Transaction(doc, "Maak 3D prefab view"))
             {
                 t.Start();
 
-                // --- 5️⃣ Maak nieuwe 3D view
+                // Maak nieuwe 3D view
                 ViewFamilyType viewFamilyType = new FilteredElementCollector(doc)
                     .OfClass(typeof(ViewFamilyType))
                     .Cast<ViewFamilyType>()
@@ -85,22 +101,24 @@ public class Com_Create3DView : IExternalEventHandler
                 }
 
                 View3D view3D = View3D.CreateIsometric(doc, viewFamilyType.Id);
-                view3D.Scale = 50; // Stel schaal in op 1:50
 
+                if (elementsToHide.Count > 0)
+                    view3D.HideElements(elementsToHide);
+                
                 // Unieke naam
                 string sheetNumber = sheet.get_Parameter(BuiltInParameter.SHEET_NUMBER).AsString();
                 string baseName = $"Nr {sheetNumber} - 3D view";
                 view3D.Name = GetUniqueViewName(doc, baseName);
 
-                // --- 6️⃣ Section box instellen
-                view3D.ViewTemplateId = ElementId.InvalidElementId; // zonder template
+                // Section box instellen
+                view3D.ViewTemplateId = templateView.Id; // gebruik geselecteerde template
                 view3D.IsSectionBoxActive = true;
                 view3D.SetSectionBox(combinedBox);
 
-                // --- 7️⃣ Oriëntatie instellen
+                // Oriëntatie instellen
                 SetViewOrientation(view3D, combinedBox);
 
-                // --- 8️⃣ Plaats nieuwe 3D view op sheet
+                // Plaats nieuwe 3D view op sheet
                 Viewport.Create(doc, sheet.Id, view3D.Id, viewport.GetBoxCenter());
 
                 t.Commit();
@@ -120,7 +138,21 @@ public class Com_Create3DView : IExternalEventHandler
 
     public string GetName() => nameof(Com_Create3DView);
 
-    // 👉 Bereken gecombineerde boundingbox van elementen
+    // Zoek naar verticale ducts of pipes
+    private static bool IsVertical(Element e)
+    {
+        if (e.Location is not LocationCurve locCurve) 
+            return false;
+
+        XYZ p1 = locCurve.Curve.GetEndPoint(0);
+        XYZ p2 = locCurve.Curve.GetEndPoint(1);
+        XYZ dir = (p2 - p1).Normalize();
+
+        // Als de Z-component bijna 1 of -1 is → verticale richting
+        return Math.Abs(dir.Z) > 0.8;
+    }
+    
+    // Bereken gecombineerde boundingbox van elementen
     private static BoundingBoxXYZ GetCombinedBoundingBox(IEnumerable<Element> elements)
     {
         BoundingBoxXYZ totalBox = null!;
@@ -161,7 +193,7 @@ public class Com_Create3DView : IExternalEventHandler
         return totalBox!;
     }
 
-    // 👉 Unieke naam genereren
+    // Unieke naam genereren
     private static string GetUniqueViewName(Document doc, string baseName)
     {
         var existingNames = new FilteredElementCollector(doc)
@@ -181,7 +213,7 @@ public class Com_Create3DView : IExternalEventHandler
         return name;
     }
 
-    // 👉 Stel camera/oriëntatie in (top-front-right)
+    // Stel camera/oriëntatie in (top-front-right)
     private static void SetViewOrientation(View3D view3D, BoundingBoxXYZ box)
     {
         XYZ center = (box.Min + box.Max) / 2;

@@ -7,7 +7,6 @@ using UI.Themes;
 using System;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Collections.Generic;
 using UI.Controls.Navigation;
 using Core;

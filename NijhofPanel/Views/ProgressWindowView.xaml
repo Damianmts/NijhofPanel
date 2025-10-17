@@ -4,7 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
-        Title="Laden..." Height="100" Width="350" WindowStartupLocation="CenterScreen"
+        Title="Laden..."
+        Height="100"
+        Width="350"
+        WindowStartupLocation="CenterScreen"
         Background="{DynamicResource CurrentBackgroundColor}">
 
     <Window.Resources>

@@ -45,8 +45,37 @@ public class RevitApplication : ExternalApplication
 
         // RevitContext instellen zodra een document opent
         Application.ControlledApplication.DocumentOpened += (_, args) =>
-            RevitContext.SetUiApplication(new UIApplication(args.Document.Application));
+        {
+            var uiApp = new UIApplication(args.Document.Application);
+            RevitContext.SetUiApplication(uiApp);
 
+            try
+            {
+                ChangeWatcher.Register(uiApp);
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Nijhof Tools", $"Kon Revit change-listener niet starten:\n{ex.Message}");
+            }
+        };
+
+        // Afmelden zodra het document wordt gesloten
+        Application.ControlledApplication.DocumentClosed += (_, args) =>
+        {
+            var uiApp = RevitContext.UiApp;
+            if (uiApp != null)
+            {
+                try
+                {
+                    ChangeWatcher.Unregister(uiApp);
+                }
+                catch
+                {
+                    // Stil falen is prima – dit voorkomt foutmeldingen bij afsluiten
+                }
+            }
+        };
+        
         // ExternalEvent handlers
         var familyHandler = new FamilyPlacementHandler();
         var familyEvent = ExternalEvent.Create(familyHandler);
@@ -96,6 +125,7 @@ public class RevitApplication : ExternalApplication
         var paneId = new DockablePaneId(new Guid("e54d1236-371d-4b8b-9c93-30c9508f2fb9"));
         var provider = new DockablePaneProvider(mainView);
         Application.RegisterDockablePane(paneId, "Nijhof Tools", provider);
+        
     }
     
     private RibbonPanel GetOrCreateRibbonPanel()

@@ -26,13 +26,13 @@
                 <ControlTemplate.Triggers>
                     <!-- Hover -->
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="Box" Property="BorderBrush" Value="#3b82f6"/>
+                        <Setter TargetName="Box" Property="BorderBrush" Value="#f5d105"/>
                     </Trigger>
 
                     <!-- Checked -->
                     <Trigger Property="IsChecked" Value="True">
-                        <Setter TargetName="Box" Property="Background" Value="#3b82f6"/>
-                        <Setter TargetName="Box" Property="BorderBrush" Value="#3b82f6"/>
+                        <Setter TargetName="Box" Property="Background" Value="#046434"/>
+                        <Setter TargetName="Box" Property="BorderBrush" Value="#046434"/>
                         <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                     </Trigger>
 

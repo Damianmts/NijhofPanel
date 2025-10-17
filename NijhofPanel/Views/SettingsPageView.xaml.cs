@@ -9,7 +9,7 @@ public partial class SettingsPageView
         InitializeComponent();
         DataContext = new SettingsPageViewModel();
     }
-    
+
     public SettingsPageView()
     {
         InitializeComponent();
