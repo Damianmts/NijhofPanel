@@ -366,6 +366,37 @@ public class Com_RecessPlaceBeam : IExternalEventHandler
     private static double MapPipeDiameterToOpening(double pipeDiaFeet)
     {
         double pipeDiaMM = UnitUtils.ConvertFromInternalUnits(pipeDiaFeet, UnitTypeId.Millimeters);
+
+        // Speciale keuzelogica voor 110 mm
+        if (pipeDiaMM >= 105 && pipeDiaMM <= 115)
+        {
+            var result = TaskDialog.Show(
+                "Sparingdiameter kiezen",
+                "Houdt rekening met afschot.\n\nWelke sparingdiameter wil je gebruiken?",
+                TaskDialogCommonButtons.None,
+                TaskDialogResult.None);
+
+            var td = new TaskDialog("Sparingdiameter kiezen")
+            {
+                MainInstruction = "De leidingdiameter is 110 mm.",
+                MainContent = "Kies de gewenste sparingdiameter:",
+                CommonButtons = TaskDialogCommonButtons.Cancel
+            };
+            td.AddCommandLink(TaskDialogCommandLinkId.CommandLink1, "125 mm sparing");
+            td.AddCommandLink(TaskDialogCommandLinkId.CommandLink2, "160 mm sparing");
+
+            var choice = td.Show();
+
+            double chosenMM = choice switch
+            {
+                TaskDialogResult.CommandLink1 => 125,
+                TaskDialogResult.CommandLink2 => 160,
+                _ => 160 // standaard bij annuleren of sluiten
+            };
+
+            return UnitUtils.ConvertToInternalUnits(chosenMM, UnitTypeId.Millimeters);
+        }
+
         var ranges = new (double min, double max, double openingMM)[]
         {
             (0, 40, 50),

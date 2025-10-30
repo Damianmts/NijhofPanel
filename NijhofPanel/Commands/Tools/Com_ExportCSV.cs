@@ -123,22 +123,23 @@ public class Com_ExportCSV : IExternalEventHandler
                 var header = tableData.GetSectionData(SectionType.Header);
                 var body = tableData.GetSectionData(SectionType.Body);
 
-                var fileName = CleanFileName(schedule.Name) + ".csv";
+                // aangepaste bestandsnaam met projectnummer
+                var fileName = $"{projectNummer} - {CleanFileName(schedule.Name)}.csv";
                 var fullPath = Path.Combine(basePath, fileName);
                 string newFullPath = fullPath;
-                string summarySuffix = ""; // buiten de using gedefinieerd
+                string summarySuffix = "";
 
                 using (var writer = new StreamWriter(fullPath, false, System.Text.Encoding.UTF8))
                 {
                     // Titel
                     writer.WriteLine(schedule.Name);
-                    writer.WriteLine();
 
-                    // Headers
+                    // Headers (alleen kolom 0 t/m 6)
                     for (int row = 1; row < header.NumberOfRows; row++)
                     {
                         var headerValues = new List<string>();
-                        for (int col = 0; col < header.NumberOfColumns; col++)
+                        int maxCol = Math.Min(7, header.NumberOfColumns); // Max 7 kolommen
+                        for (int col = 0; col < maxCol; col++)
                         {
                             var headerText = schedule.GetCellText(SectionType.Header, row, col);
                             headerValues.Add(EscapeCsv(headerText));
@@ -147,13 +148,17 @@ public class Com_ExportCSV : IExternalEventHandler
                         writer.WriteLine(string.Join(";", headerValues));
                     }
 
-                    // Data (met uitsluiting van 5m buizen/ducts)
+                    // Lege regel na headers
+                    writer.WriteLine();
+
+                    // Data (met uitsluiting van 5m buizen/ducts, alleen kolom 0 t/m 6)
                     var excludedItems = new Dictionary<string, int>();
 
                     for (int row = 0; row < body.NumberOfRows; row++)
                     {
                         var rowValues = new List<string>();
-                        for (int col = 0; col < body.NumberOfColumns; col++)
+                        int maxCol = Math.Min(7, body.NumberOfColumns); // Max 7 kolommen
+                        for (int col = 0; col < maxCol; col++)
                         {
                             var cellValue = schedule.GetCellText(SectionType.Body, row, col);
                             rowValues.Add(cellValue);

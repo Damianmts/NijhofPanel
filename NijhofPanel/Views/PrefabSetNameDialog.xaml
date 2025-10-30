@@ -1,0 +1,55 @@
+﻿<Window x:Class="NijhofPanel.Views.PrefabSetNameDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:NijhofPanel.Views"
+        mc:Ignorable="d"
+        Title="Prefab Kenmerk instellen" 
+        Height="200" 
+        Width="400"
+        WindowStartupLocation="CenterOwner" 
+        ResizeMode="NoResize">
+    
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Kies het type kenmerk:" FontWeight="Bold"/>
+
+        <!-- ComboBox + TextBox met overlay 'placeholder' -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,5">
+            <ComboBox x:Name="TypeComboBox" Width="120" SelectedIndex="0" SelectionChanged="OnSelectionChanged">
+                <ComboBoxItem Content="BNR"/>
+                <ComboBoxItem Content="Kavel"/>
+                <ComboBoxItem Content="Type"/>
+                <ComboBoxItem Content="Verd."/>
+            </ComboBox>
+
+            <Grid Width="180" Margin="10,0,0,0">
+                <TextBox x:Name="ValueTextBox"
+                         TextChanged="OnTextChanged"/>
+                <TextBlock x:Name="Placeholder"
+                           Text="bijv. 12, A2 of 1e"
+                           Foreground="Gray"
+                           IsHitTestVisible="False"
+                           Margin="5,2,0,0"
+                           VerticalAlignment="Center"
+                           Visibility="Visible"/>
+            </Grid>
+        </StackPanel>
+
+        <TextBlock Grid.Row="2" Text="Voorbeeld:" FontWeight="Bold" Margin="0,5,0,0"/>
+        <TextBlock x:Name="PreviewText" Grid.Row="3" FontSize="14" Foreground="Gray" />
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Width="75" Margin="5" Click="OnOkClick" Content="OK"/>
+            <Button Width="75" Margin="5" Click="OnCancelClick" Content="Annuleer"/>
+        </StackPanel>
+    </Grid>
+    
+</Window>

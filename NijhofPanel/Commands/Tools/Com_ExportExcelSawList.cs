@@ -83,7 +83,7 @@ public class Com_ExportExcelSawList : IExternalEventHandler
 
             try
             {
-                var fileName = CleanSheetName(schedule.Name) + ".xlsx";
+                var fileName = $"{projectNummer} - {CleanSheetName(schedule.Name)}.xlsx";
                 var fullPath = Path.Combine(basePath, fileName);
 
                 using var package = new ExcelPackage();
@@ -93,9 +93,11 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                 var header = tableData.GetSectionData(SectionType.Header);
                 var body = tableData.GetSectionData(SectionType.Body);
 
-                // ===== Titel =====
+                int maxCol = Math.Min(7, Math.Max(header.NumberOfColumns, body.NumberOfColumns)); // Max 7 kolommen
+
+                // Titel
                 worksheet.Cells[1, 1].Value = schedule.Name;
-                using (var titleRange = worksheet.Cells[1, 1, 1, body.NumberOfColumns])
+                using (var titleRange = worksheet.Cells[1, 1, 1, maxCol])
                 {
                     titleRange.Merge = true;
                     titleRange.Style.Font.Bold = true;
@@ -103,8 +105,9 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                     titleRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 }
 
-                // ===== Headers =====
+                // Headers
                 var headerRowCount = header.NumberOfRows;
+                int headerMaxCol = Math.Min(7, header.NumberOfColumns);
 
                 // Controleer of eerste headerregel gelijk is aan de titel → dan overslaan
                 int headerStartIndex = 0;
@@ -115,10 +118,10 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                         headerStartIndex = 1;
                 }
 
-                // Schrijf alleen de headerregels die niet de titel dupliceren
+                // Schrijf alleen de headerregels die niet de titel dupliceren (max 7 kolommen)
                 for (int row = headerStartIndex; row < headerRowCount; row++)
                 {
-                    for (int col = 0; col < header.NumberOfColumns; col++)
+                    for (int col = 0; col < headerMaxCol; col++)
                     {
                         worksheet.Cells[(row - headerStartIndex) + 2, col + 1].Value =
                             schedule.GetCellText(SectionType.Header, row, col);
@@ -127,10 +130,10 @@ public class Com_ExportExcelSawList : IExternalEventHandler
 
                 // Headerstijl – exact over de header, zonder lege rij
                 int styledHeaderRows = headerRowCount - headerStartIndex;
-                
-                // Bepaal de laatst gebruikte kolom in de header (zodat de grijze stijl niet te ver doorloopt)
-                int lastUsedHeaderCol = header.NumberOfColumns;
-                for (int c = header.NumberOfColumns - 1; c >= 0; c--)
+
+                // Bepaal de laatst gebruikte kolom in de header (max 7 kolommen)
+                int lastUsedHeaderCol = headerMaxCol;
+                for (int c = headerMaxCol - 1; c >= 0; c--)
                 {
                     bool colIsEmpty = true;
                     for (int r = headerStartIndex; r < headerRowCount; r++)
@@ -142,6 +145,7 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                             break;
                         }
                     }
+
                     if (!colIsEmpty)
                     {
                         lastUsedHeaderCol = c + 1; // 1-based kolomindex
@@ -158,12 +162,12 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                     headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
                 }
 
-                // ===== Lege rij onder header =====
+                // Lege rij onder header
                 int dataStartRow = styledHeaderRows + 3; // +1 voor titel, +header, +1 lege rij
 
-                // ===== Data (body) met uitsluiting van 5m buizen/ducts =====
+                // Data (body) met uitsluiting van 5m buizen/ducts (max 7 kolommen)
                 int dataRows = body.NumberOfRows;
-                int dataCols = body.NumberOfColumns;
+                int dataCols = Math.Min(7, body.NumberOfColumns); // Max 7 kolommen
 
                 var rows = new List<object[]>(); // Alleen regels die niet 5m zijn
                 var excludedItems = new Dictionary<string, int>(); // Houdt bij wat we overslaan
@@ -188,8 +192,9 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                         string raw = string.Join(" ", rowValues.Select(x => x?.ToString() ?? ""));
                         string key = "5m onbekend";
 
-                        // === Buisdetectie (zoek naar diameter in mm) ===
-                        var match = Regex.Match(raw, @"[Øø]?\s*(\d+(\.\d+)?)\s*mm", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                        // Buisdetectie (zoek naar diameter in mm)
+                        var match = Regex.Match(raw, @"[Øø]?\s*(\d+(\.\d+)?)\s*mm",
+                            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                         if (match.Success)
                         {
                             // Neem alleen het numerieke deel voor de diameter
@@ -198,7 +203,7 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                                 diameter = diameter.Substring(0, diameter.Length - 2);
                             key = $"5m ø{diameter} mm";
                         }
-                        // === Ductdetectie (195/80 → 195-80) ===
+                        // Ductdetectie (195/80 → 195-80)
                         else if (raw.Contains("/"))
                         {
                             var maat = raw.Split(' ').FirstOrDefault(v => v.Contains("/"));
@@ -218,14 +223,14 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                     rows.Add(rowValues);
                 }
 
-                // ===== Plaats data =====
+                // Plaats data
                 worksheet.Cells[dataStartRow, 1].LoadFromArrays(rows);
 
-                // ===== Layout =====
+                // Layout
                 if (body.NumberOfRows < 500)
                     worksheet.Cells.AutoFitColumns();
 
-                // Border tot en met laatste datarij (één rij minder)
+                // Border tot en met laatste datarij (alleen voor de 7 kolommen)
                 int lastRow = dataStartRow + rows.Count - 1;
                 using (var range = worksheet.Cells[1, 1, lastRow, dataCols])
                 {
@@ -236,7 +241,7 @@ public class Com_ExportExcelSawList : IExternalEventHandler
                     range.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                 }
 
-                // ===== Bestandsnaam met samenvatting =====
+                // Bestandsnaam met samenvatting
                 string summarySuffix = "";
                 if (excludedItems.Any())
                 {

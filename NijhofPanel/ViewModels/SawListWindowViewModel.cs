@@ -136,8 +136,12 @@ public partial class SawListWindowViewModel : ObservableObject
 
     private static string ExtractBouwnummer(string name)
     {
-        var match = Regex.Match(name, @"\b(BNR|Kavel|Type)\s*[A-Za-z0-9\*]+", RegexOptions.IgnoreCase);
-        return match.Success ? match.Value : string.Empty;
+        // Herken BNR / Kavel / Type / Verd.  (bij Verd. staat waarde eerst)
+        var match = Regex.Match(name,
+            @"(\b(BNR|Kavel|Type)\s*[A-Za-z0-9\*]+|\b[A-Za-z0-9]+\s*Verd\.)",
+            RegexOptions.IgnoreCase);
+
+        return match.Success ? match.Value.Trim() : string.Empty;
     }
 
     public partial class SawListItem : ObservableObject

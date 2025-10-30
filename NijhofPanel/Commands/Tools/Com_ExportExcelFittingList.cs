@@ -82,11 +82,12 @@ public class Com_ExportExcelFittingList : IExternalEventHandler
 
             try
             {
-                var fileName = CleanSheetName(schedule.Name) + ".xlsx";
+                // Bestandsnaam met projectnummer
+                var fileName = $"{projectNummer} - {CleanFileName(schedule.Name)}.xlsx";
                 var fullPath = Path.Combine(basePath, fileName);
 
                 using var package = new ExcelPackage();
-                var worksheet = package.Workbook.Worksheets.Add(schedule.Name);
+                var worksheet = package.Workbook.Worksheets.Add("Blad1");
 
                 var tableData = schedule.GetTableData();
                 var header = tableData.GetSectionData(SectionType.Header);
@@ -202,13 +203,16 @@ public class Com_ExportExcelFittingList : IExternalEventHandler
         }
     }
 
-    private string CleanSheetName(string name)
+    private string CleanFileName(string name)
     {
-        var invalid = Path.GetInvalidFileNameChars();
+        if (string.IsNullOrWhiteSpace(name))
+            return "Onbekend";
+
+        // Verwijder ongeldige tekens voor Windows-bestanden
+        var invalid = System.IO.Path.GetInvalidFileNameChars();
         var cleanName = string.Join("_", name.Split(invalid, StringSplitOptions.RemoveEmptyEntries));
-        if (cleanName.Length > 31)
-            cleanName = cleanName.Substring(0, 31);
-        return cleanName;
+
+        return cleanName.Trim();
     }
 
     public string GetName() => "Nijhof Panel Export Excel FittingList";

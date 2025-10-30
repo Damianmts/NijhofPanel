@@ -11,6 +11,7 @@ using Autodesk.Revit.DB.Plumbing;
 using System.Text.RegularExpressions;
 using NijhofPanel.Helpers.Core;
 using System.Globalization;
+using NijhofPanel.Views;
 using Autodesk.Revit.DB.Mechanical;
 
 [Transaction(TransactionMode.Manual)]
@@ -109,28 +110,18 @@ public class Com_PrefabCreate : IExternalEventHandler
                     }
                 }
 
-                // Vraag gebruiker om invoer: BNR, Kavel of Type
-                string? kavelnummer = InputBoxHelper.Show(
-                    "Voer het Prefab kenmerk in (bijv. 'BNR 12', 'Kavel 5' of 'Type A2'):",
-                    "Prefab Kenmerk"
-                );
+                // Nieuw dialoogvenster voor kenmerk
+                var dialog = new PrefabSetNameDialog();
+                bool? dialogResult = dialog.ShowDialog();
 
-                // Controleer of invoer geldig is
-                if (string.IsNullOrWhiteSpace(kavelnummer))
+                if (dialogResult != true || string.IsNullOrWhiteSpace(dialog.ResultText))
                 {
                     TaskDialog.Show("Prefab Set", "Geen invoer gedaan. De actie is geannuleerd.");
                     transaction.RollBack();
                     return;
                 }
 
-                // Sta 'BNR', 'Kavel' of 'Type' toe
-                if (!Regex.IsMatch(kavelnummer, @"^(BNR|Kavel|Type)\s+\S+$", RegexOptions.IgnoreCase))
-                {
-                    TaskDialog.Show("Prefab Set",
-                        "Ongeldige invoer. Gebruik 'BNR [nummer]', 'Kavel [nummer]' of 'Type [code]'.");
-                    transaction.RollBack();
-                    return;
-                }
+                string kavelnummer = dialog.ResultText;
                 
                 // Haal alle levels op uit het Revit-model
                 var levels = new FilteredElementCollector(doc)

@@ -21,12 +21,15 @@ public partial class ScheduleSelectionWindowView
         InitializeComponent();
 
         // De rest van de code blijft hetzelfde
-        ScheduleListBox.ItemsSource = schedules.Select(s => new ScheduleItem
-        {
-            Name = s.Name,
-            Schedule = s,
-            IsSelected = false
-        }).ToList();
+        ScheduleListBox.ItemsSource = schedules
+            .OrderBy(s => s.Name, System.StringComparer.CurrentCultureIgnoreCase) // <-- sorteren op naam
+            .Select(s => new ScheduleItem
+            {
+                Name = s.Name,
+                Schedule = s,
+                IsSelected = false
+            })
+            .ToList();
     }
 
     private void ExportButton_Click(object sender, RoutedEventArgs e)

@@ -20,3 +20,6 @@
 #User-specific files
 *.user
 /NijhofPanel.sln.DotSettings
+
+#Random Shit
+/Instructions.md
