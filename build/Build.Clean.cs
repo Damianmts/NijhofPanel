@@ -41,6 +41,37 @@ sealed partial class Build
     static void CleanDirectory(AbsolutePath path)
     {
         Log.Information("Cleaning directory: {Directory}", path);
-        path.CreateOrCleanDirectory();
+
+        try
+        {
+            // Verwijder "ReadOnly" attribuut van directory en subbestanden
+            if (Directory.Exists(path))
+            {
+                foreach (var file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                {
+                    var attrs = File.GetAttributes(file);
+                    if (attrs.HasFlag(FileAttributes.ReadOnly))
+                        File.SetAttributes(file, attrs & ~FileAttributes.ReadOnly);
+                }
+
+                foreach (var dir in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
+                {
+                    var attrs = File.GetAttributes(dir);
+                    if (attrs.HasFlag(FileAttributes.ReadOnly))
+                        File.SetAttributes(dir, attrs & ~FileAttributes.ReadOnly);
+                }
+            }
+
+            // Voer de standaard clean-operatie uit
+            path.CreateOrCleanDirectory();
+        }
+        catch (IOException ex)
+        {
+            Log.Warning("Kon map niet verwijderen: {Path}. Fout: {Message}", path, ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Log.Warning("Geen toegang tot map: {Path}. Fout: {Message}", path, ex.Message);
+        }
     }
 }
