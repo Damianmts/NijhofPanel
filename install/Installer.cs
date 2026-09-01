@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Installer;
 using WixSharp;
 using WixSharp.CommonTasks;
@@ -7,6 +8,9 @@ using Assembly = System.Reflection.Assembly;
 
 const string outputName = "Nijhof Panel";
 const string projectName = "NijhofPanel";
+
+// The build agent does not expose the Windows Installer service used by WiX ICE validation.
+Compiler.LightOptions = "-sval -sw1076 -sw1079";
 
 // TODO - Customize installer
 
@@ -35,7 +39,9 @@ var excludedProjects = new[]
     "NijhofPanel.Tests"
 };
 
-var wixEntities = Generator.GenerateWixEntities(args, excludedProjects);
+var isRevit2027 = new Func<string, bool>(path => path.Contains("R27") || path.Contains("2027"));
+var legacyWixEntities = Generator.GenerateWixEntities(args.Where(path => !isRevit2027(path)), excludedProjects);
+var revit2027WixEntities = Generator.GenerateWixEntities(args.Where(isRevit2027), excludedProjects);
 project.RemoveDialogsBetween(NativeDialogs.WelcomeDlg, NativeDialogs.CustomizeDlg);
 
 BuildSingleUserMsi();
@@ -47,7 +53,7 @@ void BuildSingleUserMsi()
     project.OutFileName = $"{outputName}-{project.Version}-SingleUser";
     project.Dirs =
     [
-        new InstallDir(@"%AppDataFolder%\Autodesk\Revit\Addins\", wixEntities)
+        new InstallDir(@"%AppDataFolder%\Autodesk\Revit\Addins\", legacyWixEntities.Concat(revit2027WixEntities).ToArray())
     ];
     project.BuildMsi();
 }
@@ -56,9 +62,15 @@ void BuildMultiUserUserMsi()
 {
     project.InstallScope = InstallScope.perMachine;
     project.OutFileName = $"{outputName}-{project.Version}-MultiUser";
-    project.Dirs =
-    [
-        new InstallDir(@"%CommonAppDataFolder%\Autodesk\Revit\Addins\", wixEntities)
-    ];
+    project.Dirs = legacyWixEntities.Any()
+        ?
+        [
+            new InstallDir(@"%CommonAppDataFolder%\Autodesk\Revit\Addins\", legacyWixEntities),
+            new Dir(@"%ProgramFilesFolder%\Autodesk\Revit\Addins\", revit2027WixEntities)
+        ]
+        :
+        [
+            new InstallDir(@"%ProgramFilesFolder%\Autodesk\Revit\Addins\", revit2027WixEntities)
+        ];
     project.BuildMsi();
 }

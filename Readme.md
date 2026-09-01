@@ -4,7 +4,7 @@ Een uitgebreide Revit-plugin ontwikkeld voor Nijhof Installaties om workflows te
 
 ## 📋 Overzicht
 
-Nijhof Panel is een multi-versie Revit-plugin die tools biedt voor elektrotechnische installaties, prefab-management, en diverse projectspecifieke automatiseringen. De plugin ondersteunt Revit 2024, 2025 en 2026.
+Nijhof Panel is een multi-versie Revit-plugin die tools biedt voor elektrotechnische installaties, prefab-management, en diverse projectspecifieke automatiseringen. De plugin ondersteunt Revit 2024, 2025, 2026 en 2027.
 
 ## ✨ Hoofdfuncties
 
@@ -36,10 +36,11 @@ Nijhof Panel is een multi-versie Revit-plugin die tools biedt voor elektrotechni
 ## 🔧 Technische Specificaties
 
 ### Vereisten
-- Autodesk Revit 2024, 2025, of 2026
+- Autodesk Revit 2024, 2025, 2026, of 2027
 - Windows 10/11
 - .NET Framework 4.8 (voor Revit 2024)
 - .NET 8.0 (voor Revit 2025/2026)
+- .NET 10.0 (voor Revit 2027)
 
 ### Afhankelijkheden
 - Nice3point.Revit.Toolkit
@@ -144,6 +145,7 @@ De solution ondersteunt meerdere configuraties:
 - Debug/Release R24 (Revit 2024)
 - Debug/Release R25 (Revit 2025)
 - Debug/Release R26 (Revit 2026)
+- Debug/Release R27 (Revit 2027)
 
 ### Development Host
 

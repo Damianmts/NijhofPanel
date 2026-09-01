@@ -1,11 +1,10 @@
 ﻿namespace NijhofPanel;
 
 using System.Globalization;
-using System.Reflection;
 using System.Threading;
 using Autodesk.Revit.UI;
-using JetBrains.Annotations;
 using Nice3point.Revit.Toolkit.External;
+using RevitExternalEvent = Autodesk.Revit.UI.ExternalEvent;
 using Commands.Electrical;
 using Services;
 using ViewModels;
@@ -24,13 +23,12 @@ using OfficeOpenXml;
 
 // TODO - Fix all warnings in project :/
 
-[UsedImplicitly]
 public class RevitApplication : ExternalApplication
 {
     public static RevitRequestHandler LibraryHandler { get; private set; } = null!;
-    public static ExternalEvent LibraryEvent { get; private set; } = null!;
+    public static RevitExternalEvent LibraryEvent { get; private set; } = null!;
     public static Com_ConnectElement ConnectElementHandler { get; private set; } = null!;
-    public static ExternalEvent ConnectElementEvent { get; private set; } = null!;
+    public static RevitExternalEvent ConnectElementEvent { get; private set; } = null!;
 
     public override void OnStartup()
     {
@@ -40,9 +38,6 @@ public class RevitApplication : ExternalApplication
         // WPF-resources en cultuurinstelling
         System.Windows.Application.ResourceAssembly = typeof(RevitApplication).Assembly;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-        AppDomain.CurrentDomain.AssemblyResolve += (_, _) =>
-            Assembly.LoadFrom(typeof(RevitApplication).Assembly.Location);
-
         // RevitContext instellen zodra een document opent
         Application.ControlledApplication.DocumentOpened += (_, args) =>
         {
@@ -78,21 +73,21 @@ public class RevitApplication : ExternalApplication
         
         // ExternalEvent handlers
         var familyHandler = new FamilyPlacementHandler();
-        var familyEvent = ExternalEvent.Create(familyHandler);
+        var familyEvent = RevitExternalEvent.Create(familyHandler);
         var prefabHandler = new RevitRequestHandler();
-        var prefabEvent = ExternalEvent.Create(prefabHandler);
+        var prefabEvent = RevitExternalEvent.Create(prefabHandler);
         var tagGroepnummerHandler = new Com_TagGroepnummer();
-        var tagGroepnummerEvent = ExternalEvent.Create(tagGroepnummerHandler);
+        var tagGroepnummerEvent = RevitExternalEvent.Create(tagGroepnummerHandler);
         var tagSwitchcodeHandler = new Com_TagSwitchcode();
-        var tagSwitchcodeEvent = ExternalEvent.Create(tagSwitchcodeHandler);
+        var tagSwitchcodeEvent = RevitExternalEvent.Create(tagSwitchcodeHandler);
         var codeLijstHandler = new Com_CodeLijst();
-        var codeLijstEvent = ExternalEvent.Create(codeLijstHandler);
+        var codeLijstEvent = RevitExternalEvent.Create(codeLijstHandler);
 
         
         LibraryHandler = new RevitRequestHandler();
-        LibraryEvent   = ExternalEvent.Create(LibraryHandler);
+        LibraryEvent   = RevitExternalEvent.Create(LibraryHandler);
         ConnectElementHandler = new Com_ConnectElement();
-        ConnectElementEvent   = ExternalEvent.Create(ConnectElementHandler);
+        ConnectElementEvent   = RevitExternalEvent.Create(ConnectElementHandler);
 
         // Ribbon-buttons
         var ribbonPanel = GetOrCreateRibbonPanel();

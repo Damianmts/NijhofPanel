@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Version>1.0.0-beta.1</Version>
+        <Version>1.0.1-beta.1</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -12,7 +12,7 @@
         <PlatformTarget>x64</PlatformTarget>
         <ImplicitUsings>true</ImplicitUsings>
         <EnableDynamicLoading>true</EnableDynamicLoading>
-        <Configurations>Debug R24;Debug R25;Debug R26;Release R24;Release R25;Release R26</Configurations>
+        <Configurations>Debug R24;Debug R25;Debug R26;Debug R27;Release R24;Release R25;Release R26;Release R27</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
@@ -28,6 +28,10 @@
     <PropertyGroup Condition="$(Configuration.Contains('R26'))">
         <RevitVersion>2026</RevitVersion>
         <TargetFramework>net8.0-windows</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(Configuration.Contains('R27'))">
+        <RevitVersion>2027</RevitVersion>
+        <TargetFramework>net10.0-windows</TargetFramework>
     </PropertyGroup>
 
     <!-- Launch configuration -->
